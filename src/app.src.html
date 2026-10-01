@@ -6,6 +6,11 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="color-scheme" content="light dark">
 <title>NIET Payroll</title>
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,/*ICON32*/">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -62,8 +67,9 @@ button,input{font:inherit;color:inherit;letter-spacing:inherit}
 /* ---------- nav bar (translucent material) ---------- */
 .nav{position:sticky;top:0;z-index:20;background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:.5px solid var(--sep)}
 .nav-in{max-width:1180px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{font-weight:600;font-size:15px}
-.brand span{color:var(--label-2);font-weight:400;margin-left:8px}
+.brand{font-weight:600;font-size:15px;display:flex;align-items:center;gap:9px}
+.logo{width:26px;height:26px;flex:none;filter:drop-shadow(0 1px 2px rgba(19,34,74,.25))}
+.brand span{color:var(--label-2);font-weight:400;margin-left:2px}
 .navlink{color:var(--blue);text-decoration:none;font-size:15px;padding:6px 2px}
 .navlink:hover{opacity:.75}
 
@@ -241,7 +247,7 @@ td.stepcell{padding:6px 8px;text-align:center}
 <body>
 <header class="nav">
   <div class="nav-in">
-    <div class="brand">NIET Payroll <span>Noida Institute of Education &amp; Technology</span></div>
+    <div class="brand"><img class="logo" src="data:image/png;base64,/*ICON64*/" alt="" width="26" height="26">NIET Payroll <span>Noida Institute of Education &amp; Technology</span></div>
     <a class="navlink" href="/?logout" id="signout">Sign out</a>
   </div>
 </header>
@@ -314,7 +320,7 @@ td.stepcell{padding:6px 8px;text-align:center}
       </div>
     </div>
     <div class="problems" id="problems" role="alert"></div>
-    <p class="foot">Salaries, names and bank accounts come from the approved templates, which are kept out of the code. Only the month, days, leave, salary cut, ESI, net amounts, totals, amount in words and cheque details change.</p>
+    <p class="foot"><span id="tplver"></span>Salaries, names and bank accounts come from the approved templates, which are kept out of the code. Only the month, days, leave, salary cut, ESI, net amounts, totals, amount in words and cheque details change.</p>
   </section>
 </main>
 
@@ -423,7 +429,16 @@ const stepper = (k, name, label) => `<div class="stepper" data-k="${k}">
   <input data-k="${k}" type="number" min="0" step="0.5" value="0" inputmode="decimal" aria-label="${label} for ${name}">
   <button type="button" data-d="1" aria-label="Increase ${label} for ${name}">+</button></div>`;
 
+async function fingerprint() {
+  try {
+    const both = new Uint8Array(XLSX.length + DOCX.length); both.set(XLSX); both.set(DOCX, XLSX.length);
+    const h = new Uint8Array(await crypto.subtle.digest('SHA-256', both));
+    $('tplver').textContent = 'Template version ' + [...h.slice(0, 3)].map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase() + '. ';
+  } catch { /* not critical */ }
+}
+
 async function start() {
+  fingerprint();
   JSZip.loadAsync(DOCX).then(z => z.file('word/document.xml').async('string')).then(x => { const m = x.match(/Account No\.\s*(\d+)/); $('acct').textContent = m ? m[1] : ''; });
   return PAS.loadMaster(JSZip, XLSX, DOCX).then(emps => {
     EMPS = emps;

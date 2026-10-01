@@ -5,6 +5,8 @@ import APP_HTML from './_page.js';
 const login = (msg = '') => `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow">
 <title>Sign in · NIET Payroll</title>
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest"><meta name="theme-color" content="#e9eee7">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600&family=Spectral:wght@600&display=swap" rel="stylesheet">
 <style>
@@ -13,6 +15,7 @@ const login = (msg = '') => `<!doctype html><html lang="en"><head><meta charset=
 main{min-height:100vh;display:grid;place-items:center;padding:24px 16px}
 form{width:100%;max-width:360px;background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:26px 24px;
   background-image:repeating-linear-gradient(115deg,transparent 0 13px,rgba(180,203,189,.28) 13px 14px);box-shadow:0 14px 30px -20px rgba(27,42,74,.5)}
+.mark{display:block;width:64px;height:64px;margin:0 0 14px;filter:drop-shadow(0 6px 12px rgba(19,34,74,.28))}
 h1{margin:0 0 4px;font:600 24px/1.15 Spectral,Georgia,serif}
 p{margin:0 0 18px;color:var(--soft);font-size:13.5px}
 label{display:block;font-size:13px;color:var(--soft);margin:12px 0 4px}
@@ -23,7 +26,7 @@ button:hover{background:#24375f}
 .err{margin:12px 0 0;color:var(--stamp);font-size:13.5px}
 </style></head><body><main>
 <form method="post" action="/" autocomplete="on">
-  <h1>NIET Payroll</h1>
+  <img class="mark" src="/icon-192.png" alt="" width="64" height="64"><h1>NIET Payroll</h1>
   <p>Noida Institute of Education &amp; Technology. Sign in to prepare the payroll and transfer memo.</p>
   <label for="u">Username</label><input id="u" name="user" autocomplete="username" required autofocus>
   <label for="p">Password</label><input id="p" name="pass" type="password" autocomplete="current-password" required>
