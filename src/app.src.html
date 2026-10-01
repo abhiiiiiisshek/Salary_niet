@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>NIET Payroll</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#e9eee7;      /* cheque-paper sage, page ground */
+  --sheet:#fafbf8;      /* working surface */
+  --ink:#1b2a4a;        /* fountain-pen navy */
+  --ink-soft:#56627a;
+  --rule:#d2dad1;
+  --guil-2:#cfdccf;     /* guilloche line */
+  --stamp:#b3261e;      /* rubber stamp red: stamp + errors only */
+  --focus:#3b6db3;
+  --serif:"Spectral", Georgia, "Times New Roman", serif;
+  --sans:"Public Sans", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+.page{max-width:1240px;margin:0 auto;padding:28px 24px 64px}
+
+/* ---------- masthead ---------- */
+.mast{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid var(--rule)}
+.mast h1{margin:0;font:600 26px/1.1 var(--serif);letter-spacing:-.2px}
+.mast p{margin:4px 0 0;color:var(--ink-soft);font-size:13.5px}
+.lock{font-size:12.5px;color:var(--ink-soft);display:flex;align-items:center;gap:6px}
+.lock svg{width:14px;height:14px}
+
+/* ---------- the month sentence ---------- */
+.sentence{margin:26px 0 22px;font:400 clamp(22px,2.6vw,30px)/1.35 var(--serif);max-width:60ch}
+.sentence select{font:inherit;color:var(--ink);background:transparent;border:0;border-bottom:2px solid var(--ink);padding:0 22px 0 2px;margin:0 2px;cursor:pointer;appearance:none;-webkit-appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);
+  background-position:calc(100% - 10px) 58%,calc(100% - 5px) 58%;background-size:5px 5px;background-repeat:no-repeat}
+.sentence .soft{color:var(--ink-soft)}
+
+/* ---------- layout ---------- */
+.desk{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:24px;align-items:start}
+
+/* ---------- ledger ---------- */
+.ledger{background:var(--sheet);border:1px solid var(--rule);border-radius:4px}
+.ledger-head{display:flex;justify-content:space-between;align-items:baseline;padding:16px 18px 10px;gap:12px;flex-wrap:wrap}
+.ledger-head h2{margin:0;font:600 17px/1.2 var(--serif)}
+.ledger-head p{margin:0;font-size:13px;color:var(--ink-soft)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:14px;font-variant-numeric:tabular-nums}
+th{font-weight:500;font-size:12.5px;color:var(--ink-soft);text-align:right;padding:8px 10px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:#f3f6f1;vertical-align:bottom;line-height:1.25}
+td{padding:8px 10px;text-align:right;border-bottom:1px solid #e6ebe5;white-space:nowrap}
+th.l,td.l{text-align:left}
+td.who{white-space:normal;min-width:200px}
+td.who b{font-weight:500;display:block}
+td.who small{color:var(--ink-soft);font-size:12.5px}
+.esi{font-size:11px;color:var(--ink-soft);border:1px solid var(--rule);border-radius:3px;padding:0 4px;margin-left:6px;vertical-align:1px;font-weight:400}
+td input{width:54px;font:inherit;text-align:right;color:var(--ink);background:#fff;border:1px solid #c9d2c8;border-radius:3px;padding:5px 7px;font-variant-numeric:tabular-nums}
+td input:hover{border-color:var(--ink-soft)}
+td input:focus{border-color:var(--ink);outline:none;box-shadow:0 0 0 3px rgba(59,109,179,.18)}
+td input.bad{border-color:var(--stamp);background:#fdf1ef}
+tr.cut td{background:#f2f6f0}
+td.dim{color:#9aa4b2}
+td.net{font-weight:600}
+tfoot td{border-top:2px solid var(--ink);border-bottom:0;font-weight:600;padding-top:11px;padding-bottom:13px}
+.problems{margin:0;padding:12px 18px 14px;border-top:1px solid var(--rule);color:var(--stamp);font-size:13.5px;display:none}
+.problems.on{display:block}
+.problems ul{margin:4px 0 0;padding-left:18px}
+
+/* ---------- the cheque ---------- */
+.cheque-col{position:sticky;top:20px}
+.cheque{position:relative;overflow:hidden;border-radius:6px;border:1px solid #a9bfb1;padding:20px 22px 22px;color:var(--ink);
+  background:
+    radial-gradient(circle at 110% -10%, rgba(255,255,255,.75) 0 35%, transparent 36%),
+    repeating-radial-gradient(circle at 85% 120%, transparent 0 9px, var(--guil-2) 9px 10px),
+    repeating-linear-gradient(115deg, transparent 0 13px, rgba(180,203,189,.45) 13px 14px),
+    #eef4ee;
+  box-shadow:0 1px 0 #fff inset, 0 14px 30px -18px rgba(27,42,74,.45)}
+.cheque::before{content:"";position:absolute;inset:8px;border:1px dashed rgba(27,42,74,.22);border-radius:3px;pointer-events:none}
+.cheque > *{position:relative}
+.chq-top{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--ink-soft)}
+.chq-bank{font:600 15px/1.2 var(--serif);color:var(--ink)}
+.chq-pay{margin:18px 0 4px;font-size:12.5px;color:var(--ink-soft)}
+.chq-amt{display:flex;align-items:baseline;gap:6px;font:600 44px/1 var(--serif);letter-spacing:-.5px;font-variant-numeric:lining-nums tabular-nums}
+.chq-amt .r{font-size:30px;font-weight:500}
+.chq-amt .tail{font-size:22px;color:var(--ink-soft);font-weight:500}
+.chq-words{margin:10px 0 16px;padding-bottom:12px;border-bottom:1px solid rgba(27,42,74,.35);font:italic 400 16.5px/1.4 var(--serif);min-height:3.2em}
+.chq-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chq-fields label{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:3px}
+.chq-fields input{width:100%;font:500 15px/1.3 var(--sans);color:var(--ink);background:rgba(255,255,255,.75);border:0;border-bottom:1.5px solid var(--ink);border-radius:0;padding:6px 4px}
+.chq-fields input::placeholder{color:#8a96a8;font-weight:400}
+.chq-meta{margin-top:12px;font-size:12.5px;color:var(--ink-soft)}
+.acct{font-variant-numeric:tabular-nums}
+
+/* stamp */
+.stamp{position:absolute;right:30px;bottom:22px;padding:8px 14px 7px;border:3px solid var(--stamp);border-radius:6px;color:var(--stamp);
+  font:700 20px/1 var(--sans);letter-spacing:2px;text-align:center;transform:rotate(-12deg);opacity:0;pointer-events:none;mix-blend-mode:multiply}
+.stamp small{display:block;font:600 10.5px/1.2 var(--sans);letter-spacing:1px;margin-top:4px}
+.stamp.on{animation:thunk .42s cubic-bezier(.2,.9,.25,1.25) forwards}
+.cheque.hit{animation:shake .32s ease-out .18s}
+@keyframes thunk{0%{opacity:0;transform:rotate(-20deg) scale(2.1)}70%{opacity:.95;transform:rotate(-11deg) scale(.94)}100%{opacity:.85;transform:rotate(-12deg) scale(1)}}
+@keyframes shake{0%,100%{transform:none}30%{transform:translate(1px,2px)}60%{transform:translate(-1px,-1px)}}
+
+/* action */
+.act{margin-top:14px;background:var(--sheet);border:1px solid var(--rule);border-radius:4px;padding:14px 16px}
+.check{display:flex;gap:9px;align-items:flex-start;font-size:14px;cursor:pointer}
+.check input{margin:3px 0 0;width:16px;height:16px;accent-color:var(--ink)}
+.go{margin-top:12px;width:100%;border:0;border-radius:4px;background:var(--ink);color:#fff;font:600 15px/1 var(--sans);padding:14px 16px;cursor:pointer;transition:background .15s, transform .08s}
+.go:hover:not(:disabled){background:#24375f}
+.go:active:not(:disabled){transform:translateY(1px)}
+.go:disabled{background:#9aa6b6;cursor:not-allowed}
+.why{margin:8px 0 0;font-size:12.5px;color:var(--ink-soft);min-height:1.2em}
+.why.bad{color:var(--stamp)}
+
+/* files slide out from under the cheque */
+.files{display:grid;gap:8px;margin-top:12px}
+.file{display:flex;align-items:center;gap:12px;padding:10px 12px;background:#fff;border:1px solid var(--rule);border-radius:4px;text-decoration:none;color:var(--ink);
+  opacity:0;transform:translateY(-14px)}
+.files.on .file{animation:slide .45s cubic-bezier(.2,.8,.2,1) forwards}
+.files.on .file:nth-child(2){animation-delay:.12s}
+@keyframes slide{to{opacity:1;transform:none}}
+.file:hover{border-color:var(--ink)}
+.file .ic{flex:none;width:34px;height:42px;border-radius:2px;color:#fff;font:700 9px/1 var(--sans);display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;clip-path:polygon(0 0,72% 0,100% 22%,100% 100%,0 100%)}
+.file .ic.x{background:#1e6b44} .file .ic.w{background:#2b5797}
+.file b{display:block;font-weight:600;font-size:14px;overflow-wrap:anywhere}
+.file span small{display:block;color:var(--ink-soft);font-size:12.5px;overflow-wrap:anywhere}
+.file .dl{margin-left:auto;font-size:12.5px;color:var(--ink-soft)}
+.files p{margin:2px 0 0;font-size:12.5px;color:var(--ink-soft)}
+
+.loader{background:var(--sheet);border:1px solid var(--rule);border-left:4px solid var(--ink);border-radius:4px;padding:16px 18px;margin-bottom:22px;max-width:900px}
+.loader h2{margin:0 0 4px;font:600 17px/1.2 var(--serif)}
+.loader p{margin:0 0 12px;color:var(--ink-soft);font-size:14px;max-width:75ch}
+.pickrow{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+.pickrow label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--ink-soft)}
+.pickrow input{font:inherit;font-size:13px;color:var(--ink)}
+.pickrow .go{width:auto;margin:0;padding:11px 18px}
+.foot{margin-top:28px;font-size:12.5px;color:var(--ink-soft);max-width:80ch}
+
+@media (prefers-reduced-motion:no-preference){
+  .cheque{animation:settle .7s cubic-bezier(.2,.8,.2,1) .1s both}
+  @keyframes settle{from{opacity:0;transform:translateY(10px) rotate(.6deg)}to{opacity:1;transform:none}}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:1ms!important;animation-delay:0s!important;transition:none!important}
+}
+@media (max-width:980px){
+  .desk{grid-template-columns:minmax(0,1fr)}
+  .cheque-col{position:static}
+}
+@media (max-width:520px){
+  .page{padding:20px 16px 48px}
+  .chq-amt{font-size:36px}
+  .chq-fields{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="mast">
+    <div>
+      <h1>NIET Payroll</h1>
+      <p>Noida Institute of Education &amp; Technology, monthly payroll and bank transfer memo</p>
+    </div>
+    <div class="lock"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>Files are built in your browser and never uploaded</div>
+  </header>
+
+  <p class="sentence">
+    Salary for <select id="month" aria-label="Salary month"></select><select id="year" aria-label="Year"></select><span class="soft" id="calline"></span>
+  </p>
+
+  <form class="loader" id="pick" hidden>
+    <h2>Load the approved templates</h2>
+    <p>The templates hold salaries and bank account numbers, so they aren't stored in this page. Choose the two template files on this computer. They're read in the browser and never uploaded.</p>
+    <div class="pickrow">
+      <label>Payroll template (.xlsx)<input type="file" id="px" accept=".xlsx"></label>
+      <label>Memo template (.docx)<input type="file" id="pd" accept=".docx"></label>
+      <button class="go" type="submit">Use these files</button>
+    </div>
+    <p class="why bad" id="pickmsg"></p>
+  </form>
+
+  <div class="desk">
+    <section class="ledger" aria-labelledby="ledger-h">
+      <div class="ledger-head">
+        <h2 id="ledger-h">Leave this month</h2>
+        <p>Only leave without pay reduces salary. C/L and M/L are recorded on the sheet.</p>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead><tr>
+            <th class="l">Employee</th>
+            <th>C/L</th><th>M/L &amp; E/L</th><th>Leave without pay</th><th>Working days</th>
+            <th>Salary</th><th>Salary cut</th><th>ESI</th><th>Net payable</th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+          <tfoot><tr>
+            <td class="l">Total, 9 employees</td><td></td><td></td><td></td><td></td>
+            <td data-t="M"></td><td data-t="O"></td><td data-t="R"></td><td data-t="U"></td>
+          </tr></tfoot>
+        </table>
+      </div>
+      <div class="problems" id="problems" role="alert"></div>
+    </section>
+
+    <aside class="cheque-col">
+      <div class="cheque" id="cheque">
+        <div class="chq-top">
+          <div><div class="chq-bank">Indian Bank</div>Sector 51, Noida</div>
+          <div style="text-align:right">Savings A/c<br><span class="acct" id="acct"></span></div>
+        </div>
+        <div class="chq-pay">Pay the employees listed, a total of</div>
+        <div class="chq-amt" aria-live="polite"><span class="r">₹</span><span id="amt">0</span><span class="tail">/-</span></div>
+        <div class="chq-words" id="words"></div>
+        <div class="chq-fields">
+          <div><label for="cdate">Cheque date</label><input id="cdate" type="date"></div>
+          <div><label for="cno">Cheque no.</label><input id="cno" type="text" inputmode="numeric" placeholder="Optional"></div>
+        </div>
+        <div class="chq-meta" id="paidin"></div>
+        <div class="stamp" id="stamp" aria-hidden="true">PREPARED<small id="stampdate"></small></div>
+      </div>
+
+      <div class="act">
+        <label class="check"><input type="checkbox" id="ok"> I have checked every row in the table</label>
+        <button class="go" id="go" disabled>Generate payroll and memo</button>
+        <p class="why" id="why"></p>
+        <div class="files" id="files" hidden>
+          <a class="file" id="fx"><span class="ic x">XLSX</span><span><b>Payroll sheet</b><small id="fxName"></small></span><span class="dl">Download</span></a>
+          <a class="file" id="fd"><span class="ic w">DOCX</span><span><b>Transfer memo</b><small id="fdName"></small></span><span class="dl">Download</span></a>
+          <p>Both files download on their own. If the browser held one back, click it here.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <p class="foot">Salaries, names and bank accounts come from the approved August 2026 templates, which are kept out of the code. Only the month, days, leave, salary cut, ESI, net amounts, totals, amount in words and cheque details change.</p>
+</div>
+
+<script>/*JSZIP*/</script>
+<script>/*ENGINE*/</script>
+<script>
+// Templates hold salaries and bank accounts, so they are NOT in this file or the public repo.
+// On Vercel they come from /api/templates (behind the password). Offline builds may embed them.
+const EMBED_XLSX = "/*XLSX_B64*/", EMBED_DOCX = "/*DOCX_B64*/";
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+let XLSX = null, DOCX = null;
+const $ = id => document.getElementById(id);
+const rs = n => '₹' + PAS.indianCommas(Math.round(n));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let EMPS = [], shown = 0, tween = null, URLS = [];
+
+function init() {
+  const now = new Date();
+  const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  PAS.MONTHS.forEach((m, i) => $('month').add(new Option(m, i)));
+  for (let y = prev.getFullYear() - 2; y <= prev.getFullYear() + 2; y++) $('year').add(new Option(y, y));
+  $('month').value = prev.getMonth(); $('year').value = prev.getFullYear();
+  setDefaultCheque();
+  ['month', 'year'].forEach(id => $(id).addEventListener('change', () => { setDefaultCheque(); refresh(); }));
+  ['cdate', 'cno'].forEach(id => $(id).addEventListener('input', refresh));
+  $('ok').addEventListener('change', refresh);
+  $('go').addEventListener('click', generate);
+  $('rows').addEventListener('input', refresh);
+  $('rows').addEventListener('focusin', e => { if (e.target.select) e.target.select(); });
+  $('pick').addEventListener('submit', usePickedFiles);
+  getTemplates().then(ok => ok ? start() : showPicker());
+}
+
+async function getTemplates() {
+  if (!EMBED_XLSX.startsWith('/*')) { XLSX = b64(EMBED_XLSX); DOCX = b64(EMBED_DOCX); return true; }
+  try {
+    const r = await fetch('/api/templates', { cache: 'no-store', credentials: 'same-origin' });
+    if (!r.ok) return false;
+    const j = await r.json();
+    XLSX = b64(j.xlsx); DOCX = b64(j.docx); return true;
+  } catch { return false; }
+}
+
+function showPicker() {
+  $('rows').innerHTML = '<tr><td class="l" colspan="9">Templates not loaded yet.</td></tr>';
+  $('pick').hidden = false;
+}
+
+async function usePickedFiles(ev) {
+  ev.preventDefault();
+  const fx = $('px').files[0], fd = $('pd').files[0];
+  if (!fx || !fd) { $('pickmsg').textContent = 'Choose both files: the payroll .xlsx and the memo .docx.'; return; }
+  XLSX = new Uint8Array(await fx.arrayBuffer()); DOCX = new Uint8Array(await fd.arrayBuffer());
+  try { await start(); $('pick').hidden = true; }
+  catch (e) { $('pickmsg').textContent = 'These files are not the NIET templates: ' + e.message; }
+}
+
+async function start() {
+  JSZip.loadAsync(DOCX).then(z => z.file('word/document.xml').async('string')).then(x => { const m = x.match(/Account No\.\s*(\d+)/); $('acct').textContent = m ? m[1] : ''; });
+  return PAS.loadMaster(JSZip, XLSX, DOCX).then(emps => {
+    EMPS = emps;
+    $('rows').innerHTML = emps.map(e => `
+      <tr data-row="${e.row}">
+        <td class="l who"><b>${e.name}${e.esi ? '<span class="esi" title="ESI deducted at 0.75%">ESI</span>' : ''}</b><small>${e.designation}</small></td>
+        <td><input data-k="cl" type="number" min="0" step="0.5" value="0" aria-label="C/L for ${e.name}"></td>
+        <td><input data-k="ml" type="number" min="0" step="0.5" value="0" aria-label="M/L and E/L for ${e.name}"></td>
+        <td><input data-k="lwp" type="number" min="0" step="0.5" value="0" aria-label="Leave without pay for ${e.name}"></td>
+        <td data-o="H"></td><td data-o="M"></td><td data-o="O"></td><td data-o="R"></td><td class="net" data-o="U"></td>
+      </tr>`).join('');
+    refresh();
+  });
+}
+
+function setDefaultCheque() {
+  const c = PAS.calendar(+$('year').value, +$('month').value);
+  $('cdate').value = `${c.payYear}-${String(c.payIdx + 1).padStart(2, '0')}-01`;
+}
+
+function readInput() {
+  const att = {};
+  document.querySelectorAll('#rows tr[data-row]').forEach(tr => {
+    const a = {};
+    tr.querySelectorAll('input').forEach(i => a[i.dataset.k] = i.value === '' ? 0 : Number(i.value));
+    att[tr.dataset.row] = a;
+  });
+  const [y, m, d] = ($('cdate').value || '').split('-').map(Number);
+  return { year: +$('year').value, monthIdx: +$('month').value, chequeDate: y ? new Date(y, m - 1, d) : new Date(NaN), chequeNo: $('cno').value, att };
+}
+
+function countTo(target) {
+  if (reduce || !shown) { shown = target; $('amt').textContent = PAS.indianCommas(target); return; }
+  cancelAnimationFrame(tween);
+  const from = shown, t0 = performance.now(), dur = 420;
+  const step = t => {
+    const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    shown = Math.round(from + (target - from) * e);
+    $('amt').textContent = PAS.indianCommas(shown);
+    if (k < 1) tween = requestAnimationFrame(step);
+  };
+  tween = requestAnimationFrame(step);
+}
+
+function refresh() {
+  if (!EMPS.length) return;
+  const inp = readInput(), cal = PAS.calendar(inp.year, inp.monthIdx);
+  $('calline').textContent = `, ${cal.days} days, paid in ${cal.payMonthName} ${cal.payYear}.`;
+  $('paidin').textContent = `Memo heading: Salary for the Month of ${cal.short}-${cal.year} Paid in ${cal.payShort}-${cal.payYear}`;
+  const errs = PAS.validate(EMPS, cal, inp.att, inp.chequeDate);
+  document.querySelectorAll('#rows input').forEach(i => {
+    const v = Number(i.value);
+    i.classList.toggle('bad', !(v >= 0 && v <= cal.days && Math.round(v * 2) === v * 2));
+    i.max = cal.days;
+  });
+  const calc = PAS.calculate(EMPS, cal, inp.att);
+  calc.lines.forEach(l => {
+    const tr = document.querySelector(`#rows tr[data-row="${l.e.row}"]`);
+    tr.classList.toggle('cut', l.G > 0);
+    const set = (k, v, dim) => { const td = tr.querySelector(`[data-o=${k}]`); td.textContent = v; td.classList.toggle('dim', !!dim); };
+    set('H', l.H);
+    set('M', rs(l.M + l.N));
+    set('O', l.O ? rs(l.O) : '0', !l.O);
+    set('R', l.R ? rs(l.R) : '0', !l.R);
+    set('U', rs(l.U));
+  });
+  const t = calc.totals;
+  document.querySelector('[data-t=M]').textContent = rs(t.M + t.N);
+  document.querySelector('[data-t=O]').textContent = rs(t.O);
+  document.querySelector('[data-t=R]').textContent = rs(t.R);
+  document.querySelector('[data-t=U]').textContent = rs(t.U);
+  countTo(calc.total);
+  $('words').textContent = 'Rupees ' + PAS.toWords(calc.total) + ' only';
+
+  const box = $('problems');
+  box.classList.toggle('on', errs.length > 0);
+  box.innerHTML = errs.length ? '<strong>Fix these before generating</strong><ul>' + errs.map(e => `<li>${e}</li>`).join('') + '</ul>' : '';
+  $('go').disabled = !!errs.length || !$('ok').checked;
+  const why = $('why');
+  why.className = 'why' + (errs.length ? ' bad' : '');
+  why.textContent = errs.length ? `${errs.length} problem${errs.length > 1 ? 's' : ''} in the table` : (!$('ok').checked ? 'Tick the box once the table looks right.' : '');
+  resetOutput();
+}
+
+function resetOutput() {
+  URLS.forEach(u => URL.revokeObjectURL(u)); URLS = [];
+  $('files').hidden = true; $('files').classList.remove('on');
+  $('stamp').classList.remove('on'); $('cheque').classList.remove('hit');
+}
+function setFile(id, blob, name) {
+  const a = $(id), u = URL.createObjectURL(blob); URLS.push(u);
+  a.href = u; a.download = name; $(id + 'Name').textContent = name;
+}
+
+async function generate() {
+  $('go').disabled = true; $('go').textContent = 'Generating…';
+  try {
+    const out = await PAS.generate(JSZip, XLSX, DOCX, readInput());
+    if (!out.ok) { $('why').className = 'why bad'; $('why').textContent = out.errors.join(' '); return; }
+    resetOutput();
+    setFile('fx', out.xlsx, out.xlsxName);
+    setFile('fd', out.docx, out.docxName);
+    $('stampdate').textContent = PAS.fmtDate(readInput().chequeDate);
+    void $('stamp').offsetWidth;
+    $('stamp').classList.add('on'); $('cheque').classList.add('hit');
+    $('files').hidden = false;
+    setTimeout(() => $('files').classList.add('on'), reduce ? 0 : 260);
+    $('fx').click();
+    setTimeout(() => $('fd').click(), 700);
+    $('why').className = 'why';
+    $('why').textContent = `Generated for ${out.cal.monthName} ${out.cal.year}, total ${rs(out.calc.total)}.`;
+  } catch (e) {
+    $('why').className = 'why bad'; $('why').textContent = 'Could not generate: ' + e.message;
+  } finally {
+    $('go').textContent = 'Generate payroll and memo';
+    $('go').disabled = !$('ok').checked;
+  }
+}
+init();
+</script>
+</body>
+</html>

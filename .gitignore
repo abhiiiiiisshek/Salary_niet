@@ -1,0 +1,10 @@
+node_modules/
+.vercel/
+.DS_Store
+*.log
+.env*
+
+# Payroll data: salaries + bank accounts. NEVER commit.
+private/
+*.xlsx
+*.docx

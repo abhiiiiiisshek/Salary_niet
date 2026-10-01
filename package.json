@@ -1,0 +1,11 @@
+{
+  "name": "niet-payroll",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "NIET monthly payroll (.xlsx) and bank transfer memo (.docx) generator",
+  "scripts": {
+    "build:page": "python3 src/build.py",
+    "test": "node test/regression.cjs"
+  }
+}
