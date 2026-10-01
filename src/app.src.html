@@ -291,35 +291,110 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
 .nav-in > :last-child{justify-self:end}
 
 /* imprest view */
-.pi-pass .pass-amt{font-size:44px}
-.bar{height:8px;border-radius:5px;background:rgba(255,255,255,.18);overflow:hidden;margin-top:14px}
-.bar i{display:block;height:100%;background:#fff;border-radius:5px;transition:width .45s cubic-bezier(.2,.8,.2,1)}
-.bar.low i{background:#ffb340}
-.pi-meta{display:flex;justify-content:space-between;gap:10px;margin-top:8px;font-size:13px;color:rgba(255,255,255,.75)}
-.addform{display:grid;grid-template-columns:150px 90px minmax(0,1fr) 230px 130px auto;gap:10px;align-items:end;background:var(--card);border-radius:var(--r-md);box-shadow:var(--shadow);padding:14px 16px}
-.addform label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--label-2);min-width:0}
-.addform input,.addform select{height:40px;border-radius:9px;border:.5px solid var(--sep-strong);background:var(--bg);color:var(--label);padding:0 10px;font-size:15px;min-width:0;width:100%}
-.addform input:focus,.addform select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-tint)}
-.addform .go{height:40px;padding:0 18px;font-size:15px}
-.addform .cancel-edit{height:40px;border:0;background:transparent;color:var(--blue);font-size:15px;cursor:pointer}
-.addform.editing{box-shadow:0 0 0 2px var(--blue),var(--shadow)}
-.formerr{color:var(--red);font-size:13px;margin:8px 4px 0;min-height:1em}
-#piTable{min-width:860px}
-#piTable td.desc{white-space:normal;min-width:260px;text-align:left}
-#piTable td.acts{white-space:nowrap;text-align:right}
-.link{border:0;background:transparent;color:var(--blue);font-size:14px;cursor:pointer;padding:4px 6px;border-radius:6px}
+:root{--h-books:#ff9500;--h-print:#af52de;--h-net:#0a84ff;--h-mnt:#30b0c7;--h-office:#5856d6;--h-conv:#ff2d55;--h-legal:#a2845e;--h-other:#8e8e93;--ring-ok:#34c759;--ring-low:#ff9f0a;--ring-out:#ff3b30}
+.pi-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:22px 0 18px}
+.pi-head h1{margin:0;font:700 34px/1.12 var(--font-d);letter-spacing:-.022em}
+.pi-head .sub{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px;color:var(--label-2)}
+.chip-open{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--green);background:color-mix(in srgb,var(--green) 12%,transparent);border-radius:999px;padding:3px 10px}
+.chip-open::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 0 3px color-mix(in srgb,var(--green) 25%,transparent)}
+.pi-hero{background:var(--card);border-radius:20px;box-shadow:var(--shadow);padding:22px 24px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px 30px;align-items:center;margin-bottom:26px}
+.ring{position:relative;width:176px;height:176px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .track{fill:none;stroke:color-mix(in srgb,var(--label) 8%,transparent);stroke-width:16}
+.ring .prog{fill:none;stroke:var(--ring-ok);stroke-width:16;stroke-linecap:round;transition:stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1),stroke .3s}
+.ring.low .prog{stroke:var(--ring-low)} .ring.out .prog{stroke:var(--ring-out)}
+.ring .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ring .mid small{font-size:12px;color:var(--label-2)}
+.ring .mid b{font:700 30px/1.1 var(--font-d);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.stat small{display:block;color:var(--label-2);font-size:13px}
+.stat b{display:block;font:700 22px/1.25 var(--font-d);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.stat span{font-size:12.5px;color:var(--label-2)}
+.spend{margin-top:18px}
+.spend-h{display:flex;justify-content:space-between;font-size:13px;color:var(--label-2);margin-bottom:7px}
+.sbar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:color-mix(in srgb,var(--label) 8%,transparent);gap:2px}
+.sbar i{display:block;height:100%;transition:flex-basis .6s cubic-bezier(.2,.8,.2,1);min-width:3px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:13px}
+.legend span{display:inline-flex;align-items:center;gap:6px;color:var(--label)}
+.legend em{font-style:normal;color:var(--label-2);font-variant-numeric:tabular-nums}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+.low-note{grid-column:1/-1;display:flex;gap:10px;align-items:center;background:color-mix(in srgb,var(--ring-low) 12%,transparent);color:color-mix(in srgb,var(--ring-low) 70%,var(--label));border-radius:12px;padding:10px 14px;font-size:14px}
+.pi-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:24px;align-items:start}
+.card{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:18px}
+.card h2{margin:0 0 12px;font:700 20px/1.2 var(--font-d);letter-spacing:-.015em;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.card h2 small{font:400 13px/1.3 var(--font);color:var(--label-2);letter-spacing:0}
+.quick{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.quick::-webkit-scrollbar{display:none}
+.qchip{flex:none;border:0;border-radius:999px;padding:7px 12px 7px 8px;display:inline-flex;align-items:center;gap:7px;font-size:13.5px;cursor:pointer;background:color-mix(in srgb,var(--label) 6%,transparent);color:var(--label);white-space:nowrap;transition:transform .12s,background .15s}
+.qchip:hover{background:color-mix(in srgb,var(--label) 10%,transparent)} .qchip:active{transform:scale(.96)}
+.qchip .ico{width:22px;height:22px}
+.qchip em{font-style:normal;color:var(--label-2)}
+.amt-row{display:grid;grid-template-columns:minmax(0,1fr) 150px 96px;gap:10px;margin-bottom:10px}
+.fld{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--label-2);min-width:0}
+.fld input{height:44px;border-radius:11px;border:.5px solid var(--sep-strong);background:var(--bg);color:var(--label);padding:0 12px;font-size:15px;min-width:0;width:100%}
+.fld input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-tint)}
+.amt-in{position:relative}
+.amt-in span{position:absolute;left:12px;top:50%;transform:translateY(-50%);font:600 22px/1 var(--font-d);color:var(--label-2)}
+.amt-in input::-webkit-outer-spin-button,.amt-in input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.amt-in input{-moz-appearance:textfield;padding-left:32px;font:700 24px/1 var(--font-d);height:52px;font-variant-numeric:tabular-nums}
+.fld.desc{margin-bottom:12px}
+.heads{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 14px}
+.hchip{border:1.5px solid transparent;border-radius:12px;padding:7px 12px 7px 7px;display:inline-flex;align-items:center;gap:8px;font-size:13.5px;cursor:pointer;background:color-mix(in srgb,var(--c) 10%,transparent);color:var(--label);transition:transform .12s,background .15s,border-color .15s}
+.hchip:hover{background:color-mix(in srgb,var(--c) 16%,transparent)} .hchip:active{transform:scale(.97)}
+.hchip[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 20%,transparent);font-weight:600}
+.hchip .ico{width:24px;height:24px}
+.ico{display:inline-grid;place-items:center;border-radius:8px;background:var(--c);color:#fff;flex:none;width:32px;height:32px}
+.ico svg{width:62%;height:62%}
+.add-actions{display:flex;gap:10px;align-items:center}
+.add-actions .go{height:46px;padding:0 24px;font-size:15.5px}
+.cancel-edit{height:46px;border:0;background:transparent;color:var(--blue);font-size:15px;cursor:pointer;padding:0 10px}
+#piForm.editing{box-shadow:0 0 0 2px var(--blue),var(--shadow)}
+.formerr{color:var(--red);font-size:13px;margin:10px 2px 0;min-height:1em}
+.day{margin:16px 2px 6px;font-size:13px;font-weight:600;color:var(--label-2);display:flex;justify-content:space-between}
+.day:first-child{margin-top:0}
+.tx{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;position:relative;transition:background .15s}
+.tx:hover{background:color-mix(in srgb,var(--label) 4%,transparent)}
+.tx .ico{width:38px;height:38px;border-radius:10px}
+.tx .t{flex:1;min-width:0}
+.tx .t b{display:block;font-weight:500;line-height:1.3}
+.tx .t small{display:block;color:var(--label-2);font-size:12.5px;margin-top:1px}
+.tx .a{text-align:right;flex:none}
+.tx .a b{display:block;font-weight:600;font-variant-numeric:tabular-nums}
+.tx .acts{display:flex;gap:2px;justify-content:flex-end;opacity:0;transition:opacity .15s}
+.tx:hover .acts,.tx:focus-within .acts{opacity:1}
+@media (hover:none){.tx .acts{opacity:1}}
+.tx.flash{animation:flash 1.6s ease-out}
+@keyframes flash{0%{background:color-mix(in srgb,var(--blue) 18%,transparent)}100%{background:transparent}}
+.link{border:0;background:transparent;color:var(--blue);font-size:13px;cursor:pointer;padding:3px 6px;border-radius:6px}
 .link:hover{background:var(--blue-tint)}
 .link.red{color:var(--red)}
-.link.red:hover{background:color-mix(in srgb,var(--red) 10%,transparent)}
-.abs .row .v{color:var(--label);font-variant-numeric:tabular-nums}
-.abs .row.tot .k,.abs .row.tot .v{font-weight:700}
-.ok-tick{color:var(--green);font-weight:600}
+.empty-state{padding:30px 16px;text-align:center;color:var(--label-2)}
+.empty-state .big{font-size:34px;margin-bottom:6px}
+.absrow{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:.5px solid var(--sep)}
+.absrow:last-of-type{border-bottom:0}
+.absrow .n{flex:1;min-width:0}
+.absrow .n small{display:block;color:var(--label-2);font-size:12px}
+.absrow .v{font-weight:600;font-variant-numeric:tabular-nums}
+.abs-tot{display:flex;justify-content:space-between;padding-top:10px;margin-top:4px;border-top:1px solid var(--sep-strong);font-weight:700}
+.ok-tick{color:var(--green);font-size:12.5px;font-weight:600}
+.side-stack{display:flex;flex-direction:column;gap:24px}
+.bill{display:flex;align-items:flex-start;gap:12px;padding:12px 2px;border-bottom:.5px solid var(--sep)}
+.bill:last-child{border-bottom:0}
+.bill .n{flex:1;min-width:0}
+.bill .n b{font-weight:600}
+.bill .n small{display:block;font-size:12.5px;color:var(--label-2);margin-top:1px}
+.mpills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.mp{border:0;border-radius:999px;font-size:12.5px;font-weight:600;padding:4px 10px;white-space:nowrap}
+.mp.ok{background:color-mix(in srgb,var(--green) 13%,transparent);color:var(--green)}
+.mp.due{background:var(--blue);color:#fff;cursor:pointer}
+.mp.due:hover{filter:brightness(1.08)}
+.absrow .ico{width:30px;height:30px}
 .saved{font-size:12.5px;color:var(--label-2)}
-.empty-state{padding:26px 18px;text-align:center;color:var(--label-2)}
 .startform .row input{max-width:240px}
 .startform .go{margin-top:14px}
-@media (max-width:980px){.addform{grid-template-columns:1fr 1fr}.addform .wide{grid-column:1/-1}}
-@media (max-width:560px){.nav-in{grid-template-columns:auto 1fr}.nav-in .seg{grid-column:1/-1;grid-row:2;justify-self:center;margin-top:6px}.brand span{display:none}}
+@media (max-width:980px){.pi-grid{display:flex;flex-direction:column;gap:20px}.pi-grid > div,.side-stack{display:contents}#piBillsCard{order:1}#piForm{order:2;margin-bottom:0!important}#piListCard{order:3}#piAbsCard{order:4}.side-stack > section:not(.card){order:5}#piProblems{order:6}.pi-hero{grid-template-columns:minmax(0,1fr);justify-items:center}.pi-hero .info{width:100%}}
+@media (max-width:560px){.nav-in{grid-template-columns:auto 1fr}.nav-in .seg{grid-column:1/-1;grid-row:2;justify-self:center;margin-top:6px}.brand span{display:none}
+  .pi-head h1{font-size:28px}.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.stat b{font-size:18px}.amt-row{grid-template-columns:1fr 1fr}.amt-row .fld:first-child{grid-column:1/-1}.ring{width:150px;height:150px}}
 
 /* template picker (offline fallback) */
 .loader{margin-bottom:24px}
@@ -442,10 +517,10 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
 </div>
 
 <main class="page" id="piView" hidden>
-  <div class="titlebar">
+  <div class="pi-head">
     <div>
-      <div class="month"><h1 id="piTitle">Imprest</h1></div>
-      <p class="subtitle" id="piSub"></p>
+      <h1 id="piTitle">Imprest</h1>
+      <div class="sub"><span class="chip-open" id="piChip" hidden>Open</span><span id="piSub"></span></div>
     </div>
     <div class="ms-a"><span class="saved" id="piSaved"></span><button class="pill" id="piHistBtn">All P.I.s</button></div>
   </div>
@@ -473,55 +548,73 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
   </form>
 
   <div id="piMain" hidden>
-    <section class="summary" aria-label="Cash">
-      <div class="pass pi-pass">
-        <div class="pass-top"><div><b id="piPassNo"></b><span id="piPassHolder"></span></div><div style="text-align:right">Imprest<b class="num" id="piImp"></b></div></div>
-        <div class="pass-label">Cash left</div>
-        <div class="pass-amt"><span class="cur">₹</span><span id="piLeft">0</span></div>
-        <div class="bar" id="piBarFill"><i></i></div>
-        <div class="pi-meta"><span id="piSpentTxt"></span><span id="piCountTxt"></span></div>
+    <section class="pi-hero" aria-label="Cash">
+      <div class="ring" id="piRing">
+        <svg viewBox="0 0 176 176" aria-hidden="true"><circle class="track" cx="88" cy="88" r="72"/><circle class="prog" id="piRingProg" cx="88" cy="88" r="72" stroke-dasharray="452.39" stroke-dashoffset="0"/></svg>
+        <div class="mid"><small>Cash left</small><b id="piLeft">₹0</b><small id="piOf"></small></div>
       </div>
-      <div>
-        <p class="group-h">Cash received</p>
-        <div class="group">
-          <div class="row"><span class="k">Cash in hand at start</span><span class="v num" id="piOpening"></span></div>
-          <div class="row"><span class="k">Cheque received</span><span class="v num" id="piRecv"></span></div>
-          <label class="row"><span class="k">Cheque no.</span><input id="piChq" placeholder="Optional" inputmode="numeric"></label>
-          <label class="row"><span class="k">Cheque date</span><input id="piChqD" type="date"></label>
-          <label class="row"><span class="k">Account holder</span><input id="piHolder"></label>
+      <div class="info">
+        <div class="stats">
+          <div class="stat"><small>Spent</small><b id="piSpent">₹0</b><span id="piSpentPct"></span></div>
+          <div class="stat"><small>Payments</small><b id="piCount">0</b><span id="piLastTxt"></span></div>
+          <div class="stat"><small>Cheque due on close</small><b id="piDue">₹0</b><span>tops cash back up</span></div>
+        </div>
+        <div class="spend">
+          <div class="spend-h"><span>Where the money went</span><span id="piImpTxt"></span></div>
+          <div class="sbar" id="piSbar"></div>
+          <div class="legend" id="piLegend"></div>
         </div>
       </div>
+      <div class="low-note" id="piLow" hidden></div>
     </section>
 
-    <section aria-labelledby="pi-add-h" style="margin-bottom:26px">
-      <div class="sec-h"><h2 id="pi-add-h">Add a payment</h2><p>Sanction no. fills in by itself. Change it if the office gave a different one.</p></div>
-      <form class="addform" id="piForm" autocomplete="off">
-        <label>Date<input id="pfDate" type="date" required></label>
-        <label>Sanction<input id="pfSan" inputmode="numeric"></label>
-        <label class="wide">Paid to / for<input id="pfDesc" placeholder="e.g. Paid Airtel Wi-Fi bill for October" required></label>
-        <label>Head of account<select id="pfHead"></select></label>
-        <label>Amount (₹)<input id="pfAmt" type="number" min="0.01" step="0.01" inputmode="decimal" required></label>
-        <span style="display:flex;gap:4px"><button class="go" type="submit" id="pfBtn">Add</button><button class="cancel-edit" type="button" id="pfCancel" hidden>Cancel</button></span>
-      </form>
-      <p class="formerr" id="pfErr"></p>
-    </section>
+    <div class="pi-grid">
+      <div>
+        <form class="card" id="piForm" autocomplete="off" style="margin-bottom:24px">
+          <h2><span id="pfTitle">New payment</span><small>Sanction no. fills in by itself</small></h2>
+          <div class="quick" id="pfQuick" aria-label="Quick fill"></div>
+          <div class="amt-row">
+            <label class="fld">Amount<div class="amt-in"><span>₹</span><input id="pfAmt" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="0"></div></label>
+            <label class="fld">Date<input id="pfDate" type="date" style="height:52px"></label>
+            <label class="fld">Sanction<input id="pfSan" inputmode="numeric" style="height:52px"></label>
+          </div>
+          <label class="fld desc">Paid to / for<input id="pfDesc" placeholder="e.g. Paid Airtel Wi-Fi bill for October"></label>
+          <div class="fld" style="margin-bottom:4px">Head of account</div>
+          <div class="heads" id="pfHeads" role="group" aria-label="Head of account"></div>
+          <input type="hidden" id="pfHead">
+          <div class="add-actions"><button class="go" type="submit" id="pfBtn">Add payment</button><button class="cancel-edit" type="button" id="pfCancel" hidden>Cancel</button></div>
+          <p class="formerr" id="pfErr"></p>
+        </form>
 
-    <section aria-labelledby="pi-list-h" style="margin-bottom:26px">
-      <div class="sec-h"><h2 id="pi-list-h">Payments</h2><p id="piListNote"></p></div>
-      <div class="tablecard"><div class="scroll">
-        <table id="piTable">
-          <thead><tr><th class="l">Date</th><th>Sanction No.</th><th class="l">Transaction</th><th class="l">Head of account</th><th>Amount</th><th></th></tr></thead>
-          <tbody id="piRows"></tbody>
-          <tfoot><tr><td class="l" colspan="4">Total spent</td><td class="num" id="piTot"></td><td></td></tr></tfoot>
-        </table>
-      </div></div>
-    </section>
+        <section class="card" id="piListCard" aria-labelledby="pi-list-h">
+          <h2 id="pi-list-h"><span>Payments</span><small id="piListNote"></small></h2>
+          <div id="piRows"></div>
+        </section>
+      </div>
 
-    <section aria-labelledby="pi-abs-h">
-      <div class="sec-h"><h2 id="pi-abs-h">Abstract of charges</h2><p id="piAbsCheck"></p></div>
-      <div class="group abs" id="piAbs"></div>
-    </section>
-    <div class="problems" id="piProblems" role="alert"></div>
+      <div class="side-stack">
+        <section class="card" id="piBillsCard" aria-labelledby="pi-bills-h">
+          <h2 id="pi-bills-h"><span>Regular bills</span><small>every month</small></h2>
+          <div id="piBills"></div>
+        </section>
+        <section class="card" id="piAbsCard" aria-labelledby="pi-abs-h">
+          <h2 id="pi-abs-h"><span>Abstract of charges</span><span class="ok-tick" id="piAbsCheck"></span></h2>
+          <div id="piAbs"></div>
+        </section>
+        <section>
+          <p class="group-h">Cash received</p>
+          <div class="group">
+            <div class="row"><span class="k">Cash in hand at start</span><span class="v num" id="piOpening"></span></div>
+            <div class="row"><span class="k">Cheque received</span><span class="v num" id="piRecv"></span></div>
+            <label class="row"><span class="k">Cheque no.</span><input id="piChq" placeholder="Optional" inputmode="numeric"></label>
+            <label class="row"><span class="k">Cheque date</span><input id="piChqD" type="date"></label>
+            <label class="row"><span class="k">Account holder</span><input id="piHolder"></label>
+          </div>
+          <p class="group-f">These print at the top of the Form No.2 sheet.</p>
+        </section>
+        <div class="problems" id="piProblems" role="alert"></div>
+      </div>
+    </div>
   </div>
 </main>
 
@@ -1046,7 +1139,7 @@ async function loadPi(keepEdit) {
 
 function renderPiStart() {
   $('piMain').hidden = true; $('piBarTool').hidden = true; $('piStart').hidden = false;
-  $('piTitle').textContent = 'Imprest'; $('piSub').textContent = 'No P.I. is open';
+  $('piTitle').textContent = 'Imprest'; $('piSub').textContent = 'No P.I. is open'; $('piChip').hidden = true;
   const last = PIBOOKS[0];
   if (last) {   // a book exists but none open (should be rare): continue from it
     const S = PI.summarize(last);
@@ -1071,6 +1164,22 @@ async function piStartSubmit(ev) {
   } catch (e) { $('psErr').textContent = e.message; }
 }
 
+const HEAD_STYLE = [
+  [/books/i, 'books', 'M4 5.5C6 4.5 9 4.5 12 6v13c-3-1.5-6-1.5-8-.5zM20 5.5c-2-1-5-1-8 .5v13c3-1.5 6-1.5 8-.5z'],
+  [/print/i, 'print', 'M7 9V4h10v5M6 18H4v-7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7h-2M7 14h10v6H7z'],
+  [/internet|telephone|phone|wi-?fi/i, 'net', 'M2.5 9a15 15 0 0 1 19 0M5.5 12.5a10 10 0 0 1 13 0M8.8 16a5 5 0 0 1 6.4 0M12 19.5h.01'],
+  [/m\/o|mainten|repair/i, 'mnt', 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z'],
+  [/office/i, 'office', 'M3 8h18v11H3zM8 8V5h8v3M3 13h18'],
+  [/convey|travel/i, 'conv', 'M5 16v3M19 16v3M4 11l2-5h12l2 5M3 11h18v5H3zM7 13.5h.01M17 13.5h.01'],
+  [/legal|consult|affid/i, 'legal', 'M12 3v18M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0zM8 21h8'],
+];
+function headStyle(h) {
+  for (const [re, key, path] of HEAD_STYLE) if (re.test(h || '')) return { c: `var(--h-${key})`, path };
+  return { c: 'var(--h-other)', path: 'M3 12V4h8l10 10-8 8zM7.5 7.5h.01' };
+}
+const icon = (h, cls = '') => { const st = headStyle(h); return `<span class="ico ${cls}" style="--c:${st.c};background:${st.c}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${st.path}"/></svg></span>`; };
+const shortHead = h => String(h).replace(/\s*(Exp\s*)?A\/c\.?$/i, '').replace(/^M\/o NIET$/i, 'Maintenance (M/o NIET)');
+
 function piHeads() {
   const set = new Set(PI.HEADS);
   PIBOOKS.forEach(b => (b.entries || []).forEach(e => e.head && set.add(e.head)));
@@ -1081,41 +1190,151 @@ function nextSanction() {
   (PIB.entries || []).forEach(e => { const n = parseInt(e.sanction, 10); if (n > m) m = n; });
   return m + 1;
 }
+const MONTHS_RE = /\b(January|February|March|April|May|June|July|August|September|October|November|December)\b/i;
+const QUICK_DEFAULTS = [
+  { desc: 'Paid Airtel Wi-Fi Bill for {month}', head: 'Internet & Telephone Exp A/c', amount: 599 },
+  { desc: 'Paid BSNL Bill for {month}', head: 'Internet & Telephone Exp A/c', amount: '' },
+  { desc: 'Paid Speed Post charges', head: 'Printing & Stationery Exp A/c', amount: '' },
+  { desc: 'Paid for Affidavit & Notary charges', head: 'Printing & Stationery Exp A/c', amount: 200 },
+  { desc: 'Purchased Register', head: 'Printing & Stationery Exp A/c', amount: '' },
+  { desc: 'Paid to Need Book Depot for Stationery', head: 'Books & Stationery Exp A/c', amount: '' },
+];
+function quickFills() {
+  const seen = new Map();
+  PIBOOKS.forEach(b => (b.entries || []).forEach(e => {
+    const key = e.desc.replace(MONTHS_RE, '{month}').replace(/\s+/g, ' ').trim();
+    const k = key.toLowerCase(); const cur = seen.get(k) || { desc: key, head: e.head, amounts: [], n: 0 };
+    cur.n++; cur.amounts.push(Number(e.amount)); cur.head = e.head; seen.set(k, cur);
+  }));
+  const learned = [...seen.values()].filter(x => x.n >= 1).sort((a, z) => z.n - a.n).slice(0, 8).map(x => {
+    const same = x.amounts.every(a => a === x.amounts[0]);
+    return { desc: x.desc, head: x.head, amount: same ? x.amounts[0] : '' };
+  });
+  const out = [...learned];
+  for (const d of QUICK_DEFAULTS) if (out.length < 8 && !out.some(o => o.desc.toLowerCase() === d.desc.toLowerCase())) out.push(d);
+  return out;
+}
+const monthOf = isoDate => { const d = PI.parseISO(isoDate) || new Date(); return PAS.MONTHS[d.getMonth()]; };
+function renderQuick() {
+  const q = quickFills();
+  $('pfQuick').innerHTML = q.map((x, i) => `<button type="button" class="qchip" data-q="${i}">${icon(x.head)}${esc((t => t.charAt(0).toUpperCase() + t.slice(1))(x.desc.replace('{month}', monthOf($('pfDate').value)).replace(/^Paid (to |for )?/i, '')))}${x.amount ? ` <em>₹${x.amount}</em>` : ''}</button>`).join('');
+  $('pfQuick').querySelectorAll('[data-q]').forEach(b => b.onclick = () => {
+    const x = q[Number(b.dataset.q)];
+    $('pfDesc').value = x.desc.replace('{month}', monthOf($('pfDate').value));
+    setHead(x.head); $('pfAmt').value = x.amount || '';
+    (x.amount ? $('pfBtn') : $('pfAmt')).focus();
+  });
+}
+function renderHeadChips() {
+  const cur = $('pfHead').value, heads = piHeads();
+  if (cur && !heads.includes(cur)) heads.push(cur);
+  $('pfHeads').innerHTML = heads.map(h => `<button type="button" class="hchip" style="--c:${headStyle(h).c}" aria-pressed="${h === cur}" data-h="${esc(h)}">${icon(h)}${esc(shortHead(h))}</button>`).join('')
+    + `<button type="button" class="hchip" style="--c:var(--h-other)" data-other="1">${icon('')}Other…</button>`;
+  $('pfHeads').querySelectorAll('[data-h]').forEach(b => b.onclick = () => setHead(b.dataset.h));
+  $('pfHeads').querySelector('[data-other]').onclick = async () => {
+    const h = await dlg({ title: 'New head of account', msg: 'Type it exactly as it should appear in the abstract, for example "Postage Exp A/c".', okText: 'Use this head', input: 'Head of account', minLen: 3 });
+    if (h) setHead(h);
+  };
+}
+function setHead(h) { $('pfHead').value = h || ''; renderHeadChips(); }
+
 function piResetForm() {
-  PIEDIT = null; $('piForm').classList.remove('editing'); $('pfBtn').textContent = 'Add'; $('pfCancel').hidden = true;
-  $('pfDesc').value = ''; $('pfAmt').value = ''; $('pfErr').textContent = '';
+  PIEDIT = null; $('piForm').classList.remove('editing'); $('pfBtn').textContent = 'Add payment'; $('pfTitle').textContent = 'New payment'; $('pfCancel').hidden = true;
+  $('pfDesc').value = ''; $('pfAmt').value = ''; $('pfErr').textContent = ''; $('pfHead').value = '';
   if (!$('pfDate').value) $('pfDate').value = todayISO();
   if (PIB) $('pfSan').value = nextSanction();
-  const sel = $('pfHead'), cur = sel.value;
-  sel.innerHTML = '<option value="">Choose…</option>' + piHeads().map(h => `<option>${esc(h)}</option>`).join('') + '<option value="__other">Other…</option>';
-  sel.value = cur && [...sel.options].some(o => o.value === cur) ? cur : '';
+  renderHeadChips(); renderQuick();
 }
 
+const REGULAR = [
+  { name: 'Airtel Wi-Fi', re: /airtel|wi-?fi/i, desc: 'Paid Airtel Wi-Fi Bill for {month}', head: 'Internet & Telephone Exp A/c' },
+  { name: 'BSNL', re: /bsnl/i, desc: 'Paid BSNL Bill for {month}', head: 'Internet & Telephone Exp A/c' },
+];
+function lastBill(r) {   // most recent payment of this bill in any P.I.
+  let best = null;
+  PIBOOKS.concat([PIB]).forEach(b => (b && b.entries || []).forEach(e => { if (r.re.test(e.desc) && (!best || e.date > best.date)) best = e; }));
+  return best;
+}
+function billMonths() {  // months from the P.I. start up to today
+  const out = [], s = PI.parseISO(PIB.start_date), now = new Date();
+  let y = s.getFullYear(), m = s.getMonth();
+  while ((y < now.getFullYear() || (y === now.getFullYear() && m <= now.getMonth())) && out.length < 6) { out.push({ y, m }); m++; if (m > 11) { m = 0; y++; } }
+  return out.length ? out : [{ y: s.getFullYear(), m: s.getMonth() }];
+}
+function renderBills() {
+  const rows = PIB.entries || [], months = billMonths(), html = [];
+  for (const r of REGULAR) {
+    const last = lastBill(r), amt = last ? Number(last.amount) : '';
+    const pills = months.map(({ y, m }) => {
+      const mName = PAS.MONTHS[m], short = mName.slice(0, 3);
+      const paid = rows.find(e => r.re.test(e.desc) && (new RegExp('\\b' + mName + '\\b', 'i').test(e.desc) || (!MONTHS_RE.test(e.desc) && PI.parseISO(e.date).getMonth() === m && PI.parseISO(e.date).getFullYear() === y)));
+      return paid ? `<span class="mp ok" title="Paid ${money(paid.amount)} on ${PI.dots(paid.date)}">${short} ✓</span>`
+                  : `<button class="mp due" data-bill="${r.name}" data-month="${m}" data-amt="${amt}" aria-label="Add ${r.name} bill for ${mName}">${short} +</button>`;
+    }).join('');
+    const due = months.length - (pills.match(/mp ok/g) || []).length;
+    html.push(`<div class="bill">${icon(r.head)}<span class="n"><b>${esc(r.name)}</b><small>${last ? `Last bill ${money(last.amount)} on ${PI.dots(last.date)}` : 'No bill entered yet'}${due ? `, ${due} month${due > 1 ? 's' : ''} to add` : ', all entered'}</small><span class="mpills">${pills}</span></span></div>`);
+  }
+  $('piBills').innerHTML = html.join('');
+  $('piBills').querySelectorAll('[data-bill]').forEach(b => b.onclick = () => {
+    const r = REGULAR.find(x => x.name === b.dataset.bill), mName = PAS.MONTHS[Number(b.dataset.month)];
+    piResetForm();
+    $('pfDesc').value = r.desc.replace('{month}', mName); setHead(r.head);
+    $('pfAmt').value = b.dataset.amt || '';
+    $('piForm').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    $('pfAmt').focus(); $('pfAmt').select();
+    $('pfErr').style.color = 'var(--label-2)';
+    $('pfErr').textContent = b.dataset.amt ? `Amount filled from the last ${r.name} bill. Change it if this month's is different.` : `Type this month's ${r.name} amount.`;
+  });
+}
+
+let FLASH = null;
 function renderPi() {
   const b = PIB, S = PI.summarize(b);
   const label = PI.piLabel(b.pi_no, b.fy);
   $('piTitle').textContent = `P.I. No. ${label}`;
-  $('piSub').textContent = `From ${PI.dots(b.start_date)}, ${b.holder} (${b.designation})`;
-  $('piPassNo').textContent = `P.I. ${label}`; $('piPassHolder').textContent = `${b.holder}, ${b.designation}`;
-  $('piImp').textContent = money(b.imprest);
-  $('piLeft').textContent = PAS.indianCommas(Math.floor(S.balance)) + (Math.round(S.balance * 100) % 100 ? '.' + String(Math.round(S.balance * 100) % 100).padStart(2, '0') : '');
+  $('piChip').hidden = false; $('piChip').textContent = `Open since ${PI.dots(b.start_date)}`;
+  $('piSub').textContent = `${b.holder}, ${b.designation}`;
   const frac = S.cash ? Math.max(0, Math.min(1, S.balance / S.cash)) : 0;
-  $('piBarFill').querySelector('i').style.width = (frac * 100) + '%'; $('piBarFill').classList.toggle('low', frac < 0.15);
-  $('piSpentTxt').textContent = `Spent ${money(S.spent)} of ${money(S.cash)}`;
-  $('piCountTxt').textContent = `${(b.entries || []).length} payment${(b.entries || []).length === 1 ? '' : 's'}`;
-  $('piOpening').textContent = money(b.opening); $('piRecv').textContent = money(b.received);
-  $('pitbLeft').textContent = money(S.balance); $('pitbLabel').textContent = `Cash left in P.I. ${label}`;
+  const C = 452.39; $('piRingProg').style.strokeDashoffset = String(C * (1 - frac));
+  $('piRing').classList.toggle('low', frac < 0.3 && frac >= 0.12); $('piRing').classList.toggle('out', frac < 0.12);
+  $('piLeft').textContent = money(S.balance); $('piOf').textContent = `of ${money(S.cash)}`;
+  $('piSpent').textContent = money(S.spent); $('piSpentPct').textContent = S.cash ? `${Math.round(S.spent / S.cash * 100)}% of the imprest` : '';
   const rows = b.entries || [];
-  $('piRows').innerHTML = rows.length ? rows.map((e, i) => `<tr data-i="${i}">
-      <td class="l num">${esc(PI.dashes(e.date))}</td><td class="num">${esc(e.sanction)}</td><td class="desc">${esc(e.desc)}</td><td class="l">${esc(e.head)}</td>
-      <td class="num net">${money(e.amount)}</td>
-      <td class="acts"><button class="link" data-edit="${i}">Edit</button><button class="link red" data-del="${i}">Delete</button></td></tr>`).join('')
-    : `<tr><td colspan="6"><div class="empty-state">No payments yet. Add the first one above.</div></td></tr>`;
-  $('piTot').textContent = money(S.spent);
-  $('piListNote').textContent = rows.length ? `${rows.length} payment${rows.length === 1 ? '' : 's'}, newest at the bottom` : '';
-  $('piAbs').innerHTML = (S.abstract.length ? S.abstract.map(a => `<div class="row"><span class="k">${esc(a.head)}</span><span class="v">${money(a.amount)}</span></div>`).join('') : '<div class="row"><span class="k" style="color:var(--label-2)">Appears as you add payments</span></div>')
-    + `<div class="row tot"><span class="k">Total</span><span class="v">${money(S.spent)}</span></div>`;
-  $('piAbsCheck').innerHTML = S.abstract.length ? '<span class="ok-tick">✓ Matches the payments total</span>' : '';
+  $('piCount').textContent = rows.length;
+  const lastD = rows.reduce((m, e) => e.date > m ? e.date : m, '');
+  $('piLastTxt').textContent = lastD ? `last on ${PI.dots(lastD)}` : 'none yet';
+  $('piDue').textContent = money(S.spent);
+  $('piImpTxt').textContent = `Imprest ${money(b.imprest)}`;
+  const base = Number(b.imprest) || S.cash || 1;
+  $('piSbar').innerHTML = S.abstract.map(a => `<i style="flex:0 0 ${(a.amount / base * 100).toFixed(2)}%;background:${headStyle(a.head).c}" title="${esc(a.head)}: ${money(a.amount)}"></i>`).join('');
+  $('piLegend').innerHTML = S.abstract.length ? S.abstract.map(a => `<span><i class="dot" style="background:${headStyle(a.head).c}"></i>${esc(shortHead(a.head))} <em>${money(a.amount)}</em></span>`).join('') + `<span><i class="dot" style="background:color-mix(in srgb,var(--label) 14%,transparent)"></i>Left <em>${money(S.balance)}</em></span>` : '<span style="color:var(--label-2)">Nothing spent yet</span>';
+  const low = $('piLow');
+  if (rows.length && frac < 0.3) { low.hidden = false; low.innerHTML = `<b>⚠︎</b><span>Only ${money(S.balance)} left. When it runs short, close this P.I. to claim the ${money(S.spent)} cheque that tops it back up.</span>`; }
+  else low.hidden = true;
+  $('pitbLeft').textContent = money(S.balance); $('pitbLabel').textContent = `Cash left in P.I. ${label}`;
+
+  // payments grouped by day, newest day first
+  const order = rows.map((e, i) => ({ e, i })).sort((a, z) => a.e.date < z.e.date ? 1 : a.e.date > z.e.date ? -1 : z.i - a.i);
+  let html = '', day = '';
+  for (const { e, i } of order) {
+    if (e.date !== day) {
+      day = e.date; const dd = PI.parseISO(day);
+      const tot = rows.filter(x => x.date === day).reduce((t, x) => t + Number(x.amount), 0);
+      html += `<div class="day"><span>${dd ? dd.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : ''}</span><span>${money(tot)}</span></div>`;
+    }
+    html += `<div class="tx${FLASH === e.id ? ' flash' : ''}" data-i="${i}">${icon(e.head)}
+      <span class="t"><b>${esc(e.desc)}</b><small>Sanction ${esc(e.sanction || '—')}, ${esc(shortHead(e.head))}</small></span>
+      <span class="a"><b>−${money(e.amount)}</b><span class="acts"><button class="link" data-edit="${i}">Edit</button><button class="link red" data-del="${i}">Delete</button></span></span></div>`;
+  }
+  $('piRows').innerHTML = html || `<div class="empty-state"><div class="big">🧾</div>No payments yet.<br>Tap a quick-fill chip or type the first one.</div>`;
+  FLASH = null;
+  $('piListNote').textContent = rows.length ? `${rows.length} in this P.I.` : '';
+  renderBills();
+  $('piAbs').innerHTML = (S.abstract.length ? S.abstract.map(a => `<div class="absrow">${icon(a.head)}<span class="n">${esc(a.head)}<small>${Math.round(a.amount / (S.spent || 1) * 100)}% of spending</small></span><span class="v">${money(a.amount)}</span></div>`).join('')
+    : '<p style="margin:0;color:var(--label-2);font-size:14px">Fills in from the payments, one line per head of account.</p>')
+    + `<div class="abs-tot"><span>Total</span><span>${money(S.spent)}</span></div>`;
+  $('piAbsCheck').textContent = S.abstract.length ? '✓ matches payments' : '';
+  $('piOpening').textContent = money(b.opening); $('piRecv').textContent = money(b.received);
   const pb = $('piProblems'); pb.classList.toggle('on', S.problems.length > 0);
   pb.innerHTML = S.problems.length ? '<strong>Check these</strong><ul>' + S.problems.map(p => `<li>${esc(p)}</li>`).join('') + '</ul>' : '';
   $('piClose').disabled = !rows.length || S.problems.length > 0;
@@ -1126,16 +1345,15 @@ function renderPi() {
 function piSave(note) {
   const b = PIB; $('piSaved').textContent = 'Saving…';
   PISAVE = PISAVE.then(() => piApi('POST', '', { action: 'save', id: b.id, entries: b.entries, cheque_no: $('piChq').value, cheque_date: $('piChqD').value, holder: $('piHolder').value, designation: b.designation }))
-    .then(j => { PIB = { ...PIB, ...j.book }; $('piSaved').textContent = (note || 'Saved') + ' ✓'; renderPi(); })
+    .then(j => { PIB = { ...PIB, ...j.book, entries: PIB.entries }; $('piSaved').textContent = (note || 'Saved') + ' ✓'; renderPi(); })
     .catch(async e => { $('piSaved').textContent = 'Not saved'; await dlg({ title: 'Could not save', msg: e.message, okText: 'OK', noCancel: true }); loadPi(); });
   return PISAVE;
 }
 
 async function piSubmit(ev) {
-  ev.preventDefault(); $('pfErr').textContent = '';
-  let head = $('pfHead').value;
-  const e = { id: PIEDIT != null ? PIB.entries[PIEDIT].id : 'e' + Date.now(), date: $('pfDate').value, sanction: $('pfSan').value.trim(), desc: $('pfDesc').value.trim(), head, amount: PI.r2($('pfAmt').value) };
-  const miss = [!e.date && 'date', !e.desc && 'what it was for', !e.head && 'head of account', !(e.amount > 0) && 'amount'].filter(Boolean);
+  ev.preventDefault(); $('pfErr').textContent = ''; $('pfErr').style.color = '';
+  const e = { id: PIEDIT != null ? PIB.entries[PIEDIT].id : 'e' + Date.now(), date: $('pfDate').value, sanction: $('pfSan').value.trim(), desc: $('pfDesc').value.trim(), head: $('pfHead').value, amount: PI.r2($('pfAmt').value) };
+  const miss = [!(e.amount > 0) && 'amount', !e.date && 'date', !e.desc && 'what it was for', !e.head && 'head of account'].filter(Boolean);
   if (miss.length) { $('pfErr').textContent = 'Add the ' + miss.join(', ') + '.'; return; }
   if (e.date < PIB.start_date) { $('pfErr').textContent = `The date is before this P.I. started (${PI.dots(PIB.start_date)}).`; return; }
   const list = (PIB.entries || []).slice();
@@ -1145,7 +1363,7 @@ async function piSubmit(ev) {
   if (S.balance < 0) { $('pfErr').textContent = `That would spend ${money(S.spent)}, more than the ${money(S.cash)} cash in hand. Only ${money(PI.summarize(PIB).balance)} is left.`; return; }
   list.sort((a, z) => a.date < z.date ? -1 : a.date > z.date ? 1 : (parseInt(a.sanction, 10) || 0) - (parseInt(z.sanction, 10) || 0));
   const wasEdit = PIEDIT != null;
-  PIB.entries = list; renderPi(); piResetForm(); $('pfDesc').focus();
+  PIB.entries = list; FLASH = e.id; renderPi(); piResetForm(); $('pfAmt').focus();
   piSave(wasEdit ? 'Updated' : 'Added');
 }
 
@@ -1153,10 +1371,9 @@ async function piRowClick(ev) {
   const ed = ev.target.closest('[data-edit]'), del = ev.target.closest('[data-del]');
   if (ed) {
     const i = Number(ed.dataset.edit), e = PIB.entries[i]; PIEDIT = i;
-    $('pfDate').value = e.date; $('pfSan').value = e.sanction; $('pfDesc').value = e.desc; $('pfAmt').value = e.amount;
-    const sel = $('pfHead'); if (![...sel.options].some(o => o.value === e.head)) sel.insertAdjacentHTML('afterbegin', `<option>${esc(e.head)}</option>`); sel.value = e.head;
-    $('piForm').classList.add('editing'); $('pfBtn').textContent = 'Save'; $('pfCancel').hidden = false;
-    $('piForm').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); $('pfDesc').focus();
+    $('pfDate').value = e.date; $('pfSan').value = e.sanction; $('pfDesc').value = e.desc; $('pfAmt').value = e.amount; setHead(e.head);
+    $('piForm').classList.add('editing'); $('pfBtn').textContent = 'Save changes'; $('pfTitle').textContent = 'Edit payment'; $('pfCancel').hidden = false;
+    $('piForm').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); $('pfAmt').focus();
   }
   if (del) {
     const i = Number(del.dataset.del), e = PIB.entries[i];
@@ -1164,13 +1381,6 @@ async function piRowClick(ev) {
     if (!ok) return;
     PIB.entries = PIB.entries.filter((_, k) => k !== i); if (PIEDIT === i) piResetForm(); renderPi(); piSave('Deleted');
   }
-}
-
-async function piHeadChange() {
-  if ($('pfHead').value !== '__other') return;
-  const h = await dlg({ title: 'New head of account', msg: 'Type it exactly as it should appear in the abstract, for example "Postage Exp A/c".', okText: 'Use this head', input: 'Head of account', minLen: 3 });
-  const sel = $('pfHead');
-  if (h) { sel.insertAdjacentHTML('afterbegin', `<option>${esc(h)}</option>`); sel.value = h; } else sel.value = '';
 }
 
 async function piDownload() {
@@ -1225,7 +1435,7 @@ function initPi() {
   ['psStart', 'psImp', 'psOpen'].forEach(id => $(id).addEventListener('input', piStartCalc));
   $('piForm').addEventListener('submit', piSubmit);
   $('pfCancel').onclick = piResetForm;
-  $('pfHead').addEventListener('change', piHeadChange);
+  $('pfDate').addEventListener('change', renderQuick);
   $('piRows').addEventListener('click', piRowClick);
   let t = null; ['piChq', 'piChqD', 'piHolder'].forEach(id => $(id).addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => PIB && piSave(), 700); }));
   $('piDl').onclick = piDownload; $('piClose').onclick = piCloseBook;
