@@ -58,6 +58,7 @@
 }
 
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{background:var(--bg);-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--label);font:15px/1.45 var(--font);-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
 button,input{font:inherit;color:inherit;letter-spacing:inherit}
@@ -218,6 +219,70 @@ td.stepcell{padding:6px 8px;text-align:center}
 .sheet .note{margin:8px 16px 14px;font-size:12.5px;color:var(--label-2)}
 .sheet .close{width:100%;height:50px;border:0;border-radius:var(--r-md);background:var(--card);color:var(--blue);font-weight:600;font-size:16px;cursor:pointer;box-shadow:var(--shadow)}
 
+/* month status banner */
+.mstatus{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-radius:var(--r-md);padding:12px 16px;margin:-4px 0 22px;background:var(--card);box-shadow:var(--shadow);border-left:4px solid var(--label-3)}
+.mstatus.final{border-left-color:var(--green)}
+.mstatus.draft{border-left-color:var(--orange)}
+.mstatus .ms-ic{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px;background:var(--label-3)}
+.mstatus.final .ms-ic{background:var(--green)} .mstatus.draft .ms-ic{background:var(--orange)}
+.mstatus .ms-t{flex:1;min-width:220px}
+.mstatus .ms-t b{display:block;font-weight:600}
+.mstatus .ms-t small{color:var(--label-2);font-size:13px}
+.mstatus .ms-a{display:flex;gap:8px;flex-wrap:wrap}
+.pill{border:0;border-radius:999px;padding:8px 14px;font-size:14px;font-weight:500;cursor:pointer;background:var(--blue-tint);color:var(--blue);text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.pill:hover{filter:brightness(.97)}
+.pill.green{background:var(--green);color:#fff}
+.pill.red{background:color-mix(in srgb,var(--red) 12%,transparent);color:var(--red)}
+.pill:disabled{opacity:.5;cursor:default}
+tbody.locked .stepper{opacity:.55;pointer-events:none}
+
+/* save box in result sheet */
+.savebox{margin:12px 0 0;padding:12px 16px;border-radius:var(--r-md);background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px}
+.savebox:empty{display:none}
+.savebox .t{flex:1;min-width:180px}
+.savebox .t b{display:block;font-weight:600}
+.savebox .t small{color:var(--label-2)}
+.savebox.err{color:var(--red)}
+
+/* records panel */
+.sheet.wide{max-width:780px;max-height:90vh;overflow:auto}
+.rec-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 4px 14px}
+.rec-h h3{margin:0;font:700 24px/1.2 var(--font-d);letter-spacing:-.02em}
+.yearnav{display:flex;align-items:center;gap:6px;font-weight:600;font-size:17px}
+.rgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.mcard{all:unset;box-sizing:border-box;cursor:pointer;background:var(--card);border-radius:var(--r-md);box-shadow:var(--shadow);padding:12px;display:flex;flex-direction:column;gap:6px;min-height:92px;border:1.5px solid transparent}
+.mcard:hover{border-color:var(--blue-tint)}
+.mcard:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.mcard.sel{border-color:var(--blue)}
+.mcard b{font-weight:600}
+.mcard .amt{font-variant-numeric:tabular-nums;font-size:13.5px;color:var(--label-2)}
+.badge{align-self:flex-start;font-size:11.5px;font-weight:600;border-radius:6px;padding:2px 7px;background:color-mix(in srgb,var(--label) 7%,transparent);color:var(--label-2)}
+.badge.final{background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--green)}
+.badge.draft{background:color-mix(in srgb,var(--orange) 14%,transparent);color:var(--orange)}
+.badge.replaced{background:color-mix(in srgb,var(--label) 8%,transparent);color:var(--label-2);text-decoration:line-through}
+.rdetail{margin-top:18px}
+.vrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;position:relative}
+.vrow + .vrow::before{content:"";position:absolute;top:0;left:16px;right:0;border-top:.5px solid var(--sep)}
+.vrow .vt{flex:1;min-width:200px}
+.vrow .vt b{font-weight:600}
+.vrow .vt small{display:block;color:var(--label-2);font-size:12.5px}
+.vrow .why-r{display:block;color:var(--label-2);font-size:12.5px;font-style:italic}
+.rempty{color:var(--label-2);font-size:14px;padding:14px 16px}
+@media (max-width:600px){.rgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* small dialog */
+.sheet.small{max-width:420px}
+.dlg h3{margin:4px 4px 6px;font:700 20px/1.25 var(--font-d)}
+.dlg p{margin:0 4px 12px;color:var(--label-2);font-size:14.5px}
+.dlg textarea{width:100%;min-height:90px;border-radius:var(--r-md);border:.5px solid var(--sep-strong);background:var(--card);color:var(--label);padding:10px 12px;font:inherit;resize:vertical}
+.dlg textarea:focus{outline:3px solid var(--blue-tint);border-color:var(--blue)}
+.dlg .btns{display:flex;gap:10px;margin-top:12px}
+.dlg .btns button{flex:1;height:46px;border-radius:var(--r-md);border:0;font-weight:600;font-size:15.5px;cursor:pointer}
+.dlg .cancel{background:var(--card);color:var(--blue);box-shadow:var(--shadow)}
+.dlg .ok{background:var(--blue);color:#fff}
+.dlg .ok.red{background:var(--red)}
+.dlg .derr{color:var(--red);font-size:13px;margin:8px 4px 0;min-height:1em}
+
 /* template picker (offline fallback) */
 .loader{margin-bottom:24px}
 .loader .row label{flex:1;display:flex;justify-content:space-between;align-items:center;gap:12px}
@@ -248,7 +313,7 @@ td.stepcell{padding:6px 8px;text-align:center}
 <header class="nav">
   <div class="nav-in">
     <div class="brand"><img class="logo" src="data:image/png;base64,/*ICON64*/" alt="" width="26" height="26">NIET Payroll <span>Noida Institute of Education &amp; Technology</span></div>
-    <a class="navlink" href="/?logout" id="signout">Sign out</a>
+    <span><a class="navlink" href="#records" id="recordsLink" hidden>Records</a><a class="navlink" href="/?logout" id="signout" style="margin-left:18px">Sign out</a></span>
   </div>
 </header>
 
@@ -264,6 +329,8 @@ td.stepcell{padding:6px 8px;text-align:center}
     </div>
     <div class="hint"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.8"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>Files are built on this device and never uploaded</div>
   </div>
+
+  <div class="mstatus" id="mstatus" hidden></div>
 
   <form class="loader" id="pick" hidden>
     <p class="group-h">Load the approved templates</p>
@@ -347,8 +414,37 @@ td.stepcell{padding:6px 8px;text-align:center}
       <a class="file" id="fx"><span class="doc x">XLSX</span><span><b>Payroll sheet</b><small id="fxName"></small></span><span class="get">Download</span></a>
       <a class="file" id="fd"><span class="doc w">DOCX</span><span><b>Transfer memo</b><small id="fdName"></small></span><span class="get">Download</span></a>
     </div>
+    <div class="savebox" id="savebox"></div>
     <p class="note">Both files download on their own. If the browser held one back, tap it here.</p>
     <button class="close" id="close">Done</button>
+  </div>
+</div>
+
+<div class="scrim" id="rscrim" aria-hidden="true">
+  <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="rec-title">
+    <div class="grabber"></div>
+    <div class="rec-h">
+      <h3 id="rec-title">Records</h3>
+      <div class="yearnav">
+        <button class="chev" id="ryPrev" aria-label="Previous year"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
+        <span id="ryear"></span>
+        <button class="chev" id="ryNext" aria-label="Next year"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3 5 5-5 5"/></svg></button>
+      </div>
+    </div>
+    <div class="rgrid" id="rgrid"></div>
+    <div class="rdetail" id="rdetail"></div>
+    <button class="close" id="rclose" style="margin-top:16px">Done</button>
+  </div>
+</div>
+
+<div class="scrim" id="dscrim" aria-hidden="true">
+  <div class="sheet small dlg" role="alertdialog" aria-modal="true" aria-labelledby="dtitle">
+    <div class="grabber"></div>
+    <h3 id="dtitle"></h3>
+    <p id="dmsg"></p>
+    <textarea id="dinput" hidden></textarea>
+    <p class="derr" id="derr"></p>
+    <div class="btns"><button class="cancel" id="dcancel">Cancel</button><button class="ok" id="dok">OK</button></div>
   </div>
 </div>
 
@@ -364,6 +460,7 @@ const $ = id => document.getElementById(id);
 const rs = n => '₹' + PAS.indianCommas(Math.round(n));
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let EMPS = [], shown = 0, tween = null, URLS = [];
+let DB = null, MROWS = [], FINAL = null, LOCK = false, TPLVER = '', LAST = null, RYEAR = null, RSEL = null;
 const now = new Date();
 let Y = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
 let M = (now.getMonth() + 11) % 12;   // default: last month's salary
@@ -383,7 +480,14 @@ function init() {
   $('pick').addEventListener('submit', usePickedFiles);
   $('close').addEventListener('click', closeSheet);
   $('scrim').addEventListener('click', e => { if (e.target === $('scrim')) closeSheet(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+  document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if ($('dscrim').classList.contains('on')) return dlgClose(false); if ($('rscrim').classList.contains('on')) return closeRecords(); closeSheet(); });
+  $('recordsLink').addEventListener('click', e => { e.preventDefault(); openRecords(); });
+  $('rclose').addEventListener('click', closeRecords);
+  $('rscrim').addEventListener('click', e => { if (e.target === $('rscrim')) closeRecords(); });
+  $('ryPrev').addEventListener('click', () => loadYear(RYEAR - 1));
+  $('ryNext').addEventListener('click', () => loadYear(RYEAR + 1));
+  $('dcancel').addEventListener('click', () => dlgClose(false));
+  $('dok').addEventListener('click', () => dlgClose(true));
   getTemplates().then(ok => ok ? start() : showPicker());
 }
 
@@ -394,7 +498,7 @@ function setMonth(y, m, doRefresh = true) {
   $('mpick').value = `${y}-${String(m + 1).padStart(2, '0')}`;
   const c = PAS.calendar(Y, M);
   $('cdate').value = `${c.payYear}-${String(c.payIdx + 1).padStart(2, '0')}-01`;
-  if (doRefresh) refresh();
+  if (doRefresh) { refresh(); loadMonthStatus(); }
 }
 
 async function getTemplates() {
@@ -433,6 +537,7 @@ async function fingerprint() {
   try {
     const both = new Uint8Array(XLSX.length + DOCX.length); both.set(XLSX); both.set(DOCX, XLSX.length);
     const h = new Uint8Array(await crypto.subtle.digest('SHA-256', both));
+    TPLVER = [...h.slice(0, 3)].map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
     $('tplver').textContent = 'Template version ' + [...h.slice(0, 3)].map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase() + '. ';
   } catch { /* not critical */ }
 }
@@ -453,6 +558,7 @@ async function start() {
       </tr>`).join('');
     $('tcount').textContent = `Total, ${emps.length} employees`;
     refresh();
+    loadMonthStatus();
   });
 }
 
@@ -528,11 +634,13 @@ function refresh() {
   const box = $('problems');
   box.classList.toggle('on', errs.length > 0);
   box.innerHTML = errs.length ? '<strong>Fix these before generating</strong><ul>' + errs.map(e => `<li>${e}</li>`).join('') + '</ul>' : '';
-  $('go').disabled = !!errs.length || !$('ok').checked;
+  $('go').disabled = LOCK || !!errs.length || !$('ok').checked;
+  $('ok').disabled = LOCK;
+  ['cdate', 'cno'].forEach(id => { $(id).disabled = LOCK; });
+  $('rows').classList.toggle('locked', LOCK);
   const why = $('why');
-  why.className = 'why' + (errs.length ? ' bad' : '');
-  why.textContent = errs.length ? `${errs.length} problem${errs.length > 1 ? 's' : ''} in the table` : '';
-  resetOutput();
+  why.className = 'why' + (errs.length && !LOCK ? ' bad' : '');
+  why.textContent = LOCK ? `${cal.monthName} ${cal.year} is final. Reopen it to make changes.` : errs.length ? `${errs.length} problem${errs.length > 1 ? 's' : ''} in the table` : '';
 }
 
 function resetOutput() { URLS.forEach(u => URL.revokeObjectURL(u)); URLS = []; }
@@ -548,20 +656,201 @@ async function generate() {
   try {
     const out = await PAS.generate(JSZip, XLSX, DOCX, readInput());
     if (!out.ok) { $('why').className = 'why bad'; $('why').textContent = out.errors.join(' '); return; }
-    resetOutput();
+    resetOutput(); LAST = null;
     setFile('fx', out.xlsx, out.xlsxName);
     setFile('fd', out.docx, out.docxName);
     $('donesub').textContent = `${out.cal.monthName} ${out.cal.year}, total ${rs(out.calc.total)}`;
+    $('savebox').className = 'savebox'; $('savebox').innerHTML = DB ? '<span class="t"><b>Saving to records…</b></span>' : '';
     openSheet();
+    if (DB) saveDraft(out);
     $('fx').click();
     setTimeout(() => $('fd').click(), 700);
   } catch (e) {
     $('why').className = 'why bad'; $('why').textContent = 'Could not generate: ' + e.message;
   } finally {
     $('go').textContent = 'Generate payroll & memo';
-    $('go').disabled = !$('ok').checked;
+    $('go').disabled = LOCK || !$('ok').checked;
   }
 }
+
+/* ---------------- records ---------------- */
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const periodOf = (y, m) => `${y}-${String(m + 1).padStart(2, '0')}`;
+const plabel = p => `${PAS.MONTHS[+p.slice(5) - 1]} ${p.slice(0, 4)}`;
+const when = iso => iso ? new Date(iso).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
+const dl = (id, kind) => `/api/records?download=${kind}&id=${id}`;
+
+async function api(method, qs, body) {
+  const r = await fetch('/api/records' + (qs || ''), { method, credentials: 'same-origin', cache: 'no-store',
+    headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });
+  let j = {}; try { j = await r.json(); } catch {}
+  if (!r.ok) { const e = new Error(j.error || 'Request failed (' + r.status + ')'); e.status = r.status; throw e; }
+  return j;
+}
+
+async function loadMonthStatus() {
+  if (DB === false || !EMPS.length) return;
+  const p = periodOf(Y, M);
+  try {
+    const j = await api('GET', '?period=' + p);
+    if (!j.configured) { DB = false; $('mstatus').hidden = true; return; }
+    DB = true; $('recordsLink').hidden = false;
+    if (p !== periodOf(Y, M)) return;            // month changed while loading
+    MROWS = j.rows || [];
+    FINAL = MROWS.find(r => r.status === 'final') || null;
+    const wasLocked = LOCK; LOCK = !!FINAL;
+    if (FINAL) applyInputs(FINAL.inputs); else if (wasLocked) applyInputs(null);
+    renderBanner(); refresh();
+  } catch (e) { DB = false; $('mstatus').hidden = true; }
+}
+
+function applyInputs(inp) {
+  document.querySelectorAll('#rows tr[data-row]').forEach(tr => {
+    const a = (inp && inp.att && inp.att[tr.dataset.row]) || {};
+    tr.querySelectorAll('input').forEach(i => { i.value = a[i.dataset.k] || 0; });
+  });
+  if (inp && inp.chequeDate) $('cdate').value = inp.chequeDate;
+  else setMonth(Y, M, false);
+  $('cno').value = (inp && inp.chequeNo) || '';
+  if (!inp) $('ok').checked = false;
+}
+
+function renderBanner() {
+  const b = $('mstatus'), label = `${PAS.MONTHS[M]} ${Y}`;
+  const drafts = MROWS.filter(r => r.status === 'draft'), replaced = MROWS.filter(r => r.status === 'replaced');
+  if (FINAL) {
+    b.className = 'mstatus final';
+    b.innerHTML = `<span class="ms-ic" aria-hidden="true">✓</span>
+      <span class="ms-t"><b>${label} is final</b><small>Version ${FINAL.version}, ${rs(FINAL.total)}, marked final ${esc(when(FINAL.finalized_at))}. The table shows the final leave entries.</small></span>
+      <span class="ms-a"><a class="pill" href="${dl(FINAL.id, 'xlsx')}">Excel</a><a class="pill" href="${dl(FINAL.id, 'docx')}">Memo</a><button class="pill red" id="bReopen">Reopen</button></span>`;
+    $('bReopen').onclick = () => reopenMonth(periodOf(Y, M));
+  } else if (drafts.length) {
+    const last = drafts[drafts.length - 1];
+    b.className = 'mstatus draft';
+    b.innerHTML = `<span class="ms-ic" aria-hidden="true">${drafts.length}</span>
+      <span class="ms-t"><b>${drafts.length} draft${drafts.length > 1 ? 's' : ''} saved, not final yet</b><small>Latest is version ${last.version}, ${rs(last.total)}, ${esc(when(last.created_at))}.${replaced.length ? ` ${replaced.length} earlier final${replaced.length > 1 ? 's' : ''} replaced.` : ''}</small></span>
+      <span class="ms-a"><button class="pill" id="bLoad">Load v${last.version}</button><button class="pill green" id="bFinal">Mark v${last.version} final</button></span>`;
+    $('bLoad').onclick = () => { applyInputs(last.inputs || null); refresh(); };
+    $('bFinal').onclick = () => finalizeVersion(last);
+  } else { b.hidden = true; return; }
+  b.hidden = false;
+}
+
+async function blobB64(blob) {
+  const u = new Uint8Array(await blob.arrayBuffer()); let s = '';
+  for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+
+async function saveDraft(out) {
+  const box = $('savebox'), inp = readInput();
+  try {
+    const j = await api('POST', '', {
+      action: 'save', period: periodOf(out.cal.year, out.cal.monthIdx), total: out.calc.total,
+      inputs: { att: inp.att, chequeDate: $('cdate').value, chequeNo: inp.chequeNo },
+      lines: out.calc.lines.map(l => ({ name: l.e.name, cl: l.E, ml: l.F, lwp: l.G, net: l.U })),
+      template_version: TPLVER, xlsx_name: out.xlsxName, docx_name: out.docxName,
+      xlsx_b64: await blobB64(out.xlsx), docx_b64: await blobB64(out.docx),
+    });
+    LAST = j.row;
+    box.innerHTML = `<span class="t"><b>Saved as draft, version ${j.row.version}</b><small>When this is the one going to the bank, mark it final.</small></span><button class="pill green" id="sbFinal">Mark as final</button>`;
+    $('sbFinal').onclick = () => finalizeVersion(j.row, true);
+    loadMonthStatus();
+  } catch (e) {
+    box.className = 'savebox err';
+    box.innerHTML = `<span class="t"><b>Not saved to records</b><small>${esc(e.message)} Your downloaded files are fine.</small></span>`;
+  }
+}
+
+async function finalizeVersion(row, fromSheet) {
+  const ok = await dlg({ title: `Mark version ${row.version} as final?`, msg: `${plabel(row.period)}, ${rs(row.total)}. This becomes the official record for the month and the month is locked. You can reopen it later only with a written reason.`, okText: 'Mark as final' });
+  if (!ok) return;
+  try {
+    await api('POST', '', { action: 'finalize', id: row.id });
+    if (fromSheet) $('savebox').innerHTML = `<span class="t"><b>Version ${row.version} is final ✓</b><small>${esc(plabel(row.period))} is now locked as the official record.</small></span>`;
+    await loadMonthStatus();
+    if ($('rscrim').classList.contains('on')) loadYear(RYEAR, row.period);
+  } catch (e) { await dlg({ title: 'Could not mark final', msg: e.message, okText: 'OK', noCancel: true }); }
+}
+
+async function reopenMonth(period) {
+  const reason = await dlg({ title: `Reopen ${plabel(period)}?`, msg: 'The current final stays in the records, labelled "Replaced", with your reason. Write why it needs to change.', okText: 'Reopen', input: 'Reason, for example: wrong leave entered for one employee', danger: true, minLen: 5 });
+  if (!reason) return;
+  try {
+    const prev = FINAL && FINAL.period === period ? FINAL.inputs : null;
+    await api('POST', '', { action: 'reopen', period, reason });
+    await loadMonthStatus();
+    if (prev && period === periodOf(Y, M)) { applyInputs(prev); refresh(); }
+    if ($('rscrim').classList.contains('on')) loadYear(RYEAR, period);
+  } catch (e) { await dlg({ title: 'Could not reopen', msg: e.message, okText: 'OK', noCancel: true }); }
+}
+
+/* dialog: resolves true/false, or the typed text when input is used */
+let DLG = null;
+function dlg(o) {
+  $('dtitle').textContent = o.title; $('dmsg').textContent = o.msg || '';
+  $('dok').textContent = o.okText || 'OK'; $('dok').className = 'ok' + (o.danger ? ' red' : '');
+  $('dcancel').hidden = !!o.noCancel; $('derr').textContent = '';
+  const t = $('dinput'); t.hidden = !o.input; t.value = ''; t.placeholder = o.input || '';
+  const s = $('dscrim'); s.classList.add('on'); s.setAttribute('aria-hidden', 'false');
+  setTimeout(() => (o.input ? t : $('dok')).focus(), 60);
+  return new Promise(res => { DLG = { o, res }; });
+}
+function dlgClose(ok) {
+  if (!DLG) return;
+  const { o, res } = DLG;
+  if (ok && o.input) {
+    const v = $('dinput').value.trim();
+    if (v.length < (o.minLen || 1)) { $('derr').textContent = `Please write at least ${o.minLen || 1} characters.`; return; }
+    ok = v;
+  }
+  DLG = null; const s = $('dscrim'); s.classList.remove('on'); s.setAttribute('aria-hidden', 'true');
+  res(ok);
+}
+
+function openRecords() {
+  const s = $('rscrim'); s.classList.add('on'); s.setAttribute('aria-hidden', 'false');
+  loadYear(Y, periodOf(Y, M)); setTimeout(() => $('rclose').focus(), 60);
+}
+function closeRecords() { const s = $('rscrim'); if (!s.classList.contains('on')) return; s.classList.remove('on'); s.setAttribute('aria-hidden', 'true'); }
+
+let YROWS = [];
+async function loadYear(y, select) {
+  RYEAR = y; $('ryear').textContent = y;
+  $('rgrid').innerHTML = '<p class="rempty">Loading…</p>'; $('rdetail').innerHTML = '';
+  try { YROWS = (await api('GET', '?year=' + y)).rows || []; }
+  catch (e) { $('rgrid').innerHTML = `<p class="rempty">${esc(e.message)}</p>`; return; }
+  $('rgrid').innerHTML = PAS.MONTHS.map((m, i) => {
+    const p = periodOf(y, i), rows = YROWS.filter(r => r.period === p), f = rows.find(r => r.status === 'final');
+    const drafts = rows.filter(r => r.status === 'draft');
+    const badge = f ? '<span class="badge final">Final</span>' : drafts.length ? `<span class="badge draft">${drafts.length} draft${drafts.length > 1 ? 's' : ''}</span>` : '<span class="badge">Not prepared</span>';
+    const amt = f ? rs(f.total) : drafts.length ? rs(drafts[drafts.length - 1].total) : '';
+    return `<button class="mcard" data-p="${p}"><b>${m}</b>${badge}<span class="amt">${amt}</span></button>`;
+  }).join('');
+  $('rgrid').querySelectorAll('.mcard').forEach(c => c.onclick = () => showPeriod(c.dataset.p));
+  if (select && select.startsWith(String(y))) showPeriod(select);
+}
+
+function showPeriod(p) {
+  RSEL = p;
+  $('rgrid').querySelectorAll('.mcard').forEach(c => c.classList.toggle('sel', c.dataset.p === p));
+  const rows = YROWS.filter(r => r.period === p).slice().reverse();
+  const hasFinal = rows.some(r => r.status === 'final');
+  const head = `<p class="group-h">${esc(plabel(p))}</p>`;
+  if (!rows.length) { $('rdetail').innerHTML = head + '<div class="group"><p class="rempty">Nothing saved for this month yet.</p></div>'; return; }
+  $('rdetail').innerHTML = head + '<div class="group">' + rows.map(r => `
+    <div class="vrow">
+      <span class="vt"><b>Version ${r.version}</b> <span class="badge ${r.status}">${r.status === 'final' ? 'Final' : r.status === 'draft' ? 'Draft' : 'Replaced'}</span>
+        <small>${rs(r.total)}, saved ${esc(when(r.created_at))}${r.finalized_at ? `, final ${esc(when(r.finalized_at))}` : ''}</small>
+        ${r.replaced_reason ? `<span class="why-r">Reopened ${esc(when(r.replaced_at))}: “${esc(r.replaced_reason)}”</span>` : ''}</span>
+      <a class="pill" href="${dl(r.id, 'xlsx')}">Excel</a><a class="pill" href="${dl(r.id, 'docx')}">Memo</a>
+      ${r.status === 'draft' && !hasFinal ? `<button class="pill green" data-final="${r.id}">Mark final</button>` : ''}
+      ${r.status === 'final' ? `<button class="pill red" data-reopen="${p}">Reopen</button>` : ''}
+    </div>`).join('') + '</div>';
+  $('rdetail').querySelectorAll('[data-final]').forEach(b => b.onclick = () => finalizeVersion(rows.find(r => r.id == b.dataset.final)));
+  $('rdetail').querySelectorAll('[data-reopen]').forEach(b => b.onclick = () => reopenMonth(b.dataset.reopen));
+}
+
 init();
 </script>
 </body>
