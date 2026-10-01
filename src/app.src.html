@@ -34,6 +34,7 @@ body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--sans)
 .mast p{margin:4px 0 0;color:var(--ink-soft);font-size:13.5px}
 .lock{font-size:12.5px;color:var(--ink-soft);display:flex;align-items:center;gap:6px}
 .lock svg{width:14px;height:14px}
+.out{margin-left:14px;color:var(--ink);font-weight:500}
 
 /* ---------- the month sentence ---------- */
 .sentence{margin:26px 0 22px;font:400 clamp(22px,2.6vw,30px)/1.35 var(--serif);max-width:60ch}
@@ -165,7 +166,7 @@ tfoot td{border-top:2px solid var(--ink);border-bottom:0;font-weight:600;padding
       <h1>NIET Payroll</h1>
       <p>Noida Institute of Education &amp; Technology, monthly payroll and bank transfer memo</p>
     </div>
-    <div class="lock"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>Files are built in your browser and never uploaded</div>
+    <div class="lock"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>Files are built in your browser and never uploaded<a class="out" href="/?logout" id="signout">Sign out</a></div>
   </header>
 
   <p class="sentence">
@@ -270,7 +271,7 @@ function init() {
 }
 
 async function getTemplates() {
-  if (!EMBED_XLSX.startsWith('/*')) { XLSX = b64(EMBED_XLSX); DOCX = b64(EMBED_DOCX); return true; }
+  if (!EMBED_XLSX.startsWith('/*')) { $('signout').hidden = true; XLSX = b64(EMBED_XLSX); DOCX = b64(EMBED_DOCX); return true; }
   try {
     const r = await fetch('/api/templates', { cache: 'no-store', credentials: 'same-origin' });
     if (!r.ok) return false;
@@ -280,6 +281,7 @@ async function getTemplates() {
 }
 
 function showPicker() {
+  $('signout').hidden = true;
   $('rows').innerHTML = '<tr><td class="l" colspan="9">Templates not loaded yet.</td></tr>';
   $('pick').hidden = false;
 }
