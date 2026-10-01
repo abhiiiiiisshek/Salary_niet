@@ -283,6 +283,44 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
 .dlg .ok.red{background:var(--red)}
 .dlg .derr{color:var(--red);font-size:13px;margin:8px 4px 0;min-height:1em}
 
+/* view switch (segmented control) */
+.seg{display:inline-flex;background:color-mix(in srgb,var(--label) 8%,transparent);border-radius:9px;padding:2px;gap:2px}
+.seg button{border:0;background:transparent;color:var(--label);font-size:14px;font-weight:500;padding:6px 16px;border-radius:7px;cursor:pointer}
+.seg button[aria-selected="true"]{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12),0 0 0 .5px var(--sep);font-weight:600}
+.nav-in{display:grid;grid-template-columns:1fr auto 1fr}
+.nav-in > :last-child{justify-self:end}
+
+/* imprest view */
+.pi-pass .pass-amt{font-size:44px}
+.bar{height:8px;border-radius:5px;background:rgba(255,255,255,.18);overflow:hidden;margin-top:14px}
+.bar i{display:block;height:100%;background:#fff;border-radius:5px;transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.bar.low i{background:#ffb340}
+.pi-meta{display:flex;justify-content:space-between;gap:10px;margin-top:8px;font-size:13px;color:rgba(255,255,255,.75)}
+.addform{display:grid;grid-template-columns:150px 90px minmax(0,1fr) 230px 130px auto;gap:10px;align-items:end;background:var(--card);border-radius:var(--r-md);box-shadow:var(--shadow);padding:14px 16px}
+.addform label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--label-2);min-width:0}
+.addform input,.addform select{height:40px;border-radius:9px;border:.5px solid var(--sep-strong);background:var(--bg);color:var(--label);padding:0 10px;font-size:15px;min-width:0;width:100%}
+.addform input:focus,.addform select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-tint)}
+.addform .go{height:40px;padding:0 18px;font-size:15px}
+.addform .cancel-edit{height:40px;border:0;background:transparent;color:var(--blue);font-size:15px;cursor:pointer}
+.addform.editing{box-shadow:0 0 0 2px var(--blue),var(--shadow)}
+.formerr{color:var(--red);font-size:13px;margin:8px 4px 0;min-height:1em}
+#piTable{min-width:860px}
+#piTable td.desc{white-space:normal;min-width:260px;text-align:left}
+#piTable td.acts{white-space:nowrap;text-align:right}
+.link{border:0;background:transparent;color:var(--blue);font-size:14px;cursor:pointer;padding:4px 6px;border-radius:6px}
+.link:hover{background:var(--blue-tint)}
+.link.red{color:var(--red)}
+.link.red:hover{background:color-mix(in srgb,var(--red) 10%,transparent)}
+.abs .row .v{color:var(--label);font-variant-numeric:tabular-nums}
+.abs .row.tot .k,.abs .row.tot .v{font-weight:700}
+.ok-tick{color:var(--green);font-weight:600}
+.saved{font-size:12.5px;color:var(--label-2)}
+.empty-state{padding:26px 18px;text-align:center;color:var(--label-2)}
+.startform .row input{max-width:240px}
+.startform .go{margin-top:14px}
+@media (max-width:980px){.addform{grid-template-columns:1fr 1fr}.addform .wide{grid-column:1/-1}}
+@media (max-width:560px){.nav-in{grid-template-columns:auto 1fr}.nav-in .seg{grid-column:1/-1;grid-row:2;justify-self:center;margin-top:6px}.brand span{display:none}}
+
 /* template picker (offline fallback) */
 .loader{margin-bottom:24px}
 .loader .row label{flex:1;display:flex;justify-content:space-between;align-items:center;gap:12px}
@@ -313,11 +351,12 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
 <header class="nav">
   <div class="nav-in">
     <div class="brand"><img class="logo" src="data:image/png;base64,/*ICON64*/" alt="" width="26" height="26">NIET Payroll <span>Noida Institute of Education &amp; Technology</span></div>
+    <div class="seg" role="tablist" aria-label="Section"><button role="tab" id="tabPay" aria-selected="true">Payroll</button><button role="tab" id="tabPi" aria-selected="false">Imprest</button></div>
     <span><a class="navlink" href="#records" id="recordsLink" hidden>Records</a><a class="navlink" href="/?logout" id="signout" style="margin-left:18px">Sign out</a></span>
   </div>
 </header>
 
-<main class="page">
+<main class="page" id="payView">
   <div class="titlebar">
     <div>
       <div class="month">
@@ -391,7 +430,7 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
   </section>
 </main>
 
-<div class="toolbar">
+<div class="toolbar" id="payBar">
   <div class="tb-in">
     <div class="tb-total"><small id="tbmonth">Total</small><b id="tbamt">₹0</b></div>
     <div class="tb-right">
@@ -399,6 +438,110 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
       <button class="go" id="go" disabled>Generate payroll &amp; memo</button>
     </div>
     <p class="why" id="why"></p>
+  </div>
+</div>
+
+<main class="page" id="piView" hidden>
+  <div class="titlebar">
+    <div>
+      <div class="month"><h1 id="piTitle">Imprest</h1></div>
+      <p class="subtitle" id="piSub"></p>
+    </div>
+    <div class="ms-a"><span class="saved" id="piSaved"></span><button class="pill" id="piHistBtn">All P.I.s</button></div>
+  </div>
+
+  <div class="mstatus" id="piNodb" hidden><span class="ms-ic" aria-hidden="true">!</span><span class="ms-t"><b>The imprest register needs the records database</b><small>Set up Supabase (SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel) to keep the P.I. book. Payroll works without it.</small></span></div>
+
+  <form class="startform" id="piStart" hidden>
+    <p class="group-h">Start the imprest register</p>
+    <div class="group">
+      <label class="row"><span class="k">P.I. number</span><input id="psNo" type="number" min="1" value="3"></label>
+      <label class="row"><span class="k">Start date</span><input id="psStart" type="date"></label>
+      <div class="row"><span class="k">Financial year</span><span class="v" id="psFy"></span></div>
+      <label class="row"><span class="k">Account holder</span><input id="psHolder" value="Anshu"></label>
+      <label class="row"><span class="k">Designation</span><input id="psDesig" value="Office Assistant"></label>
+      <label class="row"><span class="k">Imprest amount (₹)</span><input id="psImp" type="number" min="1" value="5000"></label>
+      <label class="row"><span class="k">Cash in hand at start (₹)</span><input id="psOpen" type="number" min="0" step="0.01" value="63"></label>
+      <div class="row"><span class="k">Cheque received (₹)</span><span class="v" id="psRecv"></span></div>
+      <label class="row"><span class="k">First sanction no.</span><input id="psSan" type="number" min="1" value="79"></label>
+      <label class="row"><span class="k">Cheque no.</span><input id="psChq" placeholder="Optional"></label>
+      <label class="row"><span class="k">Cheque date</span><input id="psChqD" type="date"></label>
+    </div>
+    <p class="group-f">Cash in hand at start is the balance left in the last P.I. The cheque received is worked out so the total is the imprest amount.</p>
+    <button class="go" type="submit">Start P.I.</button>
+    <p class="formerr" id="psErr"></p>
+  </form>
+
+  <div id="piMain" hidden>
+    <section class="summary" aria-label="Cash">
+      <div class="pass pi-pass">
+        <div class="pass-top"><div><b id="piPassNo"></b><span id="piPassHolder"></span></div><div style="text-align:right">Imprest<b class="num" id="piImp"></b></div></div>
+        <div class="pass-label">Cash left</div>
+        <div class="pass-amt"><span class="cur">₹</span><span id="piLeft">0</span></div>
+        <div class="bar" id="piBarFill"><i></i></div>
+        <div class="pi-meta"><span id="piSpentTxt"></span><span id="piCountTxt"></span></div>
+      </div>
+      <div>
+        <p class="group-h">Cash received</p>
+        <div class="group">
+          <div class="row"><span class="k">Cash in hand at start</span><span class="v num" id="piOpening"></span></div>
+          <div class="row"><span class="k">Cheque received</span><span class="v num" id="piRecv"></span></div>
+          <label class="row"><span class="k">Cheque no.</span><input id="piChq" placeholder="Optional" inputmode="numeric"></label>
+          <label class="row"><span class="k">Cheque date</span><input id="piChqD" type="date"></label>
+          <label class="row"><span class="k">Account holder</span><input id="piHolder"></label>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="pi-add-h" style="margin-bottom:26px">
+      <div class="sec-h"><h2 id="pi-add-h">Add a payment</h2><p>Sanction no. fills in by itself. Change it if the office gave a different one.</p></div>
+      <form class="addform" id="piForm" autocomplete="off">
+        <label>Date<input id="pfDate" type="date" required></label>
+        <label>Sanction<input id="pfSan" inputmode="numeric"></label>
+        <label class="wide">Paid to / for<input id="pfDesc" placeholder="e.g. Paid Airtel Wi-Fi bill for October" required></label>
+        <label>Head of account<select id="pfHead"></select></label>
+        <label>Amount (₹)<input id="pfAmt" type="number" min="0.01" step="0.01" inputmode="decimal" required></label>
+        <span style="display:flex;gap:4px"><button class="go" type="submit" id="pfBtn">Add</button><button class="cancel-edit" type="button" id="pfCancel" hidden>Cancel</button></span>
+      </form>
+      <p class="formerr" id="pfErr"></p>
+    </section>
+
+    <section aria-labelledby="pi-list-h" style="margin-bottom:26px">
+      <div class="sec-h"><h2 id="pi-list-h">Payments</h2><p id="piListNote"></p></div>
+      <div class="tablecard"><div class="scroll">
+        <table id="piTable">
+          <thead><tr><th class="l">Date</th><th>Sanction No.</th><th class="l">Transaction</th><th class="l">Head of account</th><th>Amount</th><th></th></tr></thead>
+          <tbody id="piRows"></tbody>
+          <tfoot><tr><td class="l" colspan="4">Total spent</td><td class="num" id="piTot"></td><td></td></tr></tfoot>
+        </table>
+      </div></div>
+    </section>
+
+    <section aria-labelledby="pi-abs-h">
+      <div class="sec-h"><h2 id="pi-abs-h">Abstract of charges</h2><p id="piAbsCheck"></p></div>
+      <div class="group abs" id="piAbs"></div>
+    </section>
+    <div class="problems" id="piProblems" role="alert"></div>
+  </div>
+</main>
+
+<div class="toolbar" id="piBarTool" hidden>
+  <div class="tb-in">
+    <div class="tb-total"><small id="pitbLabel">Cash left</small><b id="pitbLeft">₹0</b></div>
+    <div class="tb-right">
+      <button class="pill" id="piDl" style="height:44px;padding:0 18px">Download Excel</button>
+      <button class="go" id="piClose">Close P.I.</button>
+    </div>
+    <p class="why" id="piWhy"></p>
+  </div>
+</div>
+
+<div class="scrim" id="piHist" aria-hidden="true">
+  <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="pih-title">
+    <div class="grabber"></div>
+    <div class="rec-h"><h3 id="pih-title">All P.I.s</h3></div>
+    <div class="group" id="piHistList"></div>
+    <button class="close" id="piHistClose" style="margin-top:16px">Done</button>
   </div>
 </div>
 
@@ -443,6 +586,7 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
     <h3 id="dtitle"></h3>
     <p id="dmsg"></p>
     <textarea id="dinput" hidden></textarea>
+    <input id="ddate" type="date" hidden style="width:100%;height:44px;border-radius:12px;border:.5px solid var(--sep-strong);background:var(--card);color:var(--label);padding:0 12px;font:inherit">
     <p class="derr" id="derr"></p>
     <div class="btns"><button class="cancel" id="dcancel">Cancel</button><button class="ok" id="dok">OK</button></div>
   </div>
@@ -450,6 +594,7 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
 
 <script>/*JSZIP*/</script>
 <script>/*ENGINE*/</script>
+<script>/*PIENGINE*/</script>
 <script>
 // Templates hold salaries and bank accounts, so they are NOT in this file or the public repo.
 // On Vercel they come from /api/templates (after sign-in). Offline builds may embed them.
@@ -480,7 +625,7 @@ function init() {
   $('pick').addEventListener('submit', usePickedFiles);
   $('close').addEventListener('click', closeSheet);
   $('scrim').addEventListener('click', e => { if (e.target === $('scrim')) closeSheet(); });
-  document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if ($('dscrim').classList.contains('on')) return dlgClose(false); if ($('rscrim').classList.contains('on')) return closeRecords(); closeSheet(); });
+  document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if ($('dscrim').classList.contains('on')) return dlgClose(false); if ($('rscrim').classList.contains('on')) return closeRecords(); if ($('piHist').classList.contains('on')) return closePiHist(); closeSheet(); });
   $('recordsLink').addEventListener('click', e => { e.preventDefault(); openRecords(); });
   $('rclose').addEventListener('click', closeRecords);
   $('rscrim').addEventListener('click', e => { if (e.target === $('rscrim')) closeRecords(); });
@@ -792,8 +937,9 @@ function dlg(o) {
   $('dok').textContent = o.okText || 'OK'; $('dok').className = 'ok' + (o.danger ? ' red' : '');
   $('dcancel').hidden = !!o.noCancel; $('derr').textContent = '';
   const t = $('dinput'); t.hidden = !o.input; t.value = ''; t.placeholder = o.input || '';
+  const dd = $('ddate'); dd.hidden = !o.date; if (o.date) { dd.value = o.date.value || ''; dd.min = o.date.min || ''; }
   const s = $('dscrim'); s.classList.add('on'); s.setAttribute('aria-hidden', 'false');
-  setTimeout(() => (o.input ? t : $('dok')).focus(), 60);
+  setTimeout(() => (o.input ? t : o.date ? dd : $('dok')).focus(), 60);
   return new Promise(res => { DLG = { o, res }; });
 }
 function dlgClose(ok) {
@@ -802,6 +948,11 @@ function dlgClose(ok) {
   if (ok && o.input) {
     const v = $('dinput').value.trim();
     if (v.length < (o.minLen || 1)) { $('derr').textContent = `Please write at least ${o.minLen || 1} characters.`; return; }
+    ok = v;
+  }
+  if (ok && o.date) {
+    const v = $('ddate').value;
+    if (!v || (o.date.min && v < o.date.min)) { $('derr').textContent = 'Choose a valid date' + (o.date.min ? ` (on or after ${PI.dots(o.date.min)})` : '') + '.'; return; }
     ok = v;
   }
   DLG = null; const s = $('dscrim'); s.classList.remove('on'); s.setAttribute('aria-hidden', 'true');
@@ -851,6 +1002,240 @@ function showPeriod(p) {
   $('rdetail').querySelectorAll('[data-reopen]').forEach(b => b.onclick = () => reopenMonth(b.dataset.reopen));
 }
 
+/* ================= Imprest (P.I.) ================= */
+const PITPL_B64 = "/*PITPL*/";
+let PIBOOKS = [], PIB = null, NEXTSAN = 1, PIEDIT = null, PIDB = null, PISAVE = Promise.resolve();
+const money = n => '₹' + PAS.indianCommas(Math.floor(Math.abs(n))) + (Math.round(Math.abs(n) * 100) % 100 ? '.' + String(Math.round(Math.abs(n) * 100) % 100).padStart(2, '0') : '');
+const todayISO = () => PI.iso(new Date());
+
+function showView(v) {
+  const pi = v === 'pi';
+  $('payView').hidden = pi; $('payBar').hidden = pi;
+  $('piView').hidden = !pi;
+  $('tabPay').setAttribute('aria-selected', String(!pi)); $('tabPi').setAttribute('aria-selected', String(pi));
+  $('recordsLink').style.visibility = pi ? 'hidden' : '';
+  history.replaceState(null, '', pi ? '#imprest' : location.pathname + location.search);
+  if (pi) loadPi(); else $('piBarTool').hidden = true;
+}
+
+async function piApi(method, qs, body) {
+  const r = await fetch('/api/pi' + (qs || ''), { method, credentials: 'same-origin', cache: 'no-store',
+    headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });
+  let j = {}; try { j = await r.json(); } catch {}
+  if (!r.ok) throw new Error(j.error || 'Request failed (' + r.status + ')');
+  return j;
+}
+
+async function loadPi(keepEdit) {
+  try {
+    const j = await piApi('GET');
+    if (!j.configured) { PIDB = false; $('piNodb').hidden = false; $('piStart').hidden = true; $('piMain').hidden = true; $('piBarTool').hidden = true; $('piTitle').textContent = 'Imprest'; $('piSub').textContent = ''; return; }
+    PIDB = true; $('piNodb').hidden = true;
+    PIBOOKS = j.books || []; NEXTSAN = j.nextSanction || 1;
+    PIB = PIBOOKS.find(b => b.status === 'open') || null;
+    if (!PIB) { renderPiStart(); return; }
+    $('piStart').hidden = true; $('piMain').hidden = false; $('piBarTool').hidden = false;
+    if (!keepEdit) piResetForm();
+    $('piChq').value = PIB.cheque_no || ''; $('piChqD').value = PIB.cheque_date || ''; $('piHolder').value = PIB.holder || '';
+    renderPi();
+  } catch (e) {
+    $('piNodb').hidden = false; $('piNodb').querySelector('b').textContent = 'Could not load the imprest register';
+    $('piNodb').querySelector('small').textContent = e.message;
+  }
+}
+
+function renderPiStart() {
+  $('piMain').hidden = true; $('piBarTool').hidden = true; $('piStart').hidden = false;
+  $('piTitle').textContent = 'Imprest'; $('piSub').textContent = 'No P.I. is open';
+  const last = PIBOOKS[0];
+  if (last) {   // a book exists but none open (should be rare): continue from it
+    const S = PI.summarize(last);
+    $('psStart').value = last.end_date ? PI.addDays(last.end_date, 1) : todayISO();
+    $('psOpen').value = S.balance; $('psHolder').value = last.holder; $('psDesig').value = last.designation; $('psImp').value = last.imprest;
+    const fy = PI.fyOf($('psStart').value); $('psNo').value = fy === last.fy ? last.pi_no + 1 : 1;
+  } else if (!$('psStart').value) $('psStart').value = todayISO();
+  $('psSan').value = NEXTSAN > 1 ? NEXTSAN : $('psSan').value;
+  piStartCalc();
+}
+function piStartCalc() {
+  const v = $('psStart').value; $('psFy').textContent = v ? PI.fyOf(v) : '—';
+  const r = PI.r2(Number($('psImp').value) - Number($('psOpen').value)); $('psRecv').textContent = isFinite(r) ? money(r) : '—';
+}
+
+async function piStartSubmit(ev) {
+  ev.preventDefault(); $('psErr').textContent = '';
+  try {
+    await piApi('POST', '', { action: 'start', pi_no: Number($('psNo').value), start_date: $('psStart').value, holder: $('psHolder').value, designation: $('psDesig').value,
+      imprest: Number($('psImp').value), opening: Number($('psOpen').value), cheque_no: $('psChq').value, cheque_date: $('psChqD').value, first_sanction: Number($('psSan').value) });
+    await loadPi();
+  } catch (e) { $('psErr').textContent = e.message; }
+}
+
+function piHeads() {
+  const set = new Set(PI.HEADS);
+  PIBOOKS.forEach(b => (b.entries || []).forEach(e => e.head && set.add(e.head)));
+  return [...set];
+}
+function nextSanction() {
+  let m = NEXTSAN - 1;
+  (PIB.entries || []).forEach(e => { const n = parseInt(e.sanction, 10); if (n > m) m = n; });
+  return m + 1;
+}
+function piResetForm() {
+  PIEDIT = null; $('piForm').classList.remove('editing'); $('pfBtn').textContent = 'Add'; $('pfCancel').hidden = true;
+  $('pfDesc').value = ''; $('pfAmt').value = ''; $('pfErr').textContent = '';
+  if (!$('pfDate').value) $('pfDate').value = todayISO();
+  if (PIB) $('pfSan').value = nextSanction();
+  const sel = $('pfHead'), cur = sel.value;
+  sel.innerHTML = '<option value="">Choose…</option>' + piHeads().map(h => `<option>${esc(h)}</option>`).join('') + '<option value="__other">Other…</option>';
+  sel.value = cur && [...sel.options].some(o => o.value === cur) ? cur : '';
+}
+
+function renderPi() {
+  const b = PIB, S = PI.summarize(b);
+  const label = PI.piLabel(b.pi_no, b.fy);
+  $('piTitle').textContent = `P.I. No. ${label}`;
+  $('piSub').textContent = `From ${PI.dots(b.start_date)}, ${b.holder} (${b.designation})`;
+  $('piPassNo').textContent = `P.I. ${label}`; $('piPassHolder').textContent = `${b.holder}, ${b.designation}`;
+  $('piImp').textContent = money(b.imprest);
+  $('piLeft').textContent = PAS.indianCommas(Math.floor(S.balance)) + (Math.round(S.balance * 100) % 100 ? '.' + String(Math.round(S.balance * 100) % 100).padStart(2, '0') : '');
+  const frac = S.cash ? Math.max(0, Math.min(1, S.balance / S.cash)) : 0;
+  $('piBarFill').querySelector('i').style.width = (frac * 100) + '%'; $('piBarFill').classList.toggle('low', frac < 0.15);
+  $('piSpentTxt').textContent = `Spent ${money(S.spent)} of ${money(S.cash)}`;
+  $('piCountTxt').textContent = `${(b.entries || []).length} payment${(b.entries || []).length === 1 ? '' : 's'}`;
+  $('piOpening').textContent = money(b.opening); $('piRecv').textContent = money(b.received);
+  $('pitbLeft').textContent = money(S.balance); $('pitbLabel').textContent = `Cash left in P.I. ${label}`;
+  const rows = b.entries || [];
+  $('piRows').innerHTML = rows.length ? rows.map((e, i) => `<tr data-i="${i}">
+      <td class="l num">${esc(PI.dashes(e.date))}</td><td class="num">${esc(e.sanction)}</td><td class="desc">${esc(e.desc)}</td><td class="l">${esc(e.head)}</td>
+      <td class="num net">${money(e.amount)}</td>
+      <td class="acts"><button class="link" data-edit="${i}">Edit</button><button class="link red" data-del="${i}">Delete</button></td></tr>`).join('')
+    : `<tr><td colspan="6"><div class="empty-state">No payments yet. Add the first one above.</div></td></tr>`;
+  $('piTot').textContent = money(S.spent);
+  $('piListNote').textContent = rows.length ? `${rows.length} payment${rows.length === 1 ? '' : 's'}, newest at the bottom` : '';
+  $('piAbs').innerHTML = (S.abstract.length ? S.abstract.map(a => `<div class="row"><span class="k">${esc(a.head)}</span><span class="v">${money(a.amount)}</span></div>`).join('') : '<div class="row"><span class="k" style="color:var(--label-2)">Appears as you add payments</span></div>')
+    + `<div class="row tot"><span class="k">Total</span><span class="v">${money(S.spent)}</span></div>`;
+  $('piAbsCheck').innerHTML = S.abstract.length ? '<span class="ok-tick">✓ Matches the payments total</span>' : '';
+  const pb = $('piProblems'); pb.classList.toggle('on', S.problems.length > 0);
+  pb.innerHTML = S.problems.length ? '<strong>Check these</strong><ul>' + S.problems.map(p => `<li>${esc(p)}</li>`).join('') + '</ul>' : '';
+  $('piClose').disabled = !rows.length || S.problems.length > 0;
+  $('piWhy').className = 'why' + (S.problems.length ? ' bad' : '');
+  $('piWhy').textContent = S.problems.length ? `${S.problems.length} problem${S.problems.length > 1 ? 's' : ''} to fix before closing` : '';
+}
+
+function piSave(note) {
+  const b = PIB; $('piSaved').textContent = 'Saving…';
+  PISAVE = PISAVE.then(() => piApi('POST', '', { action: 'save', id: b.id, entries: b.entries, cheque_no: $('piChq').value, cheque_date: $('piChqD').value, holder: $('piHolder').value, designation: b.designation }))
+    .then(j => { PIB = { ...PIB, ...j.book }; $('piSaved').textContent = (note || 'Saved') + ' ✓'; renderPi(); })
+    .catch(async e => { $('piSaved').textContent = 'Not saved'; await dlg({ title: 'Could not save', msg: e.message, okText: 'OK', noCancel: true }); loadPi(); });
+  return PISAVE;
+}
+
+async function piSubmit(ev) {
+  ev.preventDefault(); $('pfErr').textContent = '';
+  let head = $('pfHead').value;
+  const e = { id: PIEDIT != null ? PIB.entries[PIEDIT].id : 'e' + Date.now(), date: $('pfDate').value, sanction: $('pfSan').value.trim(), desc: $('pfDesc').value.trim(), head, amount: PI.r2($('pfAmt').value) };
+  const miss = [!e.date && 'date', !e.desc && 'what it was for', !e.head && 'head of account', !(e.amount > 0) && 'amount'].filter(Boolean);
+  if (miss.length) { $('pfErr').textContent = 'Add the ' + miss.join(', ') + '.'; return; }
+  if (e.date < PIB.start_date) { $('pfErr').textContent = `The date is before this P.I. started (${PI.dots(PIB.start_date)}).`; return; }
+  const list = (PIB.entries || []).slice();
+  if (e.sanction && list.some((x, i) => i !== PIEDIT && String(x.sanction) === e.sanction)) { $('pfErr').textContent = `Sanction No. ${e.sanction} is already used in this P.I.`; return; }
+  if (PIEDIT != null) list[PIEDIT] = e; else list.push(e);
+  const S = PI.summarize({ ...PIB, entries: list });
+  if (S.balance < 0) { $('pfErr').textContent = `That would spend ${money(S.spent)}, more than the ${money(S.cash)} cash in hand. Only ${money(PI.summarize(PIB).balance)} is left.`; return; }
+  list.sort((a, z) => a.date < z.date ? -1 : a.date > z.date ? 1 : (parseInt(a.sanction, 10) || 0) - (parseInt(z.sanction, 10) || 0));
+  const wasEdit = PIEDIT != null;
+  PIB.entries = list; renderPi(); piResetForm(); $('pfDesc').focus();
+  piSave(wasEdit ? 'Updated' : 'Added');
+}
+
+async function piRowClick(ev) {
+  const ed = ev.target.closest('[data-edit]'), del = ev.target.closest('[data-del]');
+  if (ed) {
+    const i = Number(ed.dataset.edit), e = PIB.entries[i]; PIEDIT = i;
+    $('pfDate').value = e.date; $('pfSan').value = e.sanction; $('pfDesc').value = e.desc; $('pfAmt').value = e.amount;
+    const sel = $('pfHead'); if (![...sel.options].some(o => o.value === e.head)) sel.insertAdjacentHTML('afterbegin', `<option>${esc(e.head)}</option>`); sel.value = e.head;
+    $('piForm').classList.add('editing'); $('pfBtn').textContent = 'Save'; $('pfCancel').hidden = false;
+    $('piForm').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); $('pfDesc').focus();
+  }
+  if (del) {
+    const i = Number(del.dataset.del), e = PIB.entries[i];
+    const ok = await dlg({ title: 'Delete this payment?', msg: `${PI.dashes(e.date)}, ${e.desc}, ${money(e.amount)}.`, okText: 'Delete', danger: true });
+    if (!ok) return;
+    PIB.entries = PIB.entries.filter((_, k) => k !== i); if (PIEDIT === i) piResetForm(); renderPi(); piSave('Deleted');
+  }
+}
+
+async function piHeadChange() {
+  if ($('pfHead').value !== '__other') return;
+  const h = await dlg({ title: 'New head of account', msg: 'Type it exactly as it should appear in the abstract, for example "Postage Exp A/c".', okText: 'Use this head', input: 'Head of account', minLen: 3 });
+  const sel = $('pfHead');
+  if (h) { sel.insertAdjacentHTML('afterbegin', `<option>${esc(h)}</option>`); sel.value = h; } else sel.value = '';
+}
+
+async function piDownload() {
+  await PISAVE;
+  const out = await PI.buildExcel(JSZip, b64(PITPL_B64), { ...PIB, cheque_no: $('piChq').value, cheque_date: $('piChqD').value, holder: $('piHolder').value });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(out.blob); a.download = out.name.replace('.xlsx', '_draft.xlsx'); document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+
+async function piCloseBook() {
+  await PISAVE;
+  const S = PI.summarize(PIB), label = PI.piLabel(PIB.pi_no, PIB.fy);
+  const lastDate = (PIB.entries || []).reduce((m, e) => e.date > m ? e.date : m, PIB.start_date);
+  const end = await dlg({ title: `Close P.I. ${label}?`, msg: `Spent ${money(S.spent)}, balance ${money(S.balance)}. The P.I. is locked, its Excel is saved, and the next P.I. opens with ${money(S.balance)} in hand and a cheque of ${money(PI.r2(PIB.imprest - S.balance))} to receive. Closing date:`, okText: 'Close P.I.', date: { value: todayISO() < lastDate ? lastDate : todayISO(), min: lastDate } });
+  if (!end) return;
+  try {
+    const book = { ...PIB, end_date: end, cheque_no: $('piChq').value, cheque_date: $('piChqD').value, holder: $('piHolder').value };
+    const out = await PI.buildExcel(JSZip, b64(PITPL_B64), book);
+    const j = await piApi('POST', '', { action: 'close', id: PIB.id, end_date: end, xlsx_b64: await blobB64(out.blob), xlsx_name: out.name });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(out.blob); a.download = out.name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    await loadPi();
+    await dlg({ title: `P.I. ${label} closed ✓`, msg: `Its Excel is downloading and saved in All P.I.s. P.I. ${PI.piLabel(j.next.pi_no, j.next.fy)} is now open with ${money(j.next.opening)} in hand. Add the cheque number when the ${money(j.next.received)} cheque arrives.`, okText: 'OK', noCancel: true });
+  } catch (e) { await dlg({ title: 'Could not close', msg: e.message, okText: 'OK', noCancel: true }); }
+}
+
+function openPiHist() {
+  const latestClosed = PIBOOKS.filter(b => b.status === 'closed').sort((a, z) => a.end_date < z.end_date ? 1 : -1)[0];
+  $('piHistList').innerHTML = PIBOOKS.length ? PIBOOKS.map(b => {
+    const S = PI.summarize(b), open = b.status === 'open';
+    return `<div class="vrow"><span class="vt"><b>P.I. ${esc(PI.piLabel(b.pi_no, b.fy))}</b> <span class="badge ${open ? 'draft' : 'final'}">${open ? 'Open' : 'Closed'}</span>
+      <small>${esc(PI.dots(b.start_date))} to ${b.end_date ? esc(PI.dots(b.end_date)) : 'now'}, spent ${money(S.spent)}, balance ${money(S.balance)}, ${esc(b.holder)}</small>
+      ${(b.reopen_notes || []).map(n => `<span class="why-r">Reopened ${esc(when(n.at))}: “${esc(n.reason)}”</span>`).join('')}</span>
+      ${open ? `<button class="pill" data-gen="${b.id}">Excel (draft)</button>` : `<a class="pill" href="/api/pi?download=${b.id}">Excel</a>`}
+      ${latestClosed && b.id === latestClosed.id ? `<button class="pill red" data-reopen="${b.id}">Reopen</button>` : ''}</div>`;
+  }).join('') : '<p class="rempty">No P.I.s yet.</p>';
+  $('piHistList').querySelectorAll('[data-gen]').forEach(x => x.onclick = piDownload);
+  $('piHistList').querySelectorAll('[data-reopen]').forEach(x => x.onclick = () => piReopen(Number(x.dataset.reopen)));
+  const s = $('piHist'); s.classList.add('on'); s.setAttribute('aria-hidden', 'false'); setTimeout(() => $('piHistClose').focus(), 60);
+}
+function closePiHist() { const s = $('piHist'); if (!s.classList.contains('on')) return; s.classList.remove('on'); s.setAttribute('aria-hidden', 'true'); }
+
+async function piReopen(id) {
+  const b = PIBOOKS.find(x => x.id === id);
+  const reason = await dlg({ title: `Reopen P.I. ${PI.piLabel(b.pi_no, b.fy)}?`, msg: 'It becomes the open P.I. again so you can correct it. The empty P.I. that was opened after it is removed. Write why.', okText: 'Reopen', input: 'Reason, for example: wrong amount entered for one bill', danger: true, minLen: 5 });
+  if (!reason) return;
+  try { await piApi('POST', '', { action: 'reopen', id, reason }); closePiHist(); await loadPi(); }
+  catch (e) { await dlg({ title: 'Could not reopen', msg: e.message, okText: 'OK', noCancel: true }); }
+}
+
+function initPi() {
+  $('tabPay').onclick = () => showView('pay'); $('tabPi').onclick = () => showView('pi');
+  $('piStart').addEventListener('submit', piStartSubmit);
+  ['psStart', 'psImp', 'psOpen'].forEach(id => $(id).addEventListener('input', piStartCalc));
+  $('piForm').addEventListener('submit', piSubmit);
+  $('pfCancel').onclick = piResetForm;
+  $('pfHead').addEventListener('change', piHeadChange);
+  $('piRows').addEventListener('click', piRowClick);
+  let t = null; ['piChq', 'piChqD', 'piHolder'].forEach(id => $(id).addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => PIB && piSave(), 700); }));
+  $('piDl').onclick = piDownload; $('piClose').onclick = piCloseBook;
+  $('piHistBtn').onclick = openPiHist; $('piHistClose').onclick = closePiHist;
+  $('piHist').addEventListener('click', e => { if (e.target === $('piHist')) closePiHist(); });
+  if (EMBED_XLSX.startsWith('/*') && location.hash === '#imprest') showView('pi');
+  if (!EMBED_XLSX.startsWith('/*')) $('tabPi').closest('.seg').hidden = true;   // offline copy: payroll only
+}
+
+initPi();
 init();
 </script>
 </body>
