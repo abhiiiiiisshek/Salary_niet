@@ -1,17 +1,11 @@
-// Reports only a short fingerprint of the templates Vercel is serving (no personal data),
-// so a stale environment variable can be spotted without signing in.
-import crypto from 'node:crypto';
+// Public: only a short fingerprint of the templates being served and where they come from. No personal data.
 import { send } from '../lib/auth.js';
+import { loadTemplates } from '../lib/templates.js';
 
-export default function handler(req, res) {
-  const x = process.env.TEMPLATE_XLSX_B64 || '', d = process.env.TEMPLATE_DOCX_B64 || '';
-  const fp = b => crypto.createHash('sha256').update(b).digest('hex').slice(0, 6).toUpperCase();
-  const xb = Buffer.from(x, 'base64'), db = Buffer.from(d, 'base64');
-  const body = {
-    templateVersion: x && d ? fp(Buffer.concat([xb, db])) : null,
-    xlsx: x ? { version: fp(xb), chars: x.length } : null,
-    docx: d ? { version: fp(db), chars: d.length } : null,
-    deployedCommit: (process.env.VERCEL_GIT_COMMIT_SHA || '').slice(0, 7) || null,
-  };
-  return send(res, 200, 'application/json', JSON.stringify(body));
+export default async function handler(req, res) {
+  const t = loadTemplates();
+  return send(res, 200, 'application/json', JSON.stringify({
+    templateVersion: t.version || null, source: t.source, problem: t.error || null,
+    sealedVersion: (await import('./_sealed.js')).default.version, deployedCommit: (process.env.VERCEL_GIT_COMMIT_SHA || '').slice(0, 7) || null,
+  }));
 }
