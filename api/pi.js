@@ -145,6 +145,18 @@ export default async function handler(req, res) {
       return json(res, 200, { ok: true, book: rows[0] });
     }
 
+    if (b.action === 'delete') {
+      // Only the most recent P.I. can be deleted (keeps the carry-forward chain intact).
+      const id = Number(b.id);
+      const all = await pidb.list();
+      const latest = all.slice().sort((x, z) => (x.start_date < z.start_date ? 1 : x.start_date > z.start_date ? -1 : z.id - x.id))[0];
+      if (!latest || latest.id !== id) return json(res, 409, { error: 'Only the most recent P.I. can be deleted. Delete the newer ones first.' });
+      const label = PI.piLabel(latest.pi_no, latest.fy);
+      if (String(b.confirm || '').trim() !== label) return json(res, 400, { error: `Type ${label} to confirm.` });
+      await pidb.remove(`?id=eq.${id}`);
+      return json(res, 200, { ok: true, deleted: label });
+    }
+
     return json(res, 400, { error: 'Unknown action' });
   } catch (e) {
     return json(res, e.status || 502, { error: e.status ? e.message : 'Database: ' + e.message });

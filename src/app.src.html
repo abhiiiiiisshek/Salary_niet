@@ -1407,19 +1407,39 @@ async function piCloseBook() {
 
 function openPiHist() {
   const latestClosed = PIBOOKS.filter(b => b.status === 'closed').sort((a, z) => a.end_date < z.end_date ? 1 : -1)[0];
+  const newest = PIBOOKS.slice().sort((a, z) => a.start_date < z.start_date ? 1 : a.start_date > z.start_date ? -1 : z.id - a.id)[0];
   $('piHistList').innerHTML = PIBOOKS.length ? PIBOOKS.map(b => {
     const S = PI.summarize(b), open = b.status === 'open';
     return `<div class="vrow"><span class="vt"><b>P.I. ${esc(PI.piLabel(b.pi_no, b.fy))}</b> <span class="badge ${open ? 'draft' : 'final'}">${open ? 'Open' : 'Closed'}</span>
       <small>${esc(PI.dots(b.start_date))} to ${b.end_date ? esc(PI.dots(b.end_date)) : 'now'}, spent ${money(S.spent)}, balance ${money(S.balance)}, ${esc(b.holder)}</small>
       ${(b.reopen_notes || []).map(n => `<span class="why-r">Reopened ${esc(when(n.at))}: “${esc(n.reason)}”</span>`).join('')}</span>
       ${open ? `<button class="pill" data-gen="${b.id}">Excel (draft)</button>` : `<a class="pill" href="/api/pi?download=${b.id}">Excel</a>`}
-      ${latestClosed && b.id === latestClosed.id ? `<button class="pill red" data-reopen="${b.id}">Reopen</button>` : ''}</div>`;
+      ${latestClosed && b.id === latestClosed.id && !(PIB && (PIB.entries || []).length) ? `<button class="pill" data-reopen="${b.id}">Reopen</button>` : ''}
+      ${newest && b.id === newest.id ? `<button class="pill red" data-delete="${b.id}">Delete</button>` : ''}</div>`;
   }).join('') : '<p class="rempty">No P.I.s yet.</p>';
   $('piHistList').querySelectorAll('[data-gen]').forEach(x => x.onclick = piDownload);
   $('piHistList').querySelectorAll('[data-reopen]').forEach(x => x.onclick = () => piReopen(Number(x.dataset.reopen)));
+  $('piHistList').querySelectorAll('[data-delete]').forEach(x => x.onclick = () => piDelete(Number(x.dataset.delete)));
   const s = $('piHist'); s.classList.add('on'); s.setAttribute('aria-hidden', 'false'); setTimeout(() => $('piHistClose').focus(), 60);
 }
 function closePiHist() { const s = $('piHist'); if (!s.classList.contains('on')) return; s.classList.remove('on'); s.setAttribute('aria-hidden', 'true'); }
+
+async function piDelete(id) {
+  const b = PIBOOKS.find(x => x.id === id), label = PI.piLabel(b.pi_no, b.fy), n = (b.entries || []).length;
+  const typed = await dlg({ title: `Delete P.I. ${label}?`,
+    msg: `This permanently removes P.I. ${label}${n ? ` and its ${n} payment${n > 1 ? 's' : ''}` : ''}${b.status === 'closed' ? ' and its saved Excel' : ''}. It can't be undone. Type ${label} to confirm.`,
+    okText: 'Delete', input: label, danger: true, minLen: 1 });
+  if (!typed) return;
+  if (typed.trim() !== label) { await dlg({ title: 'Not deleted', msg: `The text didn't match ${label}.`, okText: 'OK', noCancel: true }); return; }
+  try {
+    await piApi('POST', '', { action: 'delete', id, confirm: typed.trim() });
+    closePiHist(); await loadPi();
+    const prev = PIBOOKS.find(x => x.status === 'closed');
+    await dlg({ title: `P.I. ${label} deleted`, msg: PIBOOKS.length
+      ? (PIB ? `P.I. ${PI.piLabel(PIB.pi_no, PIB.fy)} is open.` : `You can start a new P.I. now${prev ? `, or open All P.I.s to reopen ${PI.piLabel(prev.pi_no, prev.fy)} or delete it too` : ''}.`)
+      : 'The register is empty. Fill in the start form to begin again.', okText: 'OK', noCancel: true });
+  } catch (e) { await dlg({ title: 'Could not delete', msg: e.message, okText: 'OK', noCancel: true }); }
+}
 
 async function piReopen(id) {
   const b = PIBOOKS.find(x => x.id === id);
