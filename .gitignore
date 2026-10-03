@@ -8,3 +8,7 @@ node_modules/
 private/
 *.xlsx
 *.docx
+
+# Data-free style templates are safe to commit
+!pi/pi_template.xlsx
+!travel/travel_template.xlsx
