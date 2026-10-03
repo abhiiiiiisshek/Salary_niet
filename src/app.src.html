@@ -396,6 +396,55 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
 @media (max-width:560px){.nav-in{grid-template-columns:auto 1fr}.nav-in .seg{grid-column:1/-1;grid-row:2;justify-self:center;margin-top:6px}.brand span{display:none}
   .pi-head h1{font-size:28px}.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.stat b{font-size:18px}.amt-row{grid-template-columns:1fr 1fr}.amt-row .fld:first-child{grid-column:1/-1}.ring{width:150px;height:150px}}
 
+/* travel view */
+.tr-hero{display:flex;justify-content:space-between;align-items:center;gap:18px 28px;flex-wrap:wrap;margin-bottom:24px;padding:22px 24px}
+.tr-due small{display:block;color:var(--label-2);font-size:13.5px}
+.tr-due b{display:block;font:700 46px/1.08 var(--font-d);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.tr-due span{color:var(--label-2);font-size:14px}
+.tr-hero-a{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.tr-hero-a p{margin:0;max-width:34ch;font-size:14px;color:var(--label-2)}
+.tr-hero-a p.nudge{color:var(--green);font-weight:600}
+.stepf{display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;padding:14px 0;border-bottom:.5px solid var(--sep)}
+.stepf:last-of-type{border-bottom:0}
+.stepf .n{width:28px;height:28px;border-radius:50%;background:var(--blue-tint);color:var(--blue);font-weight:700;font-size:14px;display:grid;place-items:center;transition:background .2s,color .2s}
+.stepf.filled .n{background:var(--green);color:#fff}
+.stepf .lbl{display:block;font-weight:600;margin:3px 0 9px}
+.stepf .tin{width:100%;height:46px;border-radius:11px;border:.5px solid var(--sep-strong);background:var(--bg);color:var(--label);padding:0 12px;font-size:16px}
+.stepf .tin:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-tint)}
+.mini{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.mini button,.modes button,.datechips button{border:0;border-radius:999px;padding:7px 13px;font-size:13.5px;cursor:pointer;background:color-mix(in srgb,var(--label) 6%,transparent);color:var(--label);transition:transform .12s,background .15s}
+.mini button:hover,.modes button:hover,.datechips button:hover{background:color-mix(in srgb,var(--label) 11%,transparent)}
+.mini button:active,.modes button:active{transform:scale(.96)}
+.modes{display:flex;flex-wrap:wrap;gap:8px}
+.modes button[aria-pressed="true"],.datechips button[aria-pressed="true"]{background:var(--blue);color:#fff;font-weight:600}
+.hintline{font-size:13px;color:var(--label-2);margin:8px 0 0}
+.hintline b{color:var(--label)}
+.proofbox{border:2px dashed var(--sep-strong);border-radius:14px;padding:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--bg)}
+.proofbox.has{border-style:solid;border-color:var(--green)}
+.proofbox .pv{width:76px;height:76px;border-radius:10px;object-fit:cover;flex:none;background:var(--card);display:grid;place-items:center;font-weight:700;color:var(--label-2)}
+.proofbox .pt{flex:1;min-width:150px;font-size:14px;color:var(--label-2)}
+.proofbox .pt b{display:block;color:var(--label)}
+.pbtn{border:0;border-radius:11px;padding:10px 14px;font-size:14.5px;font-weight:600;cursor:pointer;background:var(--blue);color:#fff}
+.pbtn.alt{background:var(--blue-tint);color:var(--blue)}
+.datechips{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.datechips input{height:40px;border-radius:10px;border:.5px solid var(--sep-strong);background:var(--bg);color:var(--label);padding:0 10px;font-size:15px}
+.thumb{width:44px;height:44px;border-radius:10px;object-fit:cover;flex:none;background:var(--bg);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--label-2);border:0;padding:0;cursor:zoom-in}
+.ckrow{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:.5px solid var(--sep);cursor:pointer}
+.ckrow input{width:20px;height:20px;accent-color:var(--blue);flex:none}
+.ckrow .t{flex:1;min-width:0} .ckrow .t small{display:block;color:var(--label-2);font-size:12.5px}
+.ckrow b.amt{font-variant-numeric:tabular-nums}
+.claimtot{display:flex;justify-content:space-between;font-weight:700;font-size:17px;padding:12px 4px 4px}
+.badge.sub{background:color-mix(in srgb,var(--orange) 14%,transparent);color:var(--orange)}
+.badge.paid{background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--green)}
+.dcheck{display:flex;gap:10px;align-items:flex-start;margin:0 4px 8px;font-size:14.5px;cursor:pointer}
+.dcheck input{width:18px;height:18px;margin-top:2px;accent-color:var(--blue)}
+
+.qchip{white-space:normal;max-width:100%;text-align:left}
+#trForm,#piForm,.pi-grid > *{min-width:0;max-width:100%}
+.stepf .amt-in input{width:100%;max-width:260px;height:52px;border-radius:11px;border:.5px solid var(--sep-strong);background:var(--bg);color:var(--label);min-width:0}
+.stepf .amt-in input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-tint)}
+.stepf .amt-in{max-width:260px}
+
 /* template picker (offline fallback) */
 .loader{margin-bottom:24px}
 .loader .row label{flex:1;display:flex;justify-content:space-between;align-items:center;gap:12px}
@@ -426,7 +475,7 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
 <header class="nav">
   <div class="nav-in">
     <div class="brand"><img class="logo" src="data:image/png;base64,/*ICON64*/" alt="" width="26" height="26">NIET Payroll <span>Noida Institute of Education &amp; Technology</span></div>
-    <div class="seg" role="tablist" aria-label="Section"><button role="tab" id="tabPay" aria-selected="true">Payroll</button><button role="tab" id="tabPi" aria-selected="false">Imprest</button></div>
+    <div class="seg" role="tablist" aria-label="Section"><button role="tab" id="tabPay" aria-selected="true">Payroll</button><button role="tab" id="tabPi" aria-selected="false">Imprest</button><button role="tab" id="tabTr" aria-selected="false">Travel</button></div>
     <span><a class="navlink" href="#records" id="recordsLink" hidden>Records</a><a class="navlink" href="/?logout" id="signout" style="margin-left:18px">Sign out</a></span>
   </div>
 </header>
@@ -629,6 +678,76 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
   </div>
 </div>
 
+<main class="page" id="trView" hidden>
+  <div class="pi-head">
+    <div><h1>Travel</h1><div class="sub"><span id="trWho"></span></div></div>
+    <div class="ms-a"><span class="saved" id="trSaved"></span></div>
+  </div>
+  <div class="mstatus" id="trNodb" hidden><span class="ms-ic" aria-hidden="true">!</span><span class="ms-t"><b>Travel needs the records database</b><small>Set up Supabase (SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel) to keep trips and receipts.</small></span></div>
+
+  <div id="trMain" hidden>
+    <section class="card tr-hero" aria-label="To claim">
+      <div class="tr-due"><small>Waiting to be claimed</small><b id="trDue">₹0</b><span id="trDueSub"></span></div>
+      <div class="tr-hero-a"><p id="trHint"></p><button class="go" id="trClaimBtn" style="height:50px;padding:0 24px">Create claim</button></div>
+    </section>
+
+    <div class="pi-grid">
+      <form class="card" id="trForm" autocomplete="off" novalidate>
+        <h2><span id="trfTitle">Add a trip</span><small>Fill the 6 steps, then save</small></h2>
+        <div class="quick" id="trRepeat" aria-label="Same as an earlier trip"></div>
+        <div class="stepf" id="st1"><span class="n">1</span><div>
+          <label class="lbl" for="tfTo">Where did you go?</label>
+          <input class="tin" id="tfTo" list="tfToList" placeholder="e.g. CCS University, Meerut"><datalist id="tfToList"></datalist>
+          <div class="mini" id="tfToChips"></div><p class="hintline" id="tfToHint" hidden></p></div></div>
+        <div class="stepf" id="st2"><span class="n">2</span><div>
+          <label class="lbl" for="tfWhy">What work was it for?</label>
+          <input class="tin" id="tfWhy" list="tfWhyList" placeholder="e.g. Exam forms submission"><datalist id="tfWhyList"></datalist>
+          <div class="mini" id="tfWhyChips"></div></div></div>
+        <div class="stepf" id="st3"><span class="n">3</span><div>
+          <span class="lbl">How did you travel?</span><div class="modes" id="tfModes" role="group" aria-label="Mode of travel"></div><input type="hidden" id="tfMode"></div></div>
+        <div class="stepf" id="st4"><span class="n">4</span><div>
+          <label class="lbl" for="tfAmt">How much did you pay in total?</label>
+          <div class="amt-in"><span>₹</span><input id="tfAmt" type="number" min="1" step="0.01" inputmode="decimal" placeholder="0"></div>
+          <p class="hintline">Both ways together, if you came back the same way.</p></div></div>
+        <div class="stepf" id="st5"><span class="n">5</span><div>
+          <span class="lbl">Proof of payment</span>
+          <div class="proofbox" id="tfProof">
+            <span class="pv" id="tfPv">?</span>
+            <span class="pt" id="tfPt"><b>Add a photo of the ticket or the UPI payment screenshot</b>JPG, PNG or PDF</span>
+            <span style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="pbtn" id="tfCamBtn">Take photo</button><button type="button" class="pbtn alt" id="tfFileBtn">Choose file</button></span>
+          </div>
+          <input type="file" id="tfCam" accept="image/*" capture="environment" hidden><input type="file" id="tfFile" accept="image/*,application/pdf" hidden></div></div>
+        <div class="stepf" id="st6"><span class="n">6</span><div>
+          <span class="lbl">When?</span>
+          <div class="datechips"><button type="button" data-ago="0">Today</button><button type="button" data-ago="1">Yesterday</button><input type="date" id="tfDate" aria-label="Trip date"></div></div></div>
+        <div class="add-actions" style="margin-top:14px"><button class="go" type="submit" id="tfBtn" style="height:50px;padding:0 28px">Save trip</button><button class="cancel-edit" type="button" id="tfCancel" hidden>Cancel</button></div>
+        <p class="formerr" id="tfErr" role="alert"></p>
+      </form>
+
+      <div class="side-stack">
+        <section class="card" aria-labelledby="tr-p-h"><h2 id="tr-p-h"><span>Not claimed yet</span><small id="trPendNote"></small></h2><div id="trPending"></div></section>
+        <section class="card" aria-labelledby="tr-c-h"><h2 id="tr-c-h"><span>Claims</span><small id="trClaimNote"></small></h2><div id="trClaims"></div></section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="scrim" id="trClaim" aria-hidden="true">
+  <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="trc-title">
+    <div class="grabber"></div>
+    <div class="rec-h"><h3 id="trc-title">New travel claim</h3></div>
+    <div class="group" style="margin-bottom:14px">
+      <label class="row"><span class="k">Claimant</span><input id="tcName"></label>
+      <label class="row"><span class="k">Designation</span><input id="tcDesig" value="Office Assistant"></label>
+      <label class="row"><span class="k">Claim date</span><input id="tcDate" type="date"></label>
+    </div>
+    <p class="group-h">Trips in this claim</p>
+    <div class="card" style="padding:6px 14px"><div id="tcList"></div><div class="claimtot"><span>Total</span><span id="tcTotal">₹0</span></div></div>
+    <p class="formerr" id="tcErr"></p>
+    <div class="dlg"><div class="btns"><button class="cancel" id="tcCancel" type="button">Cancel</button><button class="ok" id="tcOk" type="button">Create claim</button></div></div>
+  </div>
+</div>
+
 <div class="scrim" id="piHist" aria-hidden="true">
   <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="pih-title">
     <div class="grabber"></div>
@@ -679,6 +798,7 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
     <h3 id="dtitle"></h3>
     <p id="dmsg"></p>
     <textarea id="dinput" hidden></textarea>
+    <label class="dcheck" id="dcheckWrap" hidden><input type="checkbox" id="dcheck"><span id="dcheckTxt"></span></label>
     <input id="ddate" type="date" hidden style="width:100%;height:44px;border-radius:12px;border:.5px solid var(--sep-strong);background:var(--card);color:var(--label);padding:0 12px;font:inherit">
     <p class="derr" id="derr"></p>
     <div class="btns"><button class="cancel" id="dcancel">Cancel</button><button class="ok" id="dok">OK</button></div>
@@ -688,6 +808,7 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
 <script>/*JSZIP*/</script>
 <script>/*ENGINE*/</script>
 <script>/*PIENGINE*/</script>
+<script>/*TRVENGINE*/</script>
 <script>
 // Templates hold salaries and bank accounts, so they are NOT in this file or the public repo.
 // On Vercel they come from /api/templates (after sign-in). Offline builds may embed them.
@@ -718,7 +839,7 @@ function init() {
   $('pick').addEventListener('submit', usePickedFiles);
   $('close').addEventListener('click', closeSheet);
   $('scrim').addEventListener('click', e => { if (e.target === $('scrim')) closeSheet(); });
-  document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if ($('dscrim').classList.contains('on')) return dlgClose(false); if ($('rscrim').classList.contains('on')) return closeRecords(); if ($('piHist').classList.contains('on')) return closePiHist(); closeSheet(); });
+  document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if ($('dscrim').classList.contains('on')) return dlgClose(false); if ($('rscrim').classList.contains('on')) return closeRecords(); if ($('piHist').classList.contains('on')) return closePiHist(); if ($('trClaim').classList.contains('on')) return closeClaimSheet(); closeSheet(); });
   $('recordsLink').addEventListener('click', e => { e.preventDefault(); openRecords(); });
   $('rclose').addEventListener('click', closeRecords);
   $('rscrim').addEventListener('click', e => { if (e.target === $('rscrim')) closeRecords(); });
@@ -1030,6 +1151,7 @@ function dlg(o) {
   $('dok').textContent = o.okText || 'OK'; $('dok').className = 'ok' + (o.danger ? ' red' : '');
   $('dcancel').hidden = !!o.noCancel; $('derr').textContent = '';
   const t = $('dinput'); t.hidden = !o.input; t.value = ''; t.placeholder = o.input || '';
+  $('dcheckWrap').hidden = !o.check; if (o.check) { $('dcheck').checked = !!o.check.checked; $('dcheckTxt').textContent = o.check.label; }
   const dd = $('ddate'); dd.hidden = !o.date; if (o.date) { dd.value = o.date.value || ''; dd.min = o.date.min || ''; }
   const s = $('dscrim'); s.classList.add('on'); s.setAttribute('aria-hidden', 'false');
   setTimeout(() => (o.input ? t : o.date ? dd : $('dok')).focus(), 60);
@@ -1048,6 +1170,7 @@ function dlgClose(ok) {
     if (!v || (o.date.min && v < o.date.min)) { $('derr').textContent = 'Choose a valid date' + (o.date.min ? ` (on or after ${PI.dots(o.date.min)})` : '') + '.'; return; }
     ok = v;
   }
+  if (ok && o.check) ok = { checked: $('dcheck').checked };
   DLG = null; const s = $('dscrim'); s.classList.remove('on'); s.setAttribute('aria-hidden', 'true');
   res(ok);
 }
@@ -1102,13 +1225,15 @@ const money = n => '₹' + PAS.indianCommas(Math.floor(Math.abs(n))) + (Math.rou
 const todayISO = () => PI.iso(new Date());
 
 function showView(v) {
-  const pi = v === 'pi';
-  $('payView').hidden = pi; $('payBar').hidden = pi;
-  $('piView').hidden = !pi;
-  $('tabPay').setAttribute('aria-selected', String(!pi)); $('tabPi').setAttribute('aria-selected', String(pi));
-  $('recordsLink').style.visibility = pi ? 'hidden' : '';
-  history.replaceState(null, '', pi ? '#imprest' : location.pathname + location.search);
-  if (pi) loadPi(); else $('piBarTool').hidden = true;
+  const pay = v === 'pay', pi = v === 'pi', tr = v === 'tr';
+  $('payView').hidden = !pay; $('payBar').hidden = !pay;
+  $('piView').hidden = !pi; $('trView').hidden = !tr;
+  $('tabPay').setAttribute('aria-selected', String(pay)); $('tabPi').setAttribute('aria-selected', String(pi)); $('tabTr').setAttribute('aria-selected', String(tr));
+  $('recordsLink').style.visibility = pay ? '' : 'hidden';
+  history.replaceState(null, '', pi ? '#imprest' : tr ? '#travel' : location.pathname + location.search);
+  if (!pi) $('piBarTool').hidden = true;
+  if (pi) loadPi();
+  if (tr) loadTr();
 }
 
 async function piApi(method, qs, body) {
@@ -1465,7 +1590,281 @@ function initPi() {
   if (!EMBED_XLSX.startsWith('/*')) $('tabPi').closest('.seg').hidden = true;   // offline copy: payroll only
 }
 
+/* ================= Travel ================= */
+const TRVTPL_B64 = "/*TRVTPL*/";
+const TR_PLACES = ['CCS University, Meerut', 'Samaj Kalyan Vibhag', 'Indian Bank, Sector 51, Noida', 'Post Office'];
+const TR_WORK = ['Exam forms submission', 'Scholarship work', 'Staff approval', 'Document submission', 'Bank work', 'Collecting letters or results'];
+let TRIPS = [], CLAIMS = [], TREDIT = null, PROOF = null, TRFLASH = null;
+const lsGet = k => { try { return localStorage.getItem(k); } catch { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+const claimantName = () => lsGet('trClaimant') || ('Ms. ' + ((PIB && PIB.holder) || 'Anshu').replace(/^(Ms|Mrs|Mr|Smt)\.?\s*/i, ''));
+
+async function trApi(method, qs, body) {
+  const r = await fetch('/api/travel' + (qs || ''), { method, credentials: 'same-origin', cache: 'no-store',
+    headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });
+  let j = {}; try { j = await r.json(); } catch {}
+  if (!r.ok) throw new Error(j.error || 'Request failed (' + r.status + ')');
+  return j;
+}
+
+async function loadTr() {
+  try {
+    const j = await trApi('GET');
+    if (!j.configured) { $('trNodb').hidden = false; $('trMain').hidden = true; return; }
+    $('trNodb').hidden = true; $('trMain').hidden = false;
+    TRIPS = j.trips || []; CLAIMS = j.claims || [];
+    renderTr();
+    if (!TREDIT && !$('tfDate').value) setTripDate(0);
+  } catch (e) {
+    $('trNodb').hidden = false; $('trNodb').querySelector('b').textContent = 'Could not load travel'; $('trNodb').querySelector('small').textContent = e.message;
+  }
+}
+
+const tripLine = t => `${PI.dots(t.trip_date)}, ${t.mode ? t.mode + ', ' : ''}${t.purpose}`;
+function freq(list, key) { const m = new Map(); list.forEach(x => { const k = key(x); if (k) m.set(k, (m.get(k) || 0) + 1); }); return [...m.entries()].sort((a, z) => z[1] - a[1]).map(x => x[0]); }
+const thumbHtml = t => t.proof_mime === 'application/pdf'
+  ? `<button type="button" class="thumb" data-proof="${t.id}" aria-label="Open proof">PDF</button>`
+  : `<button type="button" class="thumb" data-proof="${t.id}" aria-label="Open proof" style="background:center/cover no-repeat url('/api/travel?proof=${t.id}')"></button>`;
+
+function renderTr() {
+  $('trWho').textContent = `${claimantName()}, travel for office work`;
+  const pend = TRIPS.filter(t => !t.claim_id).sort((a, z) => a.trip_date < z.trip_date ? 1 : -1);
+  const due = PI.r2(pend.reduce((t, x) => t + Number(x.amount), 0));
+  $('trDue').textContent = money(due);
+  const oldest = pend.length ? pend[pend.length - 1].trip_date : null;
+  $('trDueSub').textContent = pend.length ? `${pend.length} trip${pend.length > 1 ? 's' : ''} since ${PI.dots(oldest)}` : 'No trips waiting';
+  const days = oldest ? Math.round((Date.now() - PI.parseISO(oldest)) / 864e5) : 0;
+  const hint = $('trHint');
+  if (!pend.length) { hint.className = ''; hint.textContent = 'Add each trip the same day, with its ticket or payment screenshot.'; }
+  else if (due >= 1000 || days >= 25) { hint.className = 'nudge'; hint.textContent = `Good time to claim: ${due >= 1000 ? money(due) + ' has piled up' : 'the oldest trip is ' + days + ' days old'}.`; }
+  else { hint.className = ''; hint.textContent = 'Claim whenever you like. Most people claim once a month.'; }
+  $('trClaimBtn').disabled = !pend.length;
+
+  $('trPendNote').textContent = pend.length ? `${pend.length}, ${money(due)}` : '';
+  $('trPending').innerHTML = pend.length ? pend.map(t => `<div class="tx${TRFLASH === t.id ? ' flash' : ''}" data-id="${t.id}">${thumbHtml(t)}
+      <span class="t"><b>${esc(t.to_place)}</b><small>${esc(tripLine(t))}</small></span>
+      <span class="a"><b>${money(t.amount)}</b><span class="acts"><button class="link" data-tedit="${t.id}">Edit</button><button class="link red" data-tdel="${t.id}">Delete</button></span></span></div>`).join('')
+    : `<div class="empty-state"><div class="big">🚌</div>Nothing waiting.<br>Trips you add appear here until you claim them.</div>`;
+  TRFLASH = null;
+
+  $('trClaimNote').textContent = CLAIMS.length ? `${CLAIMS.length}` : '';
+  $('trClaims').innerHTML = CLAIMS.length ? CLAIMS.map(c => {
+    const n = TRIPS.filter(t => t.claim_id === c.id).length, label = TRV.claimLabel(c.claim_no, c.fy);
+    return `<div class="vrow" style="padding:12px 2px"><span class="vt"><b>${esc(label)}</b> <span class="badge ${c.status === 'paid' ? 'paid' : 'sub'}">${c.status === 'paid' ? 'Paid' : 'Submitted'}</span>
+      <small>${money(c.total)}, ${n} trip${n === 1 ? '' : 's'}, ${esc(PI.dots(c.claim_date))}</small>${c.paid_note ? `<span class="why-r">${esc(c.paid_note)}</span>` : ''}</span>
+      <span style="display:flex;gap:6px;flex-wrap:wrap"><a class="pill" href="/api/travel?claim=${c.id}">Excel</a><button class="pill" data-rcpt="${c.id}">Receipts</button>
+      ${c.status === 'submitted' ? `<button class="pill green" data-paid="${c.id}">Mark paid</button><button class="pill red" data-cancel="${c.id}">Cancel</button>` : ''}</span></div>`;
+  }).join('') : '<p style="margin:0;color:var(--label-2);font-size:14px">Claims you create appear here, ready to print again.</p>';
+  renderTrChips();
+}
+
+function renderTrChips() {
+  const combos = new Map();
+  TRIPS.slice().sort((a, z) => a.trip_date < z.trip_date ? 1 : -1).forEach(t => { const k = (t.to_place + '|' + t.purpose).toLowerCase(); if (!combos.has(k)) combos.set(k, { t, n: 0 }); combos.get(k).n++; });
+  const reps = [...combos.values()].sort((a, z) => z.n - a.n).slice(0, 4);
+  $('trRepeat').innerHTML = reps.map((r, i) => `<button type="button" class="qchip" data-rep="${i}">↺ ${esc(r.t.to_place)}, ${esc(r.t.purpose)} <em>${money(r.t.amount)}</em></button>`).join('');
+  $('trRepeat').querySelectorAll('[data-rep]').forEach(b => b.onclick = () => {
+    const t = reps[Number(b.dataset.rep)].t;
+    $('tfTo').value = t.to_place; $('tfWhy').value = t.purpose; setMode(t.mode || ''); $('tfAmt').value = t.amount; toHint(); trSteps();
+    $('tfErr').style.color = 'var(--label-2)'; $('tfErr').textContent = 'Filled from your earlier trip. Now add today’s proof of payment.';
+  });
+  const places = [...new Set([...freq(TRIPS, t => t.to_place), ...TR_PLACES])].slice(0, 6);
+  const works = [...new Set([...freq(TRIPS, t => t.purpose), ...TR_WORK])].slice(0, 6);
+  $('tfToList').innerHTML = places.map(p => `<option value="${esc(p)}">`).join('');
+  $('tfWhyList').innerHTML = works.map(p => `<option value="${esc(p)}">`).join('');
+  $('tfToChips').innerHTML = places.map(p => `<button type="button" data-v="${esc(p)}">${esc(p)}</button>`).join('');
+  $('tfWhyChips').innerHTML = works.map(p => `<button type="button" data-v="${esc(p)}">${esc(p)}</button>`).join('');
+  $('tfToChips').querySelectorAll('button').forEach(b => b.onclick = () => { $('tfTo').value = b.dataset.v; toHint(true); trSteps(); $('tfWhy').focus(); });
+  $('tfWhyChips').querySelectorAll('button').forEach(b => b.onclick = () => { $('tfWhy').value = b.dataset.v; trSteps(); });
+  const cur = $('tfMode').value;
+  $('tfModes').innerHTML = TRV.MODES.map(m => `<button type="button" aria-pressed="${m === cur}" data-m="${m}">${m}</button>`).join('');
+  $('tfModes').querySelectorAll('button').forEach(b => b.onclick = () => { setMode(b.dataset.m); trSteps(); $('tfAmt').focus(); });
+}
+function setMode(m) { $('tfMode').value = m || ''; $('tfModes').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === m))); }
+function toHint(fill) {
+  const to = $('tfTo').value.trim().toLowerCase(), h = $('tfToHint');
+  const last = TRIPS.filter(t => t.to_place.toLowerCase() === to).sort((a, z) => a.trip_date < z.trip_date ? 1 : -1)[0];
+  if (!last) { h.hidden = true; return; }
+  h.hidden = false; h.innerHTML = `Last time: <b>${esc(last.mode || 'travel')}, ${money(last.amount)}</b> on ${PI.dots(last.trip_date)}.`;
+  if (fill) { if (!$('tfMode').value && last.mode) setMode(last.mode); if (!$('tfAmt').value) $('tfAmt').value = last.amount; }
+}
+function setTripDate(ago) {
+  const d = new Date(); d.setDate(d.getDate() - ago); $('tfDate').value = PI.iso(d); dateChips(); trSteps();
+}
+function dateChips() {
+  const v = $('tfDate').value, t = new Date(), y = new Date(); y.setDate(y.getDate() - 1);
+  $('trForm').querySelectorAll('[data-ago]').forEach(b => b.setAttribute('aria-pressed', String(v === PI.iso(b.dataset.ago === '0' ? t : y))));
+}
+function trSteps() {
+  const ok = [!!$('tfTo').value.trim(), !!$('tfWhy').value.trim(), !!$('tfMode').value, Number($('tfAmt').value) > 0, !!(PROOF || (TREDIT && TRIPS.find(t => t.id === TREDIT)?.proof_mime)), !!$('tfDate').value];
+  ok.forEach((v, i) => $('st' + (i + 1)).classList.toggle('filled', v));
+  return ok;
+}
+
+async function compressImage(file) {
+  let bmp;
+  try { bmp = await createImageBitmap(file); }
+  catch { bmp = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('This photo type can’t be read. Take a screenshot of it, or save it as JPG.')); i.src = URL.createObjectURL(file); }); }
+  const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  return await new Promise(res => c.toBlob(res, 'image/jpeg', 0.82));
+}
+async function pickProof(file) {
+  if (!file) return;
+  $('tfErr').textContent = '';
+  try {
+    let blob = file, mime = file.type;
+    if (mime === 'application/pdf') { if (file.size > 2.5e6) throw new Error('This PDF is larger than 2.5 MB. Take a screenshot of it instead.'); }
+    else if (/^image\//.test(mime) || /\.(heic|heif)$/i.test(file.name)) { blob = await compressImage(file); mime = 'image/jpeg'; }
+    else throw new Error('Choose a photo or a PDF.');
+    PROOF = { mime, b64: await blobB64(blob), name: file.name.replace(/\.[^.]+$/, '') + (mime === 'image/jpeg' ? '.jpg' : '.pdf') };
+    showProof(mime === 'application/pdf' ? null : URL.createObjectURL(blob), PROOF.name, mime === 'application/pdf');
+  } catch (e) { $('tfErr').style.color = ''; $('tfErr').textContent = e.message; }
+  trSteps();
+}
+function showProof(url, name, isPdf) {
+  const pv = $('tfPv'); $('tfProof').classList.add('has');
+  pv.style.background = url ? `center/cover no-repeat url('${url}')` : ''; pv.textContent = url ? '' : (isPdf ? 'PDF' : '✓');
+  $('tfPt').innerHTML = `<b>Proof added ✓</b>${esc(name || '')}`;
+  $('tfCamBtn').textContent = 'Retake'; $('tfFileBtn').textContent = 'Change file';
+}
+function clearProof() {
+  PROOF = null; $('tfProof').classList.remove('has'); $('tfPv').style.background = ''; $('tfPv').textContent = '?';
+  $('tfPt').innerHTML = '<b>Add a photo of the ticket or the UPI payment screenshot</b>JPG, PNG or PDF';
+  $('tfCamBtn').textContent = 'Take photo'; $('tfFileBtn').textContent = 'Choose file'; $('tfCam').value = ''; $('tfFile').value = '';
+}
+function trResetForm() {
+  TREDIT = null; $('trForm').classList.remove('editing'); $('trfTitle').textContent = 'Add a trip'; $('tfBtn').textContent = 'Save trip'; $('tfCancel').hidden = true;
+  ['tfTo', 'tfWhy', 'tfAmt'].forEach(id => $(id).value = ''); setMode(''); clearProof(); $('tfToHint').hidden = true; $('tfErr').textContent = '';
+  setTripDate(0);
+}
+
+async function trSubmit(ev) {
+  ev.preventDefault();
+  const err = $('tfErr'); err.style.color = '';
+  const ok = trSteps();
+  const names = ['where you went', 'what work it was for', 'how you travelled', 'how much you paid', 'the proof of payment (photo or screenshot)', 'the date'];
+  const miss = ok.map((v, i) => v ? null : names[i]).filter(Boolean);
+  if (miss.length) { err.textContent = 'Please add ' + miss.join(', ') + '.'; const first = ok.indexOf(false); $('st' + (first + 1)).scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); return; }
+  if ($('tfDate').value > todayISO()) { err.textContent = 'The date is in the future. Choose the day you travelled.'; return; }
+  $('tfBtn').disabled = true; $('tfBtn').textContent = 'Saving…';
+  try {
+    const body = { action: TREDIT ? 'update_trip' : 'add_trip', id: TREDIT, trip_date: $('tfDate').value, to_place: $('tfTo').value, purpose: $('tfWhy').value, mode: $('tfMode').value, amount: Number($('tfAmt').value), proof: PROOF || undefined };
+    const j = await trApi('POST', '', body);
+    TRFLASH = j.trip && j.trip.id; $('trSaved').textContent = (TREDIT ? 'Updated' : 'Trip saved') + ' ✓';
+    trResetForm(); await loadTr();
+  } catch (e) { err.textContent = e.message; }
+  finally { $('tfBtn').disabled = false; $('tfBtn').textContent = TREDIT ? 'Save changes' : 'Save trip'; }
+}
+
+async function trListClick(ev) {
+  const pv = ev.target.closest('[data-proof]'), ed = ev.target.closest('[data-tedit]'), del = ev.target.closest('[data-tdel]');
+  if (pv) { window.open('/api/travel?proof=' + pv.dataset.proof, '_blank', 'noopener'); return; }
+  if (ed) {
+    const t = TRIPS.find(x => x.id === Number(ed.dataset.tedit)); TREDIT = t.id; clearProof();
+    $('tfTo').value = t.to_place; $('tfWhy').value = t.purpose; setMode(t.mode || ''); $('tfAmt').value = t.amount; $('tfDate').value = t.trip_date; dateChips();
+    if (t.proof_mime) showProof(t.proof_mime === 'application/pdf' ? null : '/api/travel?proof=' + t.id, t.proof_name + ' (saved)', t.proof_mime === 'application/pdf');
+    $('trForm').classList.add('editing'); $('trfTitle').textContent = 'Edit trip'; $('tfBtn').textContent = 'Save changes'; $('tfCancel').hidden = false; trSteps();
+    $('trForm').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }
+  if (del) {
+    const t = TRIPS.find(x => x.id === Number(del.dataset.tdel));
+    if (!await dlg({ title: 'Delete this trip?', msg: `${t.to_place}, ${tripLine(t)}, ${money(t.amount)}. Its proof is deleted too.`, okText: 'Delete', danger: true })) return;
+    try { await trApi('POST', '', { action: 'delete_trip', id: t.id }); if (TREDIT === t.id) trResetForm(); $('trSaved').textContent = 'Deleted ✓'; loadTr(); }
+    catch (e) { dlg({ title: 'Could not delete', msg: e.message, okText: 'OK', noCancel: true }); }
+  }
+}
+
+/* ---- claims ---- */
+function openClaimSheet() {
+  const pend = TRIPS.filter(t => !t.claim_id).sort((a, z) => a.trip_date < z.trip_date ? -1 : 1);
+  $('tcName').value = claimantName(); $('tcDate').value = todayISO(); $('tcErr').textContent = '';
+  $('tcList').innerHTML = pend.map(t => `<label class="ckrow"><input type="checkbox" value="${t.id}" checked><span class="t">${esc(t.to_place)}<small>${esc(tripLine(t))}</small></span><b class="amt">${money(t.amount)}</b></label>`).join('');
+  $('tcList').onchange = tcTotal; tcTotal();
+  const s = $('trClaim'); s.classList.add('on'); s.setAttribute('aria-hidden', 'false'); setTimeout(() => $('tcOk').focus(), 60);
+}
+function closeClaimSheet() { const s = $('trClaim'); if (!s.classList.contains('on')) return; s.classList.remove('on'); s.setAttribute('aria-hidden', 'true'); }
+function tcPicked() { return [...$('tcList').querySelectorAll('input:checked')].map(i => Number(i.value)); }
+function tcTotal() {
+  const ids = tcPicked(), tot = TRIPS.filter(t => ids.includes(t.id)).reduce((a, t) => a + Number(t.amount), 0);
+  $('tcTotal').textContent = money(tot); $('tcOk').disabled = !ids.length; $('tcOk').textContent = ids.length ? `Create claim for ${money(tot)}` : 'Choose trips';
+}
+function receiptWindow() { const w = window.open('', '_blank'); if (w) w.document.write('<p style="font:16px system-ui;padding:24px">Preparing receipts…</p>'); return w; }
+function fillReceipts(w, claim, trips) {
+  if (!w) return;
+  const label = TRV.claimLabel(claim.claim_no, claim.fy);
+  const items = trips.map((t, i) => `<figure><figcaption><b>R${i + 1}</b> ${esc(PI.dots(t.trip_date))}, ${esc(t.to_place)}, ${esc(t.purpose)}, ${esc(money(t.amount))}</figcaption>${t.proof_mime === 'application/pdf'
+      ? `<p class="pdf">PDF receipt: <a href="/api/travel?proof=${t.id}" target="_blank">open and print separately</a></p>` : `<img src="/api/travel?proof=${t.id}" alt="Receipt R${i + 1}">`}</figure>`).join('');
+  w.document.open();
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Receipts ${esc(label)}</title><style>
+    body{font:14px/1.4 "Times New Roman",serif;margin:24px;color:#000} h1{font-size:18px;margin:0 0 4px} p.m{margin:0 0 16px}
+    figure{margin:0 0 18px;break-inside:avoid;border:1px solid #999;padding:10px} figcaption{margin-bottom:8px}
+    img{max-width:100%;max-height:420px;display:block;margin:auto} .pdf{color:#555} @media print{a{color:#000}}</style></head><body>
+    <h1>Proofs of payment, claim ${esc(label)}</h1><p class="m">${esc(claim.claimant)}, ${esc(claim.designation)}. ${trips.length} receipt${trips.length > 1 ? 's' : ''}, total ${esc(money(claim.total))}.</p>${items}
+    <script>Promise.all([...document.images].map(i=>i.complete?1:new Promise(r=>{i.onload=i.onerror=r}))).then(()=>setTimeout(()=>print(),300))<\/script></body></html>`);
+  w.document.close();
+}
+const claimTrips = c => TRIPS.filter(t => t.claim_id === c.id).sort((a, z) => a.trip_date < z.trip_date ? -1 : a.trip_date > z.trip_date ? 1 : a.id - z.id);
+
+async function createClaim() {
+  const ids = tcPicked(); if (!ids.length) return;
+  const name = $('tcName').value.trim(); if (!name) { $('tcErr').textContent = 'Write the claimant name.'; return; }
+  lsSet('trClaimant', name);
+  const w = receiptWindow();
+  $('tcOk').disabled = true; $('tcOk').textContent = 'Creating…';
+  try {
+    const j = await trApi('POST', '', { action: 'create_claim', trip_ids: ids, claimant: name, designation: $('tcDesig').value, claim_date: $('tcDate').value });
+    const trips = j.trips.slice().sort((a, z) => a.trip_date < z.trip_date ? -1 : a.trip_date > z.trip_date ? 1 : a.id - z.id);
+    const out = await TRV.buildClaimExcel(JSZip, b64(TRVTPL_B64), { ...j.claim, date: j.claim.claim_date,
+      trips: trips.map((t, i) => ({ date: t.trip_date, from: t.from_place, to: t.to_place, purpose: t.purpose, mode: t.mode, amount: t.amount, proofRef: 'R' + (i + 1) })) });
+    await trApi('POST', '', { action: 'attach_excel', id: j.claim.id, xlsx_b64: await blobB64(out.blob), xlsx_name: out.name });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(out.blob); a.download = out.name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    fillReceipts(w, j.claim, trips);
+    closeClaimSheet(); await loadTr();
+    dlg({ title: `Claim ${TRV.claimLabel(j.claim.claim_no, j.claim.fy)} created ✓`, msg: `The claim form (Excel) is downloading and the receipts are open to print. Print both, sign the form, and submit them. When the money is paid, press Mark paid.`, okText: 'OK', noCancel: true });
+  } catch (e) { if (w) w.close(); $('tcErr').textContent = e.message; }
+  finally { tcTotal(); }
+}
+
+async function trClaimsClick(ev) {
+  const rc = ev.target.closest('[data-rcpt]'), pd = ev.target.closest('[data-paid]'), cn = ev.target.closest('[data-cancel]');
+  if (rc) { const c = CLAIMS.find(x => x.id === Number(rc.dataset.rcpt)); fillReceipts(receiptWindow(), c, claimTrips(c)); }
+  if (pd) {
+    const c = CLAIMS.find(x => x.id === Number(pd.dataset.paid)), label = TRV.claimLabel(c.claim_no, c.fy);
+    const r = await dlg({ title: `Mark ${label} as paid?`, msg: `${money(c.total)} to ${c.claimant}.`, okText: 'Mark paid', check: { label: 'Also enter it in the open P.I. as a Conveyance A/c payment (next sanction number)', checked: true } });
+    if (!r) return;
+    try { const j = await trApi('POST', '', { action: 'mark_paid', id: c.id, add_to_pi: r.checked }); $('trSaved').textContent = 'Marked paid ✓'; await loadTr();
+      if (r.checked) dlg({ title: 'Paid ✓', msg: `${j.claim.paid_note}. You can see it in the Imprest tab.`, okText: 'OK', noCancel: true }); }
+    catch (e) { dlg({ title: 'Not marked paid', msg: e.message, okText: 'OK', noCancel: true }); }
+  }
+  if (cn) {
+    const c = CLAIMS.find(x => x.id === Number(cn.dataset.cancel)), label = TRV.claimLabel(c.claim_no, c.fy);
+    if (!await dlg({ title: `Cancel ${label}?`, msg: 'Its trips go back to "Not claimed yet" so you can fix them and claim again. The claim number is freed.', okText: 'Cancel claim', danger: true })) return;
+    try { await trApi('POST', '', { action: 'cancel_claim', id: c.id }); $('trSaved').textContent = 'Claim cancelled ✓'; loadTr(); }
+    catch (e) { dlg({ title: 'Could not cancel', msg: e.message, okText: 'OK', noCancel: true }); }
+  }
+}
+
+function initTr() {
+  $('tabTr').onclick = () => showView('tr');
+  $('trForm').addEventListener('submit', trSubmit);
+  $('tfCancel').onclick = trResetForm;
+  $('tfCamBtn').onclick = () => $('tfCam').click(); $('tfFileBtn').onclick = () => $('tfFile').click();
+  $('tfCam').onchange = e => pickProof(e.target.files[0]); $('tfFile').onchange = e => pickProof(e.target.files[0]);
+  ['tfTo', 'tfWhy', 'tfAmt'].forEach(id => $(id).addEventListener('input', trSteps));
+  $('tfTo').addEventListener('change', () => toHint(true));
+  $('tfDate').addEventListener('change', () => { dateChips(); trSteps(); });
+  $('trForm').querySelectorAll('[data-ago]').forEach(b => b.onclick = () => setTripDate(Number(b.dataset.ago)));
+  $('trPending').addEventListener('click', trListClick);
+  $('trClaims').addEventListener('click', trClaimsClick);
+  $('trClaimBtn').onclick = openClaimSheet; $('tcCancel').onclick = closeClaimSheet; $('tcOk').onclick = createClaim;
+  $('trClaim').addEventListener('click', e => { if (e.target === $('trClaim')) closeClaimSheet(); });
+  if (EMBED_XLSX.startsWith('/*') && location.hash === '#travel') showView('tr');
+}
+
 initPi();
+initTr();
 init();
 </script>
 </body>

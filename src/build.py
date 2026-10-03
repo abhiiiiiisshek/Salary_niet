@@ -8,6 +8,8 @@ h = (S / 'app.src.html').read_text()
 h = h.replace('/*JSZIP*/', (S / 'jszip.min.js').read_text().replace('</script', '<\\/script'), 1)
 h = h.replace('/*ENGINE*/', (S / 'engine.js').read_text(), 1)
 h = h.replace('/*PIENGINE*/', (R / 'pi' / 'pi-engine.js').read_text(), 1)
+h = h.replace('/*TRVENGINE*/', (R / 'travel' / 'travel-engine.js').read_text(), 1)
+h = h.replace('/*TRVTPL*/', base64.b64encode((R / 'travel' / 'travel_template.xlsx').read_bytes()).decode(), 1)
 h = h.replace('/*PITPL*/', base64.b64encode((R / 'pi' / 'pi_template.xlsx').read_bytes()).decode(), 1)
 for k in ('64', '32'):
     h = h.replace('/*ICON' + k + '*/', base64.b64encode((S / f'icon-{k}.png').read_bytes()).decode())
