@@ -1,4 +1,4 @@
-// Travel (conveyance) expenses: trips with proof of payment, grouped into numbered claims (TC-001/2026-27),
+// Travel (conveyance) expenses: trips with optional proof of payment, grouped into numbered claims (TC-001/2026-27),
 // which can be marked paid and, optionally, entered in the open P.I. under "Conveyance A/c".
 import { loggedIn, send } from '../lib/auth.js';
 import { dbConfigured, trdb, pidb } from '../lib/db.js';
@@ -88,11 +88,13 @@ export default async function handler(req, res) {
     const b = await readJson(req);
 
     if (b.action === 'add_trip') {
+      // proof of payment is optional; it can also be added later by editing the trip
       const f = tripFields(b), p = proofOf(b);
-      if (!p) return json(res, 400, { error: 'Add a photo of the ticket or payment screenshot as proof.' });
-      const trip = await trdb.addTrip({ ...f, proof_name: p.name, proof_mime: p.mime });
-      try { await trdb.putProof({ trip_id: trip.id, mime: p.mime, b64: p.b64, thumb_b64: p.thumb }); }
-      catch (e) { await trdb.delTrip(trip.id); throw e; }
+      const trip = await trdb.addTrip({ ...f, proof_name: p ? p.name : null, proof_mime: p ? p.mime : null });
+      if (p) {
+        try { await trdb.putProof({ trip_id: trip.id, mime: p.mime, b64: p.b64, thumb_b64: p.thumb }); }
+        catch (e) { await trdb.delTrip(trip.id); throw e; }
+      }
       return json(res, 200, { ok: true, trip });
     }
 
@@ -121,7 +123,6 @@ export default async function handler(req, res) {
       const picked = all.filter(t => ids.includes(t.id));
       if (picked.length !== ids.length) return json(res, 400, { error: 'Some trips were not found.' });
       if (picked.some(t => t.claim_id)) return json(res, 409, { error: 'Some of these trips are already in a claim.' });
-      if (picked.some(t => !t.proof_mime)) return json(res, 400, { error: 'Every trip needs a proof of payment before it can be claimed.' });
       const claimant = clean(b.claimant, 80); if (!claimant) return json(res, 400, { error: 'Write the claimant name.' });
       const date = ISO.test(b.claim_date || '') ? b.claim_date : new Date().toISOString().slice(0, 10);
       const fy = TRV.fyOf(date);

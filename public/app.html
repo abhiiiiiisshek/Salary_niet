@@ -590,6 +590,9 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
 .ckrow input{width:20px;height:20px;accent-color:var(--ink);flex:none}
 .ckrow .t{flex:1;min-width:0} .ckrow .t small{display:block;color:var(--label-2);font-size:12.5px}
 .ckrow b.amt{font-variant-numeric:tabular-nums}
+.thumb.none{cursor:default;font-size:9.5px;line-height:1.1;text-align:center;color:var(--label-3);background:var(--tsoft);box-shadow:inset 0 0 0 1.5px var(--sep)}
+.lbl .opt{font-weight:500;font-size:12px;color:var(--label-2);background:var(--tsoft);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+.noproof{font-style:normal;color:var(--orange)}
 .claimtot{display:flex;justify-content:space-between;font-weight:700;font-size:17px;padding:12px 4px 4px}
 .badge.sub{background:color-mix(in srgb,var(--orange) 14%,transparent);color:var(--orange)}
 .badge.paid{background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--green)}
@@ -915,10 +918,10 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
         <div class="amt-in"><span>₹</span><input id="tfAmt" type="number" min="1" step="0.01" inputmode="decimal" placeholder="0"></div>
         <p class="hintline">Both ways together, if you came back the same way.</p></div></div>
       <div class="stepf" id="st5"><span class="n">5</span><div>
-        <span class="lbl">Proof of payment</span>
+        <span class="lbl">Proof of payment <small class="opt">optional</small></span>
         <div class="proofbox" id="tfProof">
           <span class="pv" id="tfPv">?</span>
-          <span class="pt" id="tfPt"><b>Add a photo of the ticket or the UPI payment screenshot</b>JPG, PNG or PDF</span>
+          <span class="pt" id="tfPt"><b>Add a photo of the ticket or the UPI payment screenshot</b>Good to have, but you can skip it or add it later.</span>
           <span style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="pbtn" id="tfCamBtn">Take photo</button><button type="button" class="pbtn alt" id="tfFileBtn">Choose file</button></span>
         </div>
         <input type="file" id="tfCam" accept="image/*" capture="environment" hidden><input type="file" id="tfFile" accept="image/*,application/pdf" hidden></div></div>
@@ -1489,14 +1492,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let r = 9; const first = r;
     trips.forEach((t, i) => {
       const lines = Math.max(1, Math.ceil(String(t.purpose || '').length / 34), Math.ceil(String(t.to || '').length / 24));
-      R.push(row(r, Math.max(20, 15 * lines + 5), { A: [ST.tdc, i + 1], B: [ST.tdc, dots(t.date)], C: [ST.td, t.from || 'NIET'], D: [ST.td, t.to], E: [ST.td, t.purpose], F: [ST.tdc, t.mode || ''], G: [ST.tdamt, r2(t.amount)], H: [ST.tdc, t.proofRef || `R${i + 1}`] }));
+      R.push(row(r, Math.max(20, 15 * lines + 5), { A: [ST.tdc, i + 1], B: [ST.tdc, dots(t.date)], C: [ST.td, t.from || 'NIET'], D: [ST.td, t.to], E: [ST.td, t.purpose], F: [ST.tdc, t.mode || ''], G: [ST.tdamt, r2(t.amount)], H: [ST.tdc, t.proofRef === undefined ? `R${i + 1}` : (t.proofRef || 'Nil')] }));
       r++;
     });
     const last = r - 1, T = r;
     R.push(row(T, 22, { ...span('A', 'F', ST.totl, 'Total'), G: [ST.tota, { f: `SUM(G${first}:G${last})`, v: total }], H: [ST.blank] })); M.push(`A${T}:F${T}`);
     R.push(row(T + 1, 30, span('A', 'H', ST.words, `(${amountInWords(total)})`))); M.push(`A${T + 1}:H${T + 1}`);
-    const nP = trips.length;
-    R.push(row(T + 3, 48, span('A', 'H', ST.decl, `Certified that the above journeys were performed by me for the official work of the Institute, that the amounts claimed have actually been spent by me, and that the proofs of payment (${nP === 1 ? 'R1' : `R1 to R${nP}`}) are attached.`))); M.push(`A${T + 3}:H${T + 3}`);
+    const refs = trips.map((t, i) => t.proofRef === undefined ? `R${i + 1}` : t.proofRef).filter(x => /^R\d+$/.test(x || ''));
+    const nP = refs.length, all = nP === trips.length;
+    const proofTxt = !nP ? '.' : `, and that the proofs of payment (${nP === 1 ? refs[0] : `${refs[0]} to ${refs[nP - 1]}`}) are attached${all ? '' : ' for the journeys marked'}.`;
+    R.push(row(T + 3, 48, span('A', 'H', ST.decl, `Certified that the above journeys were performed by me for the official work of the Institute and that the amounts claimed have actually been spent by me${proofTxt}`))); M.push(`A${T + 3}:H${T + 3}`);
     R.push(row(T + 7, 36, { ...span('A', 'C', ST.sign, `Signature of Claimant\n(${c.claimant}, ${c.designation || 'Office Assistant'})`), ...span('D', 'E', ST.sign, 'Verified by'), ...span('F', 'H', ST.sign, 'Approved by Principal') }));
     M.push(`A${T + 7}:C${T + 7}`, `D${T + 7}:E${T + 7}`, `F${T + 7}:H${T + 7}`);
     R.push(row(T + 9, 34, span('A', 'H', ST.note, `For office use:  Passed for payment of Rs. ____________    Paid vide P.I. No. ____________    Sanction No. ________    Date ____________`))); M.push(`A${T + 9}:H${T + 9}`);
@@ -2360,7 +2365,7 @@ function renderWorkChips() {
   $('tfWhyChips').innerHTML = works.map((p, i) => `<button type="button" data-v="${esc(p.v)}">${i < first.length ? '★ ' : ''}${esc(p.v)}</button>`).join('');
   $('tfWhyChips').querySelectorAll('button').forEach(b => b.onclick = () => { $('tfWhy').value = b.dataset.v; trSteps(); });
 }
-const thumbHtml = t => t.proof_mime === 'application/pdf'
+const thumbHtml = t => !t.proof_mime ? `<span class="thumb none" title="No proof added">No<br>proof</span>` : t.proof_mime === 'application/pdf'
   ? `<button type="button" class="thumb" data-proof="${t.id}" aria-label="Open proof">PDF</button>`
   : `<button type="button" class="thumb" data-proof="${t.id}" aria-label="Open proof" style="background:center/cover no-repeat url('/api/travel?thumb=${t.id}&v=${encodeURIComponent(t.proof_name || '')}')"></button>`;
 
@@ -2585,7 +2590,7 @@ function showProof(url, name, isPdf) {
 }
 function clearProof() {
   PROOF = null; $('tfProof').classList.remove('has'); $('tfPv').style.background = ''; $('tfPv').textContent = '?';
-  $('tfPt').innerHTML = '<b>Add a photo of the ticket or the UPI payment screenshot</b>JPG, PNG or PDF';
+  $('tfPt').innerHTML = '<b>Add a photo of the ticket or the UPI payment screenshot</b>Good to have, but you can skip it or add it later.';
   $('tfCamBtn').textContent = 'Take photo'; $('tfFileBtn').textContent = 'Choose file'; $('tfCam').value = ''; $('tfFile').value = '';
 }
 function trResetForm() {
@@ -2598,8 +2603,8 @@ async function trSubmit(ev) {
   ev.preventDefault();
   const err = $('tfErr'); err.style.color = '';
   const ok = trSteps();
-  const names = ['where you went', 'what work it was for', 'how you travelled', 'how much you paid', 'the proof of payment (photo or screenshot)', 'the date'];
-  const miss = ok.map((v, i) => v ? null : names[i]).filter(Boolean);
+  const names = ['where you went', 'what work it was for', 'how you travelled', 'how much you paid', null, 'the date'];
+  const miss = ok.map((v, i) => v || !names[i] ? null : names[i]).filter(Boolean);
   if (miss.length) { err.textContent = 'Please add ' + miss.join(', ') + '.'; const first = ok.indexOf(false); $('st' + (first + 1)).scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); return; }
   if ($('tfDate').value > todayISO()) { err.textContent = 'The date is in the future. Choose the day you travelled.'; return; }
   $('tfBtn').disabled = true; $('tfBtn').textContent = 'Saving…';
@@ -2634,7 +2639,7 @@ async function trListClick(ev) {
 function openClaimSheet() {
   const pend = TRIPS.filter(t => !t.claim_id).sort((a, z) => a.trip_date < z.trip_date ? -1 : 1);
   $('tcName').value = claimantName(); $('tcDate').value = todayISO(); $('tcErr').textContent = '';
-  $('tcList').innerHTML = pend.map(t => `<label class="ckrow"><input type="checkbox" value="${t.id}" checked><span class="t">${esc(t.to_place)}<small>${esc(tripLine(t))}</small></span><b class="amt">${money(t.amount)}</b></label>`).join('');
+  $('tcList').innerHTML = pend.map(t => `<label class="ckrow"><input type="checkbox" value="${t.id}" checked><span class="t">${esc(t.to_place)}<small>${esc(tripLine(t))}${t.proof_mime ? '' : ' · <em class="noproof">no proof</em>'}</small></span><b class="amt">${money(t.amount)}</b></label>`).join('');
   $('tcList').onchange = tcTotal; tcTotal();
   const s = $('trClaim'); s.classList.add('on'); s.setAttribute('aria-hidden', 'false'); setTimeout(() => $('tcOk').focus(), 60);
 }
@@ -2648,42 +2653,48 @@ function receiptWindow() { const w = window.open('', '_blank'); if (w) w.documen
 function fillReceipts(w, claim, trips) {
   if (!w) return;
   const label = TRV.claimLabel(claim.claim_no, claim.fy);
-  const items = trips.map((t, i) => `<figure><figcaption><b>R${i + 1}</b> ${esc(PI.dots(t.trip_date))}, ${esc(t.to_place)}, ${esc(t.purpose)}, ${esc(money(t.amount))}</figcaption>${t.proof_mime === 'application/pdf'
-      ? `<p class="pdf">PDF receipt: <a href="/api/travel?proof=${t.id}" target="_blank">open and print separately</a></p>` : `<img src="/api/travel?proof=${t.id}" alt="Receipt R${i + 1}">`}</figure>`).join('');
+  const refs = proofRefs(trips), withP = trips.filter(t => refs[t.id]);
+  const items = withP.map(t => `<figure><figcaption><b>${refs[t.id]}</b> ${esc(PI.dots(t.trip_date))}, ${esc(t.to_place)}, ${esc(t.purpose)}, ${esc(money(t.amount))}</figcaption>${t.proof_mime === 'application/pdf'
+      ? `<p class="pdf">PDF receipt: <a href="/api/travel?proof=${t.id}" target="_blank">open and print separately</a></p>` : `<img src="/api/travel?proof=${t.id}" alt="Receipt ${refs[t.id]}">`}</figure>`).join('');
   w.document.open();
   w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Receipts ${esc(label)}</title><style>
     body{font:14px/1.4 "Times New Roman",serif;margin:24px;color:#000} h1{font-size:18px;margin:0 0 4px} p.m{margin:0 0 16px}
     figure{margin:0 0 18px;break-inside:avoid;border:1px solid #999;padding:10px} figcaption{margin-bottom:8px}
     img{max-width:100%;max-height:420px;display:block;margin:auto} .pdf{color:#555} @media print{a{color:#000}}</style></head><body>
-    <h1>Proofs of payment, claim ${esc(label)}</h1><p class="m">${esc(claim.claimant)}, ${esc(claim.designation)}. ${trips.length} receipt${trips.length > 1 ? 's' : ''}, total ${esc(money(claim.total))}.</p>${items}
+    <h1>Proofs of payment, claim ${esc(label)}</h1><p class="m">${esc(claim.claimant)}, ${esc(claim.designation)}. ${withP.length} receipt${withP.length === 1 ? '' : 's'} for ${trips.length} trip${trips.length > 1 ? 's' : ''}, total ${esc(money(claim.total))}.</p>${items}
     <script>Promise.all([...document.images].map(i=>i.complete?1:new Promise(r=>{i.onload=i.onerror=r}))).then(()=>setTimeout(()=>print(),300))<\/script></body></html>`);
   w.document.close();
 }
+const proofRefs = trips => { const m = {}; let n = 0; trips.forEach(t => { if (t.proof_mime) m[t.id] = 'R' + (++n); }); return m; };
 const claimTrips = c => TRIPS.filter(t => t.claim_id === c.id).sort((a, z) => a.trip_date < z.trip_date ? -1 : a.trip_date > z.trip_date ? 1 : a.id - z.id);
 
 async function createClaim() {
   const ids = tcPicked(); if (!ids.length) return;
   const name = $('tcName').value.trim(); if (!name) { $('tcErr').textContent = 'Write the claimant name.'; return; }
   lsSet('trClaimant', name);
-  const w = receiptWindow();
+  const anyProof = TRIPS.some(t => ids.includes(t.id) && t.proof_mime);
+  const w = anyProof ? receiptWindow() : null;
   $('tcOk').disabled = true; $('tcOk').textContent = 'Creating…';
   try {
     const j = await trApi('POST', '', { action: 'create_claim', trip_ids: ids, claimant: name, designation: $('tcDesig').value, claim_date: $('tcDate').value });
     const trips = j.trips.slice().sort((a, z) => a.trip_date < z.trip_date ? -1 : a.trip_date > z.trip_date ? 1 : a.id - z.id);
+    const refs = proofRefs(trips);
     const out = await TRV.buildClaimExcel(JSZip, b64(TRVTPL_B64), { ...j.claim, date: j.claim.claim_date,
-      trips: trips.map((t, i) => ({ date: t.trip_date, from: t.from_place, to: t.to_place, purpose: t.purpose, mode: t.mode, amount: t.amount, proofRef: 'R' + (i + 1) })) });
+      trips: trips.map((t, i) => ({ date: t.trip_date, from: t.from_place, to: t.to_place, purpose: t.purpose, mode: t.mode, amount: t.amount, proofRef: refs[t.id] || '' })) });
     await trApi('POST', '', { action: 'attach_excel', id: j.claim.id, xlsx_b64: await blobB64(out.blob), xlsx_name: out.name });
     const a = document.createElement('a'); a.href = URL.createObjectURL(out.blob); a.download = out.name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
     fillReceipts(w, j.claim, trips);
     closeClaimSheet(); await loadTr();
-    dlg({ title: `Claim ${TRV.claimLabel(j.claim.claim_no, j.claim.fy)} created ✓`, msg: `The claim form (Excel) is downloading and the receipts are open to print. Print both, sign the form, and submit them. When the money is paid, press Mark paid.`, okText: 'OK', noCancel: true });
+    dlg({ title: `Claim ${TRV.claimLabel(j.claim.claim_no, j.claim.fy)} created ✓`, msg: anyProof ? `The claim form (Excel) is downloading and the receipts are open to print. Print both, sign the form, and submit them. When the money is paid, press Mark paid.` : `The claim form (Excel) is downloading. No receipts were added for these trips, so print the form, sign it, and submit it. When the money is paid, press Mark paid.`, okText: 'OK', noCancel: true });
   } catch (e) { if (w) w.close(); $('tcErr').textContent = e.message; }
   finally { tcTotal(); }
 }
 
 async function trClaimsClick(ev) {
   const rc = ev.target.closest('[data-rcpt]'), pd = ev.target.closest('[data-paid]'), cn = ev.target.closest('[data-cancel]');
-  if (rc) { const c = CLAIMS.find(x => x.id === Number(rc.dataset.rcpt)); fillReceipts(receiptWindow(), c, claimTrips(c)); }
+  if (rc) { const c = CLAIMS.find(x => x.id === Number(rc.dataset.rcpt)), ts = claimTrips(c);
+    if (!ts.some(t => t.proof_mime)) { dlg({ title: 'No receipts', msg: 'None of the trips in this claim has a proof of payment.', okText: 'OK', noCancel: true }); return; }
+    fillReceipts(receiptWindow(), c, ts); }
   if (pd) {
     const c = CLAIMS.find(x => x.id === Number(pd.dataset.paid)), label = TRV.claimLabel(c.claim_no, c.fy);
     const r = await dlg({ title: `Mark ${label} as paid?`, msg: `${money(c.total)} to ${c.claimant}.`, okText: 'Mark paid', check: { label: 'Also enter it in the open P.I. as a Conveyance A/c payment (next sanction number)', checked: true } });

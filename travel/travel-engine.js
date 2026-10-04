@@ -60,14 +60,16 @@
     let r = 9; const first = r;
     trips.forEach((t, i) => {
       const lines = Math.max(1, Math.ceil(String(t.purpose || '').length / 34), Math.ceil(String(t.to || '').length / 24));
-      R.push(row(r, Math.max(20, 15 * lines + 5), { A: [ST.tdc, i + 1], B: [ST.tdc, dots(t.date)], C: [ST.td, t.from || 'NIET'], D: [ST.td, t.to], E: [ST.td, t.purpose], F: [ST.tdc, t.mode || ''], G: [ST.tdamt, r2(t.amount)], H: [ST.tdc, t.proofRef || `R${i + 1}`] }));
+      R.push(row(r, Math.max(20, 15 * lines + 5), { A: [ST.tdc, i + 1], B: [ST.tdc, dots(t.date)], C: [ST.td, t.from || 'NIET'], D: [ST.td, t.to], E: [ST.td, t.purpose], F: [ST.tdc, t.mode || ''], G: [ST.tdamt, r2(t.amount)], H: [ST.tdc, t.proofRef === undefined ? `R${i + 1}` : (t.proofRef || 'Nil')] }));
       r++;
     });
     const last = r - 1, T = r;
     R.push(row(T, 22, { ...span('A', 'F', ST.totl, 'Total'), G: [ST.tota, { f: `SUM(G${first}:G${last})`, v: total }], H: [ST.blank] })); M.push(`A${T}:F${T}`);
     R.push(row(T + 1, 30, span('A', 'H', ST.words, `(${amountInWords(total)})`))); M.push(`A${T + 1}:H${T + 1}`);
-    const nP = trips.length;
-    R.push(row(T + 3, 48, span('A', 'H', ST.decl, `Certified that the above journeys were performed by me for the official work of the Institute, that the amounts claimed have actually been spent by me, and that the proofs of payment (${nP === 1 ? 'R1' : `R1 to R${nP}`}) are attached.`))); M.push(`A${T + 3}:H${T + 3}`);
+    const refs = trips.map((t, i) => t.proofRef === undefined ? `R${i + 1}` : t.proofRef).filter(x => /^R\d+$/.test(x || ''));
+    const nP = refs.length, all = nP === trips.length;
+    const proofTxt = !nP ? '.' : `, and that the proofs of payment (${nP === 1 ? refs[0] : `${refs[0]} to ${refs[nP - 1]}`}) are attached${all ? '' : ' for the journeys marked'}.`;
+    R.push(row(T + 3, 48, span('A', 'H', ST.decl, `Certified that the above journeys were performed by me for the official work of the Institute and that the amounts claimed have actually been spent by me${proofTxt}`))); M.push(`A${T + 3}:H${T + 3}`);
     R.push(row(T + 7, 36, { ...span('A', 'C', ST.sign, `Signature of Claimant\n(${c.claimant}, ${c.designation || 'Office Assistant'})`), ...span('D', 'E', ST.sign, 'Verified by'), ...span('F', 'H', ST.sign, 'Approved by Principal') }));
     M.push(`A${T + 7}:C${T + 7}`, `D${T + 7}:E${T + 7}`, `F${T + 7}:H${T + 7}`);
     R.push(row(T + 9, 34, span('A', 'H', ST.note, `For office use:  Passed for payment of Rs. ____________    Paid vide P.I. No. ____________    Sanction No. ________    Date ____________`))); M.push(`A${T + 9}:H${T + 9}`);
