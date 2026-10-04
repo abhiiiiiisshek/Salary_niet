@@ -2015,7 +2015,8 @@ function renderTrChips() {
   $('tfToChips').querySelectorAll('button').forEach(b => b.onclick = () => { $('tfTo').value = b.dataset.v; toHint(true); renderWorkChips(); trSteps(); $('tfWhy').focus(); });
   renderWorkChips();
   const cur = $('tfMode').value;
-  $('tfModes').innerHTML = TRV.MODES.map(m => `<button type="button" aria-pressed="${m === cur}" data-m="${m}">${m}</button>`).join('');
+  const modes = rankedSuggest(TRIPS, t => t.mode, TRV.MODES).map(x => x.v);
+  $('tfModes').innerHTML = modes.map(m => `<button type="button" aria-pressed="${m === cur}" data-m="${m}">${m}</button>`).join('');
   $('tfModes').querySelectorAll('button').forEach(b => b.onclick = () => { setMode(b.dataset.m); trSteps(); $('tfAmt').focus(); });
 }
 function setMode(m) { $('tfMode').value = m || ''; $('tfModes').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === m))); }

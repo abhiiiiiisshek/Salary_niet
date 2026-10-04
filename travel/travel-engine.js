@@ -4,7 +4,7 @@
   'use strict';
   const SHEET = 'xl/worksheets/sheet1.xml';
   const ST = { title: 1, sub: 2, lab: 3, val: 4, valr: 5, hdr: 6, td: 7, tdc: 8, tdamt: 9, totl: 10, tota: 11, words: 12, decl: 13, sign: 14, note: 15, blank: 16 };
-  const MODES = ['Auto', 'E-rickshaw', 'Metro', 'Bus', 'Cab', 'Train', 'Own vehicle'];
+  const MODES = ['Auto', 'E-rickshaw', 'Rapido bike', 'Rapido auto', 'Uber', 'Ola', 'Metro', 'Bus', 'Cab', 'Train', 'Own vehicle'];
 
   const r2 = x => Math.round((Number(x) || 0) * 100) / 100;
   const pad = n => String(n).padStart(2, '0');
