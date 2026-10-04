@@ -1798,7 +1798,7 @@ function initPi() {
 
 /* ================= Travel ================= */
 const TRVTPL_B64 = "/*TRVTPL*/";
-const TR_PLACES = ['CCS University, Meerut', 'Samaj Kalyan Vibhag', 'Indian Bank, Sector 51, Noida', 'Post Office'];
+const TR_PLACES = ['Heritage Public School, Barola', 'Indian Bank, Sector 50, Noida', 'CCS University, Meerut', 'Samaj Kalyan Vibhag', 'Indian Bank, Sector 51, Noida', 'Post Office'];
 const TR_WORK = ['Exam forms submission', 'Scholarship work', 'Staff approval', 'Document submission', 'Bank work', 'Collecting letters or results'];
 let TRIPS = [], CLAIMS = [], TREDIT = null, PROOF = null, TRFLASH = null;
 const lsGet = k => { try { return localStorage.getItem(k); } catch { return null; } };
@@ -1828,7 +1828,32 @@ async function loadTr() {
 }
 
 const tripLine = t => `${PI.dots(t.trip_date)}, ${t.mode ? t.mode + ', ' : ''}${t.purpose}`;
-function freq(list, key) { const m = new Map(); list.forEach(x => { const k = key(x); if (k) m.set(k, (m.get(k) || 0) + 1); }); return [...m.entries()].sort((a, z) => z[1] - a[1]).map(x => x[0]); }
+// Suggestions learn from use: score = uses, with recent trips (last 90 days) counting up to double.
+// New places typed by the user join the list automatically; presets fill the remaining slots.
+const normKey = s => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+function rankedSuggest(list, key, presets) {
+  const now = Date.now(), m = new Map();
+  list.forEach(t => {
+    const v = (key(t) || '').trim(), k = normKey(v); if (!k) return;
+    const age = (now - PI.parseISO(t.trip_date)) / 864e5, e = m.get(k) || { v, n: 0, score: 0, last: '' };
+    e.n++; e.score += 1 + Math.max(0, 1 - age / 90);
+    if (t.trip_date >= e.last) { e.last = t.trip_date; e.v = v; }
+    m.set(k, e);
+  });
+  const used = [...m.values()].sort((a, z) => z.score - a.score || (a.last < z.last ? 1 : -1));
+  presets.forEach(p => { if (!m.has(normKey(p))) used.push({ v: p, n: 0, score: 0 }); });
+  return used;
+}
+// Work chips: what was done at this place before comes first, then everything else.
+function renderWorkChips() {
+  const here = normKey($('tfTo').value), atPlace = here ? TRIPS.filter(t => normKey(t.to_place) === here) : [];
+  const first = rankedSuggest(atPlace, t => t.purpose, []);
+  const seen = new Set(first.map(x => normKey(x.v)));
+  const rest = rankedSuggest(TRIPS, t => t.purpose, TR_WORK).filter(x => !seen.has(normKey(x.v)));
+  const works = [...first, ...rest].slice(0, 7);
+  $('tfWhyChips').innerHTML = works.map((p, i) => `<button type="button" data-v="${esc(p.v)}">${i < first.length ? '★ ' : ''}${esc(p.v)}</button>`).join('');
+  $('tfWhyChips').querySelectorAll('button').forEach(b => b.onclick = () => { $('tfWhy').value = b.dataset.v; trSteps(); });
+}
 const thumbHtml = t => t.proof_mime === 'application/pdf'
   ? `<button type="button" class="thumb" data-proof="${t.id}" aria-label="Open proof">PDF</button>`
   : `<button type="button" class="thumb" data-proof="${t.id}" aria-label="Open proof" style="background:center/cover no-repeat url('/api/travel?thumb=${t.id}&v=${encodeURIComponent(t.proof_name || '')}')"></button>`;
@@ -1982,14 +2007,13 @@ function renderTrChips() {
     $('tfTo').value = t.to_place; $('tfWhy').value = t.purpose; setMode(t.mode || ''); $('tfAmt').value = t.amount; toHint(); trSteps();
     $('tfErr').style.color = 'var(--label-2)'; $('tfErr').textContent = 'Filled from your earlier trip. Now add today’s proof of payment.';
   });
-  const places = [...new Set([...freq(TRIPS, t => t.to_place), ...TR_PLACES])].slice(0, 6);
-  const works = [...new Set([...freq(TRIPS, t => t.purpose), ...TR_WORK])].slice(0, 6);
-  $('tfToList').innerHTML = places.map(p => `<option value="${esc(p)}">`).join('');
+  const allPlaces = rankedSuggest(TRIPS, t => t.to_place, TR_PLACES), places = allPlaces.slice(0, 8);
+  const works = rankedSuggest(TRIPS, t => t.purpose, TR_WORK).map(x => x.v);
+  $('tfToList').innerHTML = allPlaces.map(p => `<option value="${esc(p.v)}">`).join('');
   $('tfWhyList').innerHTML = works.map(p => `<option value="${esc(p)}">`).join('');
-  $('tfToChips').innerHTML = places.map(p => `<button type="button" data-v="${esc(p)}">${esc(p)}</button>`).join('');
-  $('tfWhyChips').innerHTML = works.map(p => `<button type="button" data-v="${esc(p)}">${esc(p)}</button>`).join('');
-  $('tfToChips').querySelectorAll('button').forEach(b => b.onclick = () => { $('tfTo').value = b.dataset.v; toHint(true); trSteps(); $('tfWhy').focus(); });
-  $('tfWhyChips').querySelectorAll('button').forEach(b => b.onclick = () => { $('tfWhy').value = b.dataset.v; trSteps(); });
+  $('tfToChips').innerHTML = places.map(p => `<button type="button" data-v="${esc(p.v)}"${p.n ? ` title="Used ${p.n} time${p.n > 1 ? 's' : ''}"` : ''}>${p.n >= 2 ? '★ ' : ''}${esc(p.v)}</button>`).join('');
+  $('tfToChips').querySelectorAll('button').forEach(b => b.onclick = () => { $('tfTo').value = b.dataset.v; toHint(true); renderWorkChips(); trSteps(); $('tfWhy').focus(); });
+  renderWorkChips();
   const cur = $('tfMode').value;
   $('tfModes').innerHTML = TRV.MODES.map(m => `<button type="button" aria-pressed="${m === cur}" data-m="${m}">${m}</button>`).join('');
   $('tfModes').querySelectorAll('button').forEach(b => b.onclick = () => { setMode(b.dataset.m); trSteps(); $('tfAmt').focus(); });
@@ -2059,7 +2083,7 @@ function clearProof() {
 }
 function trResetForm() {
   TREDIT = null; $('trForm').classList.remove('editing'); $('trfTitle').textContent = 'Add a trip'; $('tfBtn').textContent = 'Save trip'; $('tfCancel').hidden = true;
-  ['tfTo', 'tfWhy', 'tfAmt'].forEach(id => $(id).value = ''); setMode(''); clearProof(); $('tfToHint').hidden = true; $('tfErr').textContent = '';
+  ['tfTo', 'tfWhy', 'tfAmt'].forEach(id => $(id).value = ''); setMode(''); clearProof(); $('tfToHint').hidden = true; $('tfErr').textContent = ''; renderWorkChips();
   setTripDate(0);
 }
 
@@ -2180,7 +2204,7 @@ function initTr() {
   $('tfCamBtn').onclick = () => $('tfCam').click(); $('tfFileBtn').onclick = () => $('tfFile').click();
   $('tfCam').onchange = e => pickProof(e.target.files[0]); $('tfFile').onchange = e => pickProof(e.target.files[0]);
   ['tfTo', 'tfWhy', 'tfAmt'].forEach(id => $(id).addEventListener('input', trSteps));
-  $('tfTo').addEventListener('change', () => toHint(true));
+  $('tfTo').addEventListener('change', () => { toHint(true); renderWorkChips(); });
   $('tfDate').addEventListener('change', () => { dateChips(); trSteps(); });
   $('trForm').querySelectorAll('[data-ago]').forEach(b => b.onclick = () => setTripDate(Number(b.dataset.ago)));
   $('trPending').addEventListener('click', trListClick);
