@@ -1,6 +1,5 @@
 // Serves the payroll app to signed-in users, and the login page to everyone else.
 import { configured, checkPassword, loggedIn, sessionCookie, clearCookie, readForm, send } from '../lib/auth.js';
-import APP_HTML from './_page.js';
 
 const login = (msg = '') => `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow">
@@ -45,11 +44,11 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const f = await readForm(req);
     if (checkPassword(f.user, f.pass)) {
-      return send(res, 303, 'text/plain', '', { 'Set-Cookie': sessionCookie(), Location: '/' });
+      return send(res, 303, 'text/plain', '', { 'Set-Cookie': sessionCookie(), Location: '/app' });
     }
     await new Promise(r => setTimeout(r, 600)); // slow down guessing
     return send(res, 401, 'text/html; charset=utf-8', login('Wrong username or password.'));
   }
   if (!loggedIn(req)) return send(res, 200, 'text/html; charset=utf-8', login());
-  return send(res, 200, 'text/html; charset=utf-8', APP_HTML);
+  return send(res, 302, 'text/plain', '', { Location: '/app' + (url.hash || '') });
 }

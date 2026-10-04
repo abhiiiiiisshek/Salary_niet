@@ -13,7 +13,7 @@
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
 /* ---------- Apple-style system tokens (light) ---------- */
 :root{
@@ -864,6 +864,7 @@ async function getTemplates() {
   if (!EMBED_XLSX.startsWith('/*')) { $('signout').hidden = true; XLSX = b64(EMBED_XLSX); DOCX = b64(EMBED_DOCX); return true; }
   try {
     const r = await fetch('/api/templates', { cache: 'no-store', credentials: 'same-origin' });
+    if (r.status === 401) { location.replace('/'); return false; }
     if (!r.ok) return false;
     const j = await r.json();
     XLSX = b64(j.xlsx); DOCX = b64(j.docx); return true;
@@ -1042,6 +1043,7 @@ const dl = (id, kind) => `/api/records?download=${kind}&id=${id}`;
 async function api(method, qs, body) {
   const r = await fetch('/api/records' + (qs || ''), { method, credentials: 'same-origin', cache: 'no-store',
     headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });
+  if (r.status === 401) { location.replace('/'); throw new Error('Signed out'); }
   let j = {}; try { j = await r.json(); } catch {}
   if (!r.ok) { const e = new Error(j.error || 'Request failed (' + r.status + ')'); e.status = r.status; throw e; }
   return j;
@@ -1239,6 +1241,7 @@ function showView(v) {
 async function piApi(method, qs, body) {
   const r = await fetch('/api/pi' + (qs || ''), { method, credentials: 'same-origin', cache: 'no-store',
     headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });
+  if (r.status === 401) { location.replace('/'); throw new Error('Signed out'); }
   let j = {}; try { j = await r.json(); } catch {}
   if (!r.ok) throw new Error(j.error || 'Request failed (' + r.status + ')');
   return j;
@@ -1602,6 +1605,7 @@ const claimantName = () => lsGet('trClaimant') || ('Ms. ' + ((PIB && PIB.holder)
 async function trApi(method, qs, body) {
   const r = await fetch('/api/travel' + (qs || ''), { method, credentials: 'same-origin', cache: 'no-store',
     headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });
+  if (r.status === 401) { location.replace('/'); throw new Error('Signed out'); }
   let j = {}; try { j = await r.json(); } catch {}
   if (!r.ok) throw new Error(j.error || 'Request failed (' + r.status + ')');
   return j;
@@ -1624,7 +1628,7 @@ const tripLine = t => `${PI.dots(t.trip_date)}, ${t.mode ? t.mode + ', ' : ''}${
 function freq(list, key) { const m = new Map(); list.forEach(x => { const k = key(x); if (k) m.set(k, (m.get(k) || 0) + 1); }); return [...m.entries()].sort((a, z) => z[1] - a[1]).map(x => x[0]); }
 const thumbHtml = t => t.proof_mime === 'application/pdf'
   ? `<button type="button" class="thumb" data-proof="${t.id}" aria-label="Open proof">PDF</button>`
-  : `<button type="button" class="thumb" data-proof="${t.id}" aria-label="Open proof" style="background:center/cover no-repeat url('/api/travel?proof=${t.id}')"></button>`;
+  : `<button type="button" class="thumb" data-proof="${t.id}" aria-label="Open proof" style="background:center/cover no-repeat url('/api/travel?thumb=${t.id}&v=${encodeURIComponent(t.proof_name || '')}')"></button>`;
 
 function renderTr() {
   $('trWho').textContent = `${claimantName()}, travel for office work`;
@@ -1710,6 +1714,13 @@ async function compressImage(file) {
   c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
   return await new Promise(res => c.toBlob(res, 'image/jpeg', 0.82));
 }
+async function makeThumb(blob) {
+  const bmp = await createImageBitmap(blob);
+  const k = 160 / Math.min(bmp.width, bmp.height), c = document.createElement('canvas');
+  c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  return await blobB64(await new Promise(res => c.toBlob(res, 'image/jpeg', 0.7)));
+}
 async function pickProof(file) {
   if (!file) return;
   $('tfErr').textContent = '';
@@ -1718,7 +1729,8 @@ async function pickProof(file) {
     if (mime === 'application/pdf') { if (file.size > 2.5e6) throw new Error('This PDF is larger than 2.5 MB. Take a screenshot of it instead.'); }
     else if (/^image\//.test(mime) || /\.(heic|heif)$/i.test(file.name)) { blob = await compressImage(file); mime = 'image/jpeg'; }
     else throw new Error('Choose a photo or a PDF.');
-    PROOF = { mime, b64: await blobB64(blob), name: file.name.replace(/\.[^.]+$/, '') + (mime === 'image/jpeg' ? '.jpg' : '.pdf') };
+    PROOF = { mime, b64: await blobB64(blob), name: file.name.replace(/\.[^.]+$/, '').slice(0, 40) + '-' + Date.now().toString(36) + (mime === 'image/jpeg' ? '.jpg' : '.pdf') };
+    if (mime === 'image/jpeg') { try { PROOF.thumb = await makeThumb(blob); } catch {} }
     showProof(mime === 'application/pdf' ? null : URL.createObjectURL(blob), PROOF.name, mime === 'application/pdf');
   } catch (e) { $('tfErr').style.color = ''; $('tfErr').textContent = e.message; }
   trSteps();

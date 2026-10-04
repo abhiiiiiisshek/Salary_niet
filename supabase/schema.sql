@@ -93,9 +93,14 @@ create table if not exists public.travel_trips (
 create table if not exists public.travel_proofs (
   trip_id     bigint primary key references public.travel_trips(id) on delete cascade,
   mime        text not null,
-  b64         text not null
+  b64         text not null,
+  thumb_b64   text
 );
+alter table public.travel_proofs add column if not exists thumb_b64 text;
 alter table public.travel_claims enable row level security;
 alter table public.travel_trips  enable row level security;
 alter table public.travel_proofs enable row level security;
 revoke all on public.travel_claims, public.travel_trips, public.travel_proofs from anon, authenticated;
+
+-- Make the API see new tables immediately
+notify pgrst, 'reload schema';

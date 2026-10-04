@@ -42,7 +42,8 @@ function proofOf(b) {
   if (!p) return null;
   if (!PROOF_TYPES.includes(p.mime) || typeof p.b64 !== 'string' || !B64.test(p.b64)) throw err(400, 'The proof must be a photo (JPG/PNG) or a PDF.');
   if (p.b64.length > 3_400_000) throw err(400, 'The proof file is too large. Use a photo or a PDF under 2.5 MB.');
-  return { mime: p.mime, b64: p.b64, name: clean(p.name, 80) || 'proof' };
+  const thumb = typeof p.thumb === 'string' && B64.test(p.thumb) && p.thumb.length < 200_000 ? p.thumb : null;
+  return { mime: p.mime, b64: p.b64, thumb, name: clean(p.name, 80) || 'proof' };
 }
 
 export default async function handler(req, res) {
@@ -58,6 +59,16 @@ export default async function handler(req, res) {
         res.statusCode = 200; res.setHeader('Content-Type', p.mime); res.setHeader('Cache-Control', 'private, max-age=3600');
         res.setHeader('X-Content-Type-Options', 'nosniff');
         return res.end(Buffer.from(p.b64, 'base64'));
+      }
+      const th = url.searchParams.get('thumb');
+      if (th) {
+        const p = /^\d+$/.test(th) ? await trdb.thumb(Number(th)) : null;
+        if (!p) return json(res, 404, { error: 'No proof found' });
+        const full = !p.thumb_b64 ? await trdb.proof(Number(th)) : null;
+        if (full && full.mime === 'application/pdf') return json(res, 404, { error: 'PDF has no thumbnail' });
+        res.statusCode = 200; res.setHeader('Content-Type', p.thumb_b64 ? 'image/jpeg' : full.mime);
+        res.setHeader('Cache-Control', 'private, max-age=604800, immutable'); res.setHeader('X-Content-Type-Options', 'nosniff');
+        return res.end(Buffer.from(p.thumb_b64 || full.b64, 'base64'));
       }
       const xl = url.searchParams.get('claim');
       if (xl) {
@@ -80,7 +91,7 @@ export default async function handler(req, res) {
       const f = tripFields(b), p = proofOf(b);
       if (!p) return json(res, 400, { error: 'Add a photo of the ticket or payment screenshot as proof.' });
       const trip = await trdb.addTrip({ ...f, proof_name: p.name, proof_mime: p.mime });
-      try { await trdb.putProof({ trip_id: trip.id, mime: p.mime, b64: p.b64 }); }
+      try { await trdb.putProof({ trip_id: trip.id, mime: p.mime, b64: p.b64, thumb_b64: p.thumb }); }
       catch (e) { await trdb.delTrip(trip.id); throw e; }
       return json(res, 200, { ok: true, trip });
     }
@@ -90,7 +101,7 @@ export default async function handler(req, res) {
       if (!t) return json(res, 404, { error: 'Trip not found' });
       if (t.claim_id) return json(res, 409, { error: 'This trip is already in a claim. Cancel the claim first to change it.' });
       const f = tripFields(b), p = proofOf(b);
-      if (p) { await trdb.delProof(id); await trdb.putProof({ trip_id: id, mime: p.mime, b64: p.b64 }); f.proof_name = p.name; f.proof_mime = p.mime; }
+      if (p) { await trdb.delProof(id); await trdb.putProof({ trip_id: id, mime: p.mime, b64: p.b64, thumb_b64: p.thumb }); f.proof_name = p.name; f.proof_mime = p.mime; }
       const rows = await trdb.patchTrips(`?id=eq.${id}&claim_id=is.null`, f);
       return json(res, 200, { ok: true, trip: rows[0] });
     }
@@ -169,6 +180,7 @@ export default async function handler(req, res) {
 
     return json(res, 400, { error: 'Unknown action' });
   } catch (e) {
-    return json(res, e.status || 502, { error: e.status ? e.message : 'Database: ' + e.message });
+    const missing = /doesn't exist yet/.test(e.message);
+    return json(res, missing ? 503 : (e.status || 502), { error: missing || (e.status && e.status < 500) ? e.message : 'Database: ' + e.message });
   }
 }

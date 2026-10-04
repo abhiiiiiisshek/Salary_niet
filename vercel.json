@@ -2,8 +2,18 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "outputDirectory": "public",
+  "regions": ["bom1"],
+  "cleanUrls": true,
   "rewrites": [
     { "source": "/", "destination": "/api/app" },
     { "source": "/index.html", "destination": "/api/app" }
+  ],
+  "headers": [
+    { "source": "/app", "headers": [
+      { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" },
+      { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+      { "key": "X-Frame-Options", "value": "DENY" },
+      { "key": "Referrer-Policy", "value": "no-referrer" } ] },
+    { "source": "/(icon-.*|apple-touch-icon|maskable-512)\\.png", "headers": [ { "key": "Cache-Control", "value": "public, max-age=604800" } ] }
   ]
 }
