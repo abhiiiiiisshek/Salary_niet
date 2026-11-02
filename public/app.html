@@ -269,6 +269,8 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
 .ps-prev .row.tot .k,.ps-prev .row.tot .v,#psNow .row.tot .k,#psNow .row.tot .v{font-weight:700}
 .revrow .v small{display:block;font-size:12px;color:var(--label-2)}
 .chip.rev{background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--green)}
+.chip.arr{background:var(--blue-tint);color:var(--blue)}
+.arrtxt{color:var(--blue)!important}
 .vrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;position:relative}
 .vrow + .vrow::before{content:"";position:absolute;top:0;left:16px;right:0;border-top:.5px solid var(--sep)}
 .vrow .vt{flex:1;min-width:200px}
@@ -1192,12 +1194,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     return (revs || []).filter(r => Number(r.row_no ?? r.row) === row && r.effective_from <= p)
       .sort((a, z) => (a.effective_from < z.effective_from ? 1 : a.effective_from > z.effective_from ? -1 : (z.id || 0) - (a.id || 0)))[0] || null;
   }
+  // One-time arrears: a revision can carry an arrear amount paid in one chosen month (column Q, "Arear").
+  function arrearFor(revs, row, cal) {
+    const p = periodKey(cal);
+    return (revs || []).filter(r => Number(r.row_no ?? r.row) === row && r.arrear_period === p)
+      .reduce((t, r) => t + (Number(r.arrear_amount) || 0), 0);
+  }
   function withRevisions(emps, revs, cal) {
     return emps.map(e => {
-      if (!e.scale) return e;
+      const arrear = arrearFor(revs, e.row, cal);
+      if (!e.scale) return arrear ? { ...e, arrear } : e;
       const r = revisionFor(revs, e.row, cal);
-      if (!r) return { ...e, daPct: 100, daRound: 0, rev: null };
-      return { ...e, bandPay: Number(r.band_pay), daPct: Number(r.da_pct), daRound: Number(r.da_round) || 0, rev: r };
+      if (!r) return { ...e, daPct: 100, daRound: 0, rev: null, arrear };
+      return { ...e, bandPay: Number(r.band_pay), daPct: Number(r.da_pct), daRound: Number(r.da_round) || 0, rev: r, arrear };
     });
   }
   function daOf(e) {
@@ -1225,13 +1234,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const N = e.hra || 0;
       const P = M + N - O;
       const R = e.esi ? +P * 0.0075 : 0;
-      const Q = 0, S = 0, T = 0;
+      const Q = Number(e.arrear) || 0, S = 0, T = 0;
       const U = roundRupee(P + Q - R - S - T);
       return { e, D, E: Number(a.cl) || 0, F: Number(a.ml) || 0, G, H: D - G, L, M, N, O, P, Q, R, S, T, U };
     });
     const sum = k => lines.reduce((t, l) => t + (l[k] || 0), 0);
     const total = sum('U');
-    return { lines, totals: { M: sum('M'), N: sum('N'), O: sum('O'), P: sum('P'), Q: 0, R: sum('R'), S: 0, T: 0, U: total }, total };
+    return { lines, totals: { M: sum('M'), N: sum('N'), O: sum('O'), P: sum('P'), Q: sum('Q'), R: sum('R'), S: 0, T: 0, U: total }, total };
   }
 
   // ---------- validation ----------
@@ -1282,6 +1291,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         x = setCell(x, 'O' + r, 'f', num(l.O), `M${r}/D${r}*G${r}`);
       }
       x = setCell(x, 'P' + r, 'f', num(l.P), `M${r}+N${r}-O${r}`);
+      if (l.Q || readNum(x, 'Q' + r)) x = setCell(x, 'Q' + r, 'n', num(l.Q));
       if (l.e.esi) x = setCell(x, 'R' + r, 'f', num(l.R), `+P${r}*0.0075`);
       x = setCell(x, 'U' + r, 'f', l.U, `ROUND(P${r}+Q${r}-R${r}-S${r}-T${r},0)`);
       x = setCell(x, 'V' + r, 's', 'Paid through BT dtd.' + fmtDate(chequeDate));
@@ -1696,7 +1706,7 @@ async function start() {
     $('rows').innerHTML = emps.map((e, i) => `
       <tr data-row="${e.row}">
         <td class="l who"><div class="who-in"><span class="avatar" style="background:linear-gradient(180deg,hsl(${HUES[i % 9]} 55% 58%),hsl(${HUES[i % 9]} 55% 44%))" aria-hidden="true">${initials(e.name)}</span>
-          <span><b>${e.name}${e.esi ? '<span class="chip" title="ESI deducted at 0.75%">ESI</span>' : ''}${e.scale ? '<span class="chip rev" data-rev hidden>Revised pay</span>' : ''}</b><small>${e.designation}</small></span></div></td>
+          <span><b>${e.name}${e.esi ? '<span class="chip" title="ESI deducted at 0.75%">ESI</span>' : ''}${e.scale ? '<span class="chip rev" data-rev hidden>Revised pay</span>' : ''}<span class="chip arr" data-arr hidden></span></b><small>${e.designation}</small></span></div></td>
         <td class="stepcell">${stepper('cl', e.name, 'C/L')}</td>
         <td class="stepcell">${stepper('ml', e.name, 'M/L and E/L')}</td>
         <td class="stepcell lwp-cell">${stepper('lwp', e.name, 'Leave without pay')}</td>
@@ -1757,6 +1767,7 @@ function refresh() {
   });
   const calc = PAS.calculate(emps, cal, inp.att);
   calc.lines.forEach(l => {
+    { const a = document.querySelector(`#rows tr[data-row="${l.e.row}"] [data-arr]`); if (a) { a.hidden = !l.Q; a.textContent = l.Q ? 'Arrear ' + rs(l.Q) : ''; a.title = l.Q ? 'One-time arrear added to this month\'s net pay (column Q)' : ''; } }
     if (l.e.scale) { const c = document.querySelector(`#rows tr[data-row="${l.e.row}"] [data-rev]`); if (c) { c.hidden = !l.e.rev; if (l.e.rev) c.title = `Band pay ₹${PAS.indianCommas(l.e.bandPay)}, DA ${l.e.daPct}% from ${plabel(l.e.rev.effective_from)}`; } }
     const tr = document.querySelector(`#rows tr[data-row="${l.e.row}"]`);
     tr.classList.toggle('cut', l.G > 0);
@@ -1848,8 +1859,8 @@ function renderPay() {
   $('psNowF').textContent = e.rev ? `From the revision starting ${plabel(e.rev.effective_from)}.` : 'From the approved template (no revision yet).';
   $('psList').innerHTML = REVERR ? `<div class="row"><span class="k" style="white-space:normal;color:var(--red)">${esc(REVERR)}</span></div>`
     : REVS.length ? REVS.map(r => `<div class="row revrow"><span class="k">From ${esc(plabel(r.effective_from))}</span>
-        <span class="v">Band pay ₹${PAS.indianCommas(Number(r.band_pay))}, DA ${Number(r.da_pct)}%<small>${esc(roundLabel(Number(r.da_round)))}${r.note ? ' · ' + esc(r.note) : ''}</small></span>
-        <button class="link red" data-rdel="${r.id}" aria-label="Delete revision from ${esc(plabel(r.effective_from))}">Delete</button></div>`).join('')
+        <span class="v">Band pay ₹${PAS.indianCommas(Number(r.band_pay))}, DA ${Number(r.da_pct)}%<small>${esc(roundLabel(Number(r.da_round)))}${r.note ? ' · ' + esc(r.note) : ''}</small>${Number(r.arrear_amount) ? `<small class="arrtxt">Arrear ₹${PAS.indianCommas(Number(r.arrear_amount))} paid in ${esc(plabel(r.arrear_period))} salary</small>` : ''}</span>
+        <button class="link" data-rarr="${r.id}">Arrear</button><button class="link red" data-rdel="${r.id}" aria-label="Delete revision from ${esc(plabel(r.effective_from))}">Delete</button></div>`).join('')
     : '<div class="row"><span class="k" style="color:var(--label-2)">None yet. The template pay is used.</span></div>';
   $('psSave').disabled = !!REVERR;
 }
@@ -1899,7 +1910,17 @@ async function psSave() {
   } catch (err) { $('psErr').textContent = err.message; }
   finally { $('psSave').disabled = !!REVERR; }
 }
+async function psArrear(r) {
+  const p = periodOf(Y, M), cur = Number(r.arrear_amount) || 0;
+  const v = await dlg({ title: `Arrear for ${scaleEmp().name}`, msg: `One-time arrear added to the ${PAS.MONTHS[M]} ${Y} salary (the sheet's Arear column). Enter 0 to remove it.${cur ? ` Now: ₹${PAS.indianCommas(cur)} in ${plabel(r.arrear_period)}.` : ''}`, input: 'Amount in ₹', okText: 'Save arrear' });
+  if (v === false || v == null) return;
+  const amt = Number(String(v).replace(/[₹,\s]/g, ''));
+  if (!(amt >= 0)) { $('psErr').textContent = 'Enter the arrear as a number.'; return; }
+  try { await api('POST', '', { action: 'revision_arrear', id: r.id, amount: amt, period: p }); $('psErr').textContent = ''; await loadRevisions(); $('psIncNote').textContent = amt ? `Arrear ₹${PAS.indianCommas(amt)} added to ${PAS.MONTHS[M]} ${Y} ✓` : 'Arrear removed ✓'; }
+  catch (err) { $('psErr').textContent = err.message; }
+}
 async function psDelete(ev) {
+  const ar = ev.target.closest('[data-rarr]'); if (ar) return psArrear(REVS.find(x => x.id === Number(ar.dataset.rarr)));
   const b = ev.target.closest('[data-rdel]'); if (!b) return;
   const r = REVS.find(x => x.id === Number(b.dataset.rdel));
   if (!await dlg({ title: `Delete the revision from ${plabel(r.effective_from)}?`, msg: 'Months from then on go back to the earlier pay. Final months already saved are not changed.', okText: 'Delete', danger: true })) return;
@@ -1983,7 +2004,7 @@ async function saveDraft(out) {
   try {
     const j = await api('POST', '', {
       action: 'save', period: periodOf(out.cal.year, out.cal.monthIdx), total: out.calc.total,
-      inputs: { att: inp.att, chequeDate: $('cdate').value, chequeNo: inp.chequeNo, payRevision: (out.calc.lines.find(l => l.e.scale) || {}).e?.rev || null },
+      inputs: { att: inp.att, chequeDate: $('cdate').value, chequeNo: inp.chequeNo, payRevision: (out.calc.lines.find(l => l.e.scale) || {}).e?.rev || null, arrears: Object.fromEntries(out.calc.lines.filter(l => l.Q).map(l => [l.e.row, l.Q])) },
       lines: out.calc.lines.map(l => ({ name: l.e.name, cl: l.E, ml: l.F, lwp: l.G, net: l.U })),
       template_version: TPLVER, xlsx_name: out.xlsxName, docx_name: out.docxName,
       xlsx_b64: await blobB64(out.xlsx), docx_b64: await blobB64(out.docx),
