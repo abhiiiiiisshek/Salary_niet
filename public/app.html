@@ -261,6 +261,14 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
 .badge.draft{background:color-mix(in srgb,var(--orange) 14%,transparent);color:var(--orange)}
 .badge.replaced{background:color-mix(in srgb,var(--label) 8%,transparent);color:var(--label-2);text-decoration:line-through}
 .rdetail{margin-top:18px}
+#pscrim select{border:0;background:transparent;color:var(--blue);font-size:15px;text-align:right;padding:10px 0;max-width:200px}
+#pscrim .row input[type=month]{max-width:200px}
+.ps-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 4px}
+.ps-prev{margin-top:4px}
+.ps-prev .row .v,.ps-now .v{font-variant-numeric:tabular-nums;color:var(--label)}
+.ps-prev .row.tot .k,.ps-prev .row.tot .v,#psNow .row.tot .k,#psNow .row.tot .v{font-weight:700}
+.revrow .v small{display:block;font-size:12px;color:var(--label-2)}
+.chip.rev{background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--green)}
 .vrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;position:relative}
 .vrow + .vrow::before{content:"";position:absolute;top:0;left:16px;right:0;border-top:.5px solid var(--sep)}
 .vrow .vt{flex:1;min-width:200px}
@@ -651,7 +659,7 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
   <div class="nav-in">
     <div class="brand"><img class="logo" src="data:image/png;base64,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" alt="" width="26" height="26">NIET Payroll <span>Noida Institute of Education &amp; Technology</span></div>
     <div class="seg" role="tablist" aria-label="Section"><button role="tab" id="tabPay" aria-selected="true">Payroll</button><button role="tab" id="tabPi" aria-selected="false">Imprest</button><button role="tab" id="tabTr" aria-selected="false">Travel</button></div>
-    <span><a class="navlink" href="#records" id="recordsLink" hidden>Records</a><a class="navlink" href="/?logout" id="signout" style="margin-left:18px">Sign out</a></span>
+    <span><a class="navlink" href="#payscale" id="payLink" hidden style="margin-right:18px">Pay scale</a><a class="navlink" href="#records" id="recordsLink" hidden>Records</a><a class="navlink" href="/?logout" id="signout" style="margin-left:18px">Sign out</a></span>
   </div>
 </header>
 
@@ -998,6 +1006,29 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
   </div>
 </div>
 
+<div class="scrim" id="pscrim" aria-hidden="true">
+  <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="ps-title">
+    <div class="grabber"></div>
+    <div class="rec-h"><h3 id="ps-title">Pay scale</h3><span class="saved" id="psWho"></span></div>
+    <p class="group-h" id="psNowH">Applied this month</p>
+    <div class="group" id="psNow"></div>
+    <p class="group-f" id="psNowF"></p>
+    <p class="group-h" style="margin-top:18px">Revisions</p>
+    <div class="group" id="psList"></div>
+    <p class="group-h" style="margin-top:18px">Add a revision</p>
+    <div class="group">
+      <label class="row"><span class="k">Starts from month</span><input id="psFrom" type="month"></label>
+      <label class="row"><span class="k">Band pay (₹)</span><input id="psBand" type="number" min="1" step="1" inputmode="numeric" placeholder="0"></label>
+      <label class="row"><span class="k">DA % of band pay + GP</span><input id="psPct" type="number" min="0" max="500" step="0.5" inputmode="decimal" value="100"></label>
+      <label class="row"><span class="k">Round DA to</span><select id="psRound"><option value="0">keep paise</option><option value="1">nearest ₹1</option><option value="10" selected>nearest ₹10</option><option value="100">nearest ₹100</option></select></label>
+    </div>
+    <div class="ps-tools"><button class="pill" id="psInc" type="button">+3% increment</button><span class="saved" id="psIncNote"></span></div>
+    <div class="group ps-prev" id="psPrev"></div>
+    <p class="formerr" id="psErr"></p>
+    <div class="dlg"><div class="btns"><button class="cancel" id="psClose" type="button">Done</button><button class="ok" id="psSave" type="button">Save revision</button></div></div>
+  </div>
+</div>
+
 <div class="scrim" id="dscrim" aria-hidden="true">
   <div class="sheet small dlg" role="alertdialog" aria-modal="true" aria-labelledby="dtitle">
     <div class="grabber"></div>
@@ -1151,6 +1182,37 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     return emps;
   }
 
+  // ---------- pay revisions (pay-scale row only) ----------
+  // A revision changes band pay and the DA rule from a given month onward. Revisions are stored in the
+  // records database (never in code). rev = { row, band_pay, da_pct, da_round, effective_from:'YYYY-MM' }
+  // da_round: 0 = keep paise, 1 = nearest rupee, 10 = nearest ten, 100 = nearest hundred.
+  const periodKey = cal => cal.year + '-' + String(cal.monthIdx + 1).padStart(2, '0');
+  function revisionFor(revs, row, cal) {
+    const p = periodKey(cal);
+    return (revs || []).filter(r => Number(r.row_no ?? r.row) === row && r.effective_from <= p)
+      .sort((a, z) => (a.effective_from < z.effective_from ? 1 : a.effective_from > z.effective_from ? -1 : (z.id || 0) - (a.id || 0)))[0] || null;
+  }
+  function withRevisions(emps, revs, cal) {
+    return emps.map(e => {
+      if (!e.scale) return e;
+      const r = revisionFor(revs, e.row, cal);
+      if (!r) return { ...e, daPct: 100, daRound: 0, rev: null };
+      return { ...e, bandPay: Number(r.band_pay), daPct: Number(r.da_pct), daRound: Number(r.da_round) || 0, rev: r };
+    });
+  }
+  function daOf(e) {
+    const base = e.bandPay + e.gradePay, pct = e.daPct == null ? 100 : e.daPct, k = e.daRound || 0;
+    if (pct === 100 && !k) return base * 1;
+    const raw = base * pct / 100;
+    return k ? roundRupee(raw / k) * k : Number(raw.toPrecision(15));
+  }
+  function daFormula(e, r) {
+    const pct = e.daPct == null ? 100 : e.daPct, k = e.daRound || 0;
+    if (pct === 100 && !k) return `SUM(J${r}+K${r})*1`;
+    const f = `(J${r}+K${r})*${pct / 100}`;
+    return k ? `ROUND(${f},${-Math.round(Math.log10(k))})` : f;
+  }
+
   // ---------- calculation (mirrors the sheet's formulas exactly) ----------
   function calculate(emps, cal, att) {
     const D = cal.days;
@@ -1158,7 +1220,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const a = att[e.row] || { cl: 0, ml: 0, lwp: 0 };
       const G = Number(a.lwp) || 0;
       let L = null, M, O;
-      if (e.scale) { L = (e.bandPay + e.gradePay) * 1; M = e.bandPay + e.gradePay + L; O = (e.bandPay + e.gradePay + L) / D * G; }
+      if (e.scale) { L = daOf(e); M = e.bandPay + e.gradePay + L; O = (e.bandPay + e.gradePay + L) / D * G; }
       else { M = e.consolidated; O = M / D * G; }
       const N = e.hra || 0;
       const P = M + N - O;
@@ -1212,7 +1274,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       x = setCell(x, 'G' + r, 'n', l.G);
       x = setCell(x, 'H' + r, 'f', l.H, `D${r}-G${r}`);
       if (l.e.scale) {
-        x = setCell(x, 'L' + r, 'f', num(l.L), `SUM(J${r}+K${r})*1`);
+        x = setCell(x, 'J' + r, 'n', num(l.e.bandPay));
+        x = setCell(x, 'L' + r, 'f', num(l.L), daFormula(l.e, r));
         x = setCell(x, 'M' + r, 'f', num(l.M), `J${r}+K${r}+L${r}`);
         x = setCell(x, 'O' + r, 'f', num(l.O), `SUM(J${r}+K${r}+L${r})/D${r}*G${r}`);
       } else {
@@ -1269,7 +1332,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   // ---------- one call does everything ----------
   async function generate(JSZip, xlsxBuf, docxBuf, input /* {year, monthIdx, chequeDate:Date, chequeNo, att:{row:{cl,ml,lwp}}} */, outType) {
     const cal = calendar(input.year, input.monthIdx);
-    const emps = await loadMaster(JSZip, xlsxBuf, docxBuf);
+    const emps = withRevisions(await loadMaster(JSZip, xlsxBuf, docxBuf), input.revisions, cal);
     const errs = validate(emps, cal, input.att, input.chequeDate);
     if (errs.length) return { ok: false, errors: errs, cal, emps };
     const calc = calculate(emps, cal, input.att);
@@ -1288,7 +1351,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     };
   }
 
-  const api = { MONTHS, calendar, roundRupee, indianCommas, toWords, loadMaster, calculate, validate, generate, fmtDate };
+  const api = { MONTHS, calendar, roundRupee, indianCommas, toWords, loadMaster, calculate, validate, generate, fmtDate, withRevisions, revisionFor, daOf };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.PAS = api;
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
@@ -1532,7 +1595,7 @@ let XLSX = null, DOCX = null;
 const $ = id => document.getElementById(id);
 const rs = n => '₹' + PAS.indianCommas(Math.round(n));
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let EMPS = [], shown = 0, tween = null, URLS = [];
+let EMPS = [], shown = 0, tween = null, URLS = [], REVS = [], REVERR = '';
 let DB = null, MROWS = [], FINAL = null, LOCK = false, TPLVER = '', LAST = null, RYEAR = null, RSEL = null;
 const now = new Date();
 let Y = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
@@ -1553,8 +1616,17 @@ function init() {
   $('pick').addEventListener('submit', usePickedFiles);
   $('close').addEventListener('click', closeSheet);
   $('scrim').addEventListener('click', e => { if (e.target === $('scrim')) closeSheet(); });
-  document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if ($('dscrim').classList.contains('on')) return dlgClose(false); if ($('rscrim').classList.contains('on')) return closeRecords(); if ($('piHist').classList.contains('on')) return closePiHist(); if ($('trClaim').classList.contains('on')) return closeClaimSheet(); if ($('trAdd').classList.contains('on')) return closeTripSheet(); closeSheet(); });
+  document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if ($('dscrim').classList.contains('on')) return dlgClose(false); if ($('rscrim').classList.contains('on')) return closeRecords(); if ($('pscrim').classList.contains('on')) return closePay(); if ($('piHist').classList.contains('on')) return closePiHist(); if ($('trClaim').classList.contains('on')) return closeClaimSheet(); if ($('trAdd').classList.contains('on')) return closeTripSheet(); closeSheet(); });
   $('recordsLink').addEventListener('click', e => { e.preventDefault(); openRecords(); });
+  $('payLink').addEventListener('click', e => { e.preventDefault(); openPay(); });
+  $('psClose').addEventListener('click', closePay);
+  $('pscrim').addEventListener('click', e => { if (e.target === $('pscrim')) closePay(); });
+  ['psFrom', 'psBand', 'psPct', 'psRound'].forEach(id => $(id).addEventListener('input', psPreview));
+  $('psRound').addEventListener('change', psPreview);
+  $('psFrom').addEventListener('change', () => { psDefaults(true); psPreview(); });
+  $('psInc').addEventListener('click', psIncrement);
+  $('psSave').addEventListener('click', psSave);
+  $('psList').addEventListener('click', psDelete);
   $('rclose').addEventListener('click', closeRecords);
   $('rscrim').addEventListener('click', e => { if (e.target === $('rscrim')) closeRecords(); });
   $('ryPrev').addEventListener('click', () => loadYear(RYEAR - 1));
@@ -1624,7 +1696,7 @@ async function start() {
     $('rows').innerHTML = emps.map((e, i) => `
       <tr data-row="${e.row}">
         <td class="l who"><div class="who-in"><span class="avatar" style="background:linear-gradient(180deg,hsl(${HUES[i % 9]} 55% 58%),hsl(${HUES[i % 9]} 55% 44%))" aria-hidden="true">${initials(e.name)}</span>
-          <span><b>${e.name}${e.esi ? '<span class="chip" title="ESI deducted at 0.75%">ESI</span>' : ''}</b><small>${e.designation}</small></span></div></td>
+          <span><b>${e.name}${e.esi ? '<span class="chip" title="ESI deducted at 0.75%">ESI</span>' : ''}${e.scale ? '<span class="chip rev" data-rev hidden>Revised pay</span>' : ''}</b><small>${e.designation}</small></span></div></td>
         <td class="stepcell">${stepper('cl', e.name, 'C/L')}</td>
         <td class="stepcell">${stepper('ml', e.name, 'M/L and E/L')}</td>
         <td class="stepcell lwp-cell">${stepper('lwp', e.name, 'Leave without pay')}</td>
@@ -1652,7 +1724,7 @@ function readInput() {
     att[tr.dataset.row] = a;
   });
   const [y, m, d] = ($('cdate').value || '').split('-').map(Number);
-  return { year: Y, monthIdx: M, chequeDate: y ? new Date(y, m - 1, d) : new Date(NaN), chequeNo: $('cno').value, att };
+  return { year: Y, monthIdx: M, chequeDate: y ? new Date(y, m - 1, d) : new Date(NaN), chequeNo: $('cno').value, att, revisions: REVS };
 }
 
 function countTo(target) {
@@ -1674,8 +1746,8 @@ function refresh() {
   $('paidin').textContent = `${cal.short}-${cal.year} paid in ${cal.payShort}-${cal.payYear}`;
   $('tbmonth').textContent = `Total for ${cal.short} ${cal.year}`;
   if (!EMPS.length) return;
-  const inp = readInput();
-  const errs = PAS.validate(EMPS, cal, inp.att, inp.chequeDate);
+  const inp = readInput(), emps = PAS.withRevisions(EMPS, REVS, cal);
+  const errs = PAS.validate(emps, cal, inp.att, inp.chequeDate);
   document.querySelectorAll('#rows .stepper').forEach(s => {
     const i = s.querySelector('input'), v = Number(i.value);
     s.classList.toggle('bad', !(v >= 0 && v <= cal.days && Math.round(v * 2) === v * 2));
@@ -1683,8 +1755,9 @@ function refresh() {
     i.max = cal.days;
     s.querySelector('[data-d="-1"]').disabled = !(v > 0);
   });
-  const calc = PAS.calculate(EMPS, cal, inp.att);
+  const calc = PAS.calculate(emps, cal, inp.att);
   calc.lines.forEach(l => {
+    if (l.e.scale) { const c = document.querySelector(`#rows tr[data-row="${l.e.row}"] [data-rev]`); if (c) { c.hidden = !l.e.rev; if (l.e.rev) c.title = `Band pay ₹${PAS.indianCommas(l.e.bandPay)}, DA ${l.e.daPct}% from ${plabel(l.e.rev.effective_from)}`; } }
     const tr = document.querySelector(`#rows tr[data-row="${l.e.row}"]`);
     tr.classList.toggle('cut', l.G > 0);
     const set = (k, v, cls) => { const td = tr.querySelector(`[data-o=${k}]`); td.textContent = v; td.classList.toggle('dim', cls === 'dim'); td.classList.toggle('neg', cls === 'neg'); };
@@ -1747,6 +1820,93 @@ async function generate() {
   }
 }
 
+/* ---------------- pay scale revisions ---------------- */
+async function loadRevisions() {
+  try { const j = await api('GET', '?revisions=1'); REVS = j.revisions || []; REVERR = ''; }
+  catch (e) { REVS = []; REVERR = e.message; }
+  refresh();
+  if ($('pscrim').classList.contains('on')) renderPay();
+}
+const scaleEmp = () => EMPS.find(e => e.scale);
+const roundLabel = k => ({ 0: 'paise kept', 1: 'nearest ₹1', 10: 'nearest ₹10', 100: 'nearest ₹100' })[k] || '';
+function payRows(e) {
+  const basic = e.bandPay + e.gradePay, da = PAS.daOf(e), tot = basic + da + (e.hra || 0);
+  const r2 = n => '₹' + PAS.indianCommas(Math.floor(n)) + (Math.round(n * 100) % 100 ? '.' + String(Math.round(n * 100) % 100).padStart(2, '0') : '');
+  return `<div class="row"><span class="k">Band pay</span><span class="v">${r2(e.bandPay)}</span></div>
+    <div class="row"><span class="k">Grade pay</span><span class="v">${r2(e.gradePay)}</span></div>
+    <div class="row"><span class="k">Basic (band pay + GP)</span><span class="v">${r2(basic)}</span></div>
+    <div class="row"><span class="k">DA ${e.daPct ?? 100}%${e.daRound ? ', ' + roundLabel(e.daRound) : ''}</span><span class="v">${r2(da)}</span></div>
+    <div class="row"><span class="k">HRA</span><span class="v">${r2(e.hra || 0)}</span></div>
+    <div class="row tot"><span class="k">Total payable (no leave)</span><span class="v">${r2(tot)}</span></div>`;
+}
+function renderPay() {
+  const e0 = scaleEmp(); if (!e0) return;
+  const cal = PAS.calendar(Y, M), e = PAS.withRevisions([e0], REVS, cal)[0];
+  $('psWho').textContent = `${e0.name}, ${e0.designation}`;
+  $('psNowH').textContent = `Applied for ${cal.monthName} ${cal.year}`;
+  $('psNow').innerHTML = payRows(e);
+  $('psNowF').textContent = e.rev ? `From the revision starting ${plabel(e.rev.effective_from)}.` : 'From the approved template (no revision yet).';
+  $('psList').innerHTML = REVERR ? `<div class="row"><span class="k" style="white-space:normal;color:var(--red)">${esc(REVERR)}</span></div>`
+    : REVS.length ? REVS.map(r => `<div class="row revrow"><span class="k">From ${esc(plabel(r.effective_from))}</span>
+        <span class="v">Band pay ₹${PAS.indianCommas(Number(r.band_pay))}, DA ${Number(r.da_pct)}%<small>${esc(roundLabel(Number(r.da_round)))}${r.note ? ' · ' + esc(r.note) : ''}</small></span>
+        <button class="link red" data-rdel="${r.id}" aria-label="Delete revision from ${esc(plabel(r.effective_from))}">Delete</button></div>`).join('')
+    : '<div class="row"><span class="k" style="color:var(--label-2)">None yet. The template pay is used.</span></div>';
+  $('psSave').disabled = !!REVERR;
+}
+function psBaseFor(from) {
+  // pay in force just before the chosen month
+  const [y, m] = from.split('-').map(Number), prev = m === 1 ? PAS.calendar(y - 1, 11) : PAS.calendar(y, m - 2);
+  return PAS.withRevisions([scaleEmp()], REVS, prev)[0];
+}
+function psDefaults(keepBand) {
+  if (!$('psFrom').value) $('psFrom').value = `${Y}-${String(M + 1).padStart(2, '0')}`;
+  const b = psBaseFor($('psFrom').value);
+  if (!keepBand || !$('psBand').value) $('psBand').value = b.bandPay;
+  if (!keepBand) { $('psPct').value = b.daPct ?? 100; $('psRound').value = String(b.daRound || 0); }
+}
+function psIncrement() {
+  const e = scaleEmp(), band = Number($('psBand').value) || 0;
+  const inc = Math.floor((band + e.gradePay) * 0.03);
+  $('psBand').value = band + inc;
+  $('psIncNote').textContent = `Added ₹${PAS.indianCommas(inc)} (3% of ₹${PAS.indianCommas(band + e.gradePay)}, paise dropped)`;
+  psPreview();
+}
+function psPreview() {
+  const e0 = scaleEmp(); if (!e0) return;
+  const band = Number($('psBand').value), pct = Number($('psPct').value);
+  if (!(band > 0) || !(pct >= 0)) { $('psPrev').innerHTML = ''; return; }
+  $('psPrev').innerHTML = payRows({ ...e0, bandPay: band, daPct: pct, daRound: Number($('psRound').value) });
+}
+function openPay() {
+  const s = $('pscrim'); s.classList.add('on'); s.setAttribute('aria-hidden', 'false');
+  $('psErr').textContent = ''; $('psIncNote').textContent = ''; $('psFrom').value = ''; $('psBand').value = '';
+  renderPay(); psDefaults(false); psPreview(); setTimeout(() => $('psBand').focus(), 60);
+}
+function closePay() { const s = $('pscrim'); if (!s.classList.contains('on')) return; s.classList.remove('on'); s.setAttribute('aria-hidden', 'true'); }
+async function psSave() {
+  const from = $('psFrom').value, band = Number($('psBand').value), pct = Number($('psPct').value), rnd = Number($('psRound').value);
+  if (!from) { $('psErr').textContent = 'Choose the month the new pay starts from.'; return; }
+  if (!(band > 0)) { $('psErr').textContent = 'Enter the band pay.'; return; }
+  const e = scaleEmp(), basic = band + e.gradePay, da = PAS.daOf({ ...e, bandPay: band, daPct: pct, daRound: rnd });
+  const ok = await dlg({ title: `Save revision from ${plabel(from)}?`, msg: `${e.name}: band pay ₹${PAS.indianCommas(band)} + GP ₹${PAS.indianCommas(e.gradePay)} = ₹${PAS.indianCommas(basic)}. DA ${pct}% = ₹${PAS.indianCommas(Math.round(da))}. HRA ₹${PAS.indianCommas(e.hra || 0)}. Total ₹${PAS.indianCommas(Math.round(basic + da + (e.hra || 0)))} a month, from ${plabel(from)} onward. Months already marked final are not changed.`, okText: 'Save' });
+  if (!ok) return;
+  $('psSave').disabled = true;
+  try {
+    const j = await api('POST', '', { action: 'revision_save', effective_from: from, band_pay: band, da_pct: pct, da_round: rnd });
+    $('psErr').textContent = '';
+    await loadRevisions();
+    $('psIncNote').textContent = j.warnFinal ? `Saved. ${plabel(from)} is already final, so reopen it if it must use the new pay.` : 'Saved ✓';
+  } catch (err) { $('psErr').textContent = err.message; }
+  finally { $('psSave').disabled = !!REVERR; }
+}
+async function psDelete(ev) {
+  const b = ev.target.closest('[data-rdel]'); if (!b) return;
+  const r = REVS.find(x => x.id === Number(b.dataset.rdel));
+  if (!await dlg({ title: `Delete the revision from ${plabel(r.effective_from)}?`, msg: 'Months from then on go back to the earlier pay. Final months already saved are not changed.', okText: 'Delete', danger: true })) return;
+  try { await api('POST', '', { action: 'revision_delete', id: r.id }); await loadRevisions(); }
+  catch (err) { $('psErr').textContent = err.message; }
+}
+
 /* ---------------- records ---------------- */
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const periodOf = (y, m) => `${y}-${String(m + 1).padStart(2, '0')}`;
@@ -1769,7 +1929,8 @@ async function loadMonthStatus() {
   try {
     const j = await api('GET', '?period=' + p);
     if (!j.configured) { DB = false; $('mstatus').hidden = true; return; }
-    DB = true; $('recordsLink').hidden = false;
+    const first = DB !== true; DB = true; $('recordsLink').hidden = false; $('payLink').hidden = false;
+    if (first) loadRevisions();
     if (p !== periodOf(Y, M)) return;            // month changed while loading
     MROWS = j.rows || [];
     FINAL = MROWS.find(r => r.status === 'final') || null;
@@ -1822,7 +1983,7 @@ async function saveDraft(out) {
   try {
     const j = await api('POST', '', {
       action: 'save', period: periodOf(out.cal.year, out.cal.monthIdx), total: out.calc.total,
-      inputs: { att: inp.att, chequeDate: $('cdate').value, chequeNo: inp.chequeNo },
+      inputs: { att: inp.att, chequeDate: $('cdate').value, chequeNo: inp.chequeNo, payRevision: (out.calc.lines.find(l => l.e.scale) || {}).e?.rev || null },
       lines: out.calc.lines.map(l => ({ name: l.e.name, cl: l.E, ml: l.F, lwp: l.G, net: l.U })),
       template_version: TPLVER, xlsx_name: out.xlsxName, docx_name: out.docxName,
       xlsx_b64: await blobB64(out.xlsx), docx_b64: await blobB64(out.docx),
@@ -1945,7 +2106,7 @@ function showView(v) {
   $('payView').hidden = !pay; $('payBar').hidden = !pay;
   $('piView').hidden = !pi; $('trView').hidden = !tr;
   $('tabPay').setAttribute('aria-selected', String(pay)); $('tabPi').setAttribute('aria-selected', String(pi)); $('tabTr').setAttribute('aria-selected', String(tr));
-  $('recordsLink').style.visibility = pay ? '' : 'hidden';
+  $('recordsLink').style.visibility = pay ? '' : 'hidden'; $('payLink').style.visibility = pay ? '' : 'hidden';
   history.replaceState(null, '', pi ? '#imprest' : tr ? '#travel' : location.pathname + location.search);
   if (!pi) $('piBarTool').hidden = true;
   if (pi) loadPi();

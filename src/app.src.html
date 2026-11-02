@@ -261,6 +261,14 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
 .badge.draft{background:color-mix(in srgb,var(--orange) 14%,transparent);color:var(--orange)}
 .badge.replaced{background:color-mix(in srgb,var(--label) 8%,transparent);color:var(--label-2);text-decoration:line-through}
 .rdetail{margin-top:18px}
+#pscrim select{border:0;background:transparent;color:var(--blue);font-size:15px;text-align:right;padding:10px 0;max-width:200px}
+#pscrim .row input[type=month]{max-width:200px}
+.ps-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 4px}
+.ps-prev{margin-top:4px}
+.ps-prev .row .v,.ps-now .v{font-variant-numeric:tabular-nums;color:var(--label)}
+.ps-prev .row.tot .k,.ps-prev .row.tot .v,#psNow .row.tot .k,#psNow .row.tot .v{font-weight:700}
+.revrow .v small{display:block;font-size:12px;color:var(--label-2)}
+.chip.rev{background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--green)}
 .vrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;position:relative}
 .vrow + .vrow::before{content:"";position:absolute;top:0;left:16px;right:0;border-top:.5px solid var(--sep)}
 .vrow .vt{flex:1;min-width:200px}
@@ -651,7 +659,7 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
   <div class="nav-in">
     <div class="brand"><img class="logo" src="data:image/png;base64,/*ICON64*/" alt="" width="26" height="26">NIET Payroll <span>Noida Institute of Education &amp; Technology</span></div>
     <div class="seg" role="tablist" aria-label="Section"><button role="tab" id="tabPay" aria-selected="true">Payroll</button><button role="tab" id="tabPi" aria-selected="false">Imprest</button><button role="tab" id="tabTr" aria-selected="false">Travel</button></div>
-    <span><a class="navlink" href="#records" id="recordsLink" hidden>Records</a><a class="navlink" href="/?logout" id="signout" style="margin-left:18px">Sign out</a></span>
+    <span><a class="navlink" href="#payscale" id="payLink" hidden style="margin-right:18px">Pay scale</a><a class="navlink" href="#records" id="recordsLink" hidden>Records</a><a class="navlink" href="/?logout" id="signout" style="margin-left:18px">Sign out</a></span>
   </div>
 </header>
 
@@ -998,6 +1006,29 @@ tbody.locked .stepper{opacity:.55;pointer-events:none}
   </div>
 </div>
 
+<div class="scrim" id="pscrim" aria-hidden="true">
+  <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="ps-title">
+    <div class="grabber"></div>
+    <div class="rec-h"><h3 id="ps-title">Pay scale</h3><span class="saved" id="psWho"></span></div>
+    <p class="group-h" id="psNowH">Applied this month</p>
+    <div class="group" id="psNow"></div>
+    <p class="group-f" id="psNowF"></p>
+    <p class="group-h" style="margin-top:18px">Revisions</p>
+    <div class="group" id="psList"></div>
+    <p class="group-h" style="margin-top:18px">Add a revision</p>
+    <div class="group">
+      <label class="row"><span class="k">Starts from month</span><input id="psFrom" type="month"></label>
+      <label class="row"><span class="k">Band pay (₹)</span><input id="psBand" type="number" min="1" step="1" inputmode="numeric" placeholder="0"></label>
+      <label class="row"><span class="k">DA % of band pay + GP</span><input id="psPct" type="number" min="0" max="500" step="0.5" inputmode="decimal" value="100"></label>
+      <label class="row"><span class="k">Round DA to</span><select id="psRound"><option value="0">keep paise</option><option value="1">nearest ₹1</option><option value="10" selected>nearest ₹10</option><option value="100">nearest ₹100</option></select></label>
+    </div>
+    <div class="ps-tools"><button class="pill" id="psInc" type="button">+3% increment</button><span class="saved" id="psIncNote"></span></div>
+    <div class="group ps-prev" id="psPrev"></div>
+    <p class="formerr" id="psErr"></p>
+    <div class="dlg"><div class="btns"><button class="cancel" id="psClose" type="button">Done</button><button class="ok" id="psSave" type="button">Save revision</button></div></div>
+  </div>
+</div>
+
 <div class="scrim" id="dscrim" aria-hidden="true">
   <div class="sheet small dlg" role="alertdialog" aria-modal="true" aria-labelledby="dtitle">
     <div class="grabber"></div>
@@ -1024,7 +1055,7 @@ let XLSX = null, DOCX = null;
 const $ = id => document.getElementById(id);
 const rs = n => '₹' + PAS.indianCommas(Math.round(n));
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let EMPS = [], shown = 0, tween = null, URLS = [];
+let EMPS = [], shown = 0, tween = null, URLS = [], REVS = [], REVERR = '';
 let DB = null, MROWS = [], FINAL = null, LOCK = false, TPLVER = '', LAST = null, RYEAR = null, RSEL = null;
 const now = new Date();
 let Y = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
@@ -1045,8 +1076,17 @@ function init() {
   $('pick').addEventListener('submit', usePickedFiles);
   $('close').addEventListener('click', closeSheet);
   $('scrim').addEventListener('click', e => { if (e.target === $('scrim')) closeSheet(); });
-  document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if ($('dscrim').classList.contains('on')) return dlgClose(false); if ($('rscrim').classList.contains('on')) return closeRecords(); if ($('piHist').classList.contains('on')) return closePiHist(); if ($('trClaim').classList.contains('on')) return closeClaimSheet(); if ($('trAdd').classList.contains('on')) return closeTripSheet(); closeSheet(); });
+  document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if ($('dscrim').classList.contains('on')) return dlgClose(false); if ($('rscrim').classList.contains('on')) return closeRecords(); if ($('pscrim').classList.contains('on')) return closePay(); if ($('piHist').classList.contains('on')) return closePiHist(); if ($('trClaim').classList.contains('on')) return closeClaimSheet(); if ($('trAdd').classList.contains('on')) return closeTripSheet(); closeSheet(); });
   $('recordsLink').addEventListener('click', e => { e.preventDefault(); openRecords(); });
+  $('payLink').addEventListener('click', e => { e.preventDefault(); openPay(); });
+  $('psClose').addEventListener('click', closePay);
+  $('pscrim').addEventListener('click', e => { if (e.target === $('pscrim')) closePay(); });
+  ['psFrom', 'psBand', 'psPct', 'psRound'].forEach(id => $(id).addEventListener('input', psPreview));
+  $('psRound').addEventListener('change', psPreview);
+  $('psFrom').addEventListener('change', () => { psDefaults(true); psPreview(); });
+  $('psInc').addEventListener('click', psIncrement);
+  $('psSave').addEventListener('click', psSave);
+  $('psList').addEventListener('click', psDelete);
   $('rclose').addEventListener('click', closeRecords);
   $('rscrim').addEventListener('click', e => { if (e.target === $('rscrim')) closeRecords(); });
   $('ryPrev').addEventListener('click', () => loadYear(RYEAR - 1));
@@ -1116,7 +1156,7 @@ async function start() {
     $('rows').innerHTML = emps.map((e, i) => `
       <tr data-row="${e.row}">
         <td class="l who"><div class="who-in"><span class="avatar" style="background:linear-gradient(180deg,hsl(${HUES[i % 9]} 55% 58%),hsl(${HUES[i % 9]} 55% 44%))" aria-hidden="true">${initials(e.name)}</span>
-          <span><b>${e.name}${e.esi ? '<span class="chip" title="ESI deducted at 0.75%">ESI</span>' : ''}</b><small>${e.designation}</small></span></div></td>
+          <span><b>${e.name}${e.esi ? '<span class="chip" title="ESI deducted at 0.75%">ESI</span>' : ''}${e.scale ? '<span class="chip rev" data-rev hidden>Revised pay</span>' : ''}</b><small>${e.designation}</small></span></div></td>
         <td class="stepcell">${stepper('cl', e.name, 'C/L')}</td>
         <td class="stepcell">${stepper('ml', e.name, 'M/L and E/L')}</td>
         <td class="stepcell lwp-cell">${stepper('lwp', e.name, 'Leave without pay')}</td>
@@ -1144,7 +1184,7 @@ function readInput() {
     att[tr.dataset.row] = a;
   });
   const [y, m, d] = ($('cdate').value || '').split('-').map(Number);
-  return { year: Y, monthIdx: M, chequeDate: y ? new Date(y, m - 1, d) : new Date(NaN), chequeNo: $('cno').value, att };
+  return { year: Y, monthIdx: M, chequeDate: y ? new Date(y, m - 1, d) : new Date(NaN), chequeNo: $('cno').value, att, revisions: REVS };
 }
 
 function countTo(target) {
@@ -1166,8 +1206,8 @@ function refresh() {
   $('paidin').textContent = `${cal.short}-${cal.year} paid in ${cal.payShort}-${cal.payYear}`;
   $('tbmonth').textContent = `Total for ${cal.short} ${cal.year}`;
   if (!EMPS.length) return;
-  const inp = readInput();
-  const errs = PAS.validate(EMPS, cal, inp.att, inp.chequeDate);
+  const inp = readInput(), emps = PAS.withRevisions(EMPS, REVS, cal);
+  const errs = PAS.validate(emps, cal, inp.att, inp.chequeDate);
   document.querySelectorAll('#rows .stepper').forEach(s => {
     const i = s.querySelector('input'), v = Number(i.value);
     s.classList.toggle('bad', !(v >= 0 && v <= cal.days && Math.round(v * 2) === v * 2));
@@ -1175,8 +1215,9 @@ function refresh() {
     i.max = cal.days;
     s.querySelector('[data-d="-1"]').disabled = !(v > 0);
   });
-  const calc = PAS.calculate(EMPS, cal, inp.att);
+  const calc = PAS.calculate(emps, cal, inp.att);
   calc.lines.forEach(l => {
+    if (l.e.scale) { const c = document.querySelector(`#rows tr[data-row="${l.e.row}"] [data-rev]`); if (c) { c.hidden = !l.e.rev; if (l.e.rev) c.title = `Band pay ₹${PAS.indianCommas(l.e.bandPay)}, DA ${l.e.daPct}% from ${plabel(l.e.rev.effective_from)}`; } }
     const tr = document.querySelector(`#rows tr[data-row="${l.e.row}"]`);
     tr.classList.toggle('cut', l.G > 0);
     const set = (k, v, cls) => { const td = tr.querySelector(`[data-o=${k}]`); td.textContent = v; td.classList.toggle('dim', cls === 'dim'); td.classList.toggle('neg', cls === 'neg'); };
@@ -1239,6 +1280,93 @@ async function generate() {
   }
 }
 
+/* ---------------- pay scale revisions ---------------- */
+async function loadRevisions() {
+  try { const j = await api('GET', '?revisions=1'); REVS = j.revisions || []; REVERR = ''; }
+  catch (e) { REVS = []; REVERR = e.message; }
+  refresh();
+  if ($('pscrim').classList.contains('on')) renderPay();
+}
+const scaleEmp = () => EMPS.find(e => e.scale);
+const roundLabel = k => ({ 0: 'paise kept', 1: 'nearest ₹1', 10: 'nearest ₹10', 100: 'nearest ₹100' })[k] || '';
+function payRows(e) {
+  const basic = e.bandPay + e.gradePay, da = PAS.daOf(e), tot = basic + da + (e.hra || 0);
+  const r2 = n => '₹' + PAS.indianCommas(Math.floor(n)) + (Math.round(n * 100) % 100 ? '.' + String(Math.round(n * 100) % 100).padStart(2, '0') : '');
+  return `<div class="row"><span class="k">Band pay</span><span class="v">${r2(e.bandPay)}</span></div>
+    <div class="row"><span class="k">Grade pay</span><span class="v">${r2(e.gradePay)}</span></div>
+    <div class="row"><span class="k">Basic (band pay + GP)</span><span class="v">${r2(basic)}</span></div>
+    <div class="row"><span class="k">DA ${e.daPct ?? 100}%${e.daRound ? ', ' + roundLabel(e.daRound) : ''}</span><span class="v">${r2(da)}</span></div>
+    <div class="row"><span class="k">HRA</span><span class="v">${r2(e.hra || 0)}</span></div>
+    <div class="row tot"><span class="k">Total payable (no leave)</span><span class="v">${r2(tot)}</span></div>`;
+}
+function renderPay() {
+  const e0 = scaleEmp(); if (!e0) return;
+  const cal = PAS.calendar(Y, M), e = PAS.withRevisions([e0], REVS, cal)[0];
+  $('psWho').textContent = `${e0.name}, ${e0.designation}`;
+  $('psNowH').textContent = `Applied for ${cal.monthName} ${cal.year}`;
+  $('psNow').innerHTML = payRows(e);
+  $('psNowF').textContent = e.rev ? `From the revision starting ${plabel(e.rev.effective_from)}.` : 'From the approved template (no revision yet).';
+  $('psList').innerHTML = REVERR ? `<div class="row"><span class="k" style="white-space:normal;color:var(--red)">${esc(REVERR)}</span></div>`
+    : REVS.length ? REVS.map(r => `<div class="row revrow"><span class="k">From ${esc(plabel(r.effective_from))}</span>
+        <span class="v">Band pay ₹${PAS.indianCommas(Number(r.band_pay))}, DA ${Number(r.da_pct)}%<small>${esc(roundLabel(Number(r.da_round)))}${r.note ? ' · ' + esc(r.note) : ''}</small></span>
+        <button class="link red" data-rdel="${r.id}" aria-label="Delete revision from ${esc(plabel(r.effective_from))}">Delete</button></div>`).join('')
+    : '<div class="row"><span class="k" style="color:var(--label-2)">None yet. The template pay is used.</span></div>';
+  $('psSave').disabled = !!REVERR;
+}
+function psBaseFor(from) {
+  // pay in force just before the chosen month
+  const [y, m] = from.split('-').map(Number), prev = m === 1 ? PAS.calendar(y - 1, 11) : PAS.calendar(y, m - 2);
+  return PAS.withRevisions([scaleEmp()], REVS, prev)[0];
+}
+function psDefaults(keepBand) {
+  if (!$('psFrom').value) $('psFrom').value = `${Y}-${String(M + 1).padStart(2, '0')}`;
+  const b = psBaseFor($('psFrom').value);
+  if (!keepBand || !$('psBand').value) $('psBand').value = b.bandPay;
+  if (!keepBand) { $('psPct').value = b.daPct ?? 100; $('psRound').value = String(b.daRound || 0); }
+}
+function psIncrement() {
+  const e = scaleEmp(), band = Number($('psBand').value) || 0;
+  const inc = Math.floor((band + e.gradePay) * 0.03);
+  $('psBand').value = band + inc;
+  $('psIncNote').textContent = `Added ₹${PAS.indianCommas(inc)} (3% of ₹${PAS.indianCommas(band + e.gradePay)}, paise dropped)`;
+  psPreview();
+}
+function psPreview() {
+  const e0 = scaleEmp(); if (!e0) return;
+  const band = Number($('psBand').value), pct = Number($('psPct').value);
+  if (!(band > 0) || !(pct >= 0)) { $('psPrev').innerHTML = ''; return; }
+  $('psPrev').innerHTML = payRows({ ...e0, bandPay: band, daPct: pct, daRound: Number($('psRound').value) });
+}
+function openPay() {
+  const s = $('pscrim'); s.classList.add('on'); s.setAttribute('aria-hidden', 'false');
+  $('psErr').textContent = ''; $('psIncNote').textContent = ''; $('psFrom').value = ''; $('psBand').value = '';
+  renderPay(); psDefaults(false); psPreview(); setTimeout(() => $('psBand').focus(), 60);
+}
+function closePay() { const s = $('pscrim'); if (!s.classList.contains('on')) return; s.classList.remove('on'); s.setAttribute('aria-hidden', 'true'); }
+async function psSave() {
+  const from = $('psFrom').value, band = Number($('psBand').value), pct = Number($('psPct').value), rnd = Number($('psRound').value);
+  if (!from) { $('psErr').textContent = 'Choose the month the new pay starts from.'; return; }
+  if (!(band > 0)) { $('psErr').textContent = 'Enter the band pay.'; return; }
+  const e = scaleEmp(), basic = band + e.gradePay, da = PAS.daOf({ ...e, bandPay: band, daPct: pct, daRound: rnd });
+  const ok = await dlg({ title: `Save revision from ${plabel(from)}?`, msg: `${e.name}: band pay ₹${PAS.indianCommas(band)} + GP ₹${PAS.indianCommas(e.gradePay)} = ₹${PAS.indianCommas(basic)}. DA ${pct}% = ₹${PAS.indianCommas(Math.round(da))}. HRA ₹${PAS.indianCommas(e.hra || 0)}. Total ₹${PAS.indianCommas(Math.round(basic + da + (e.hra || 0)))} a month, from ${plabel(from)} onward. Months already marked final are not changed.`, okText: 'Save' });
+  if (!ok) return;
+  $('psSave').disabled = true;
+  try {
+    const j = await api('POST', '', { action: 'revision_save', effective_from: from, band_pay: band, da_pct: pct, da_round: rnd });
+    $('psErr').textContent = '';
+    await loadRevisions();
+    $('psIncNote').textContent = j.warnFinal ? `Saved. ${plabel(from)} is already final, so reopen it if it must use the new pay.` : 'Saved ✓';
+  } catch (err) { $('psErr').textContent = err.message; }
+  finally { $('psSave').disabled = !!REVERR; }
+}
+async function psDelete(ev) {
+  const b = ev.target.closest('[data-rdel]'); if (!b) return;
+  const r = REVS.find(x => x.id === Number(b.dataset.rdel));
+  if (!await dlg({ title: `Delete the revision from ${plabel(r.effective_from)}?`, msg: 'Months from then on go back to the earlier pay. Final months already saved are not changed.', okText: 'Delete', danger: true })) return;
+  try { await api('POST', '', { action: 'revision_delete', id: r.id }); await loadRevisions(); }
+  catch (err) { $('psErr').textContent = err.message; }
+}
+
 /* ---------------- records ---------------- */
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const periodOf = (y, m) => `${y}-${String(m + 1).padStart(2, '0')}`;
@@ -1261,7 +1389,8 @@ async function loadMonthStatus() {
   try {
     const j = await api('GET', '?period=' + p);
     if (!j.configured) { DB = false; $('mstatus').hidden = true; return; }
-    DB = true; $('recordsLink').hidden = false;
+    const first = DB !== true; DB = true; $('recordsLink').hidden = false; $('payLink').hidden = false;
+    if (first) loadRevisions();
     if (p !== periodOf(Y, M)) return;            // month changed while loading
     MROWS = j.rows || [];
     FINAL = MROWS.find(r => r.status === 'final') || null;
@@ -1314,7 +1443,7 @@ async function saveDraft(out) {
   try {
     const j = await api('POST', '', {
       action: 'save', period: periodOf(out.cal.year, out.cal.monthIdx), total: out.calc.total,
-      inputs: { att: inp.att, chequeDate: $('cdate').value, chequeNo: inp.chequeNo },
+      inputs: { att: inp.att, chequeDate: $('cdate').value, chequeNo: inp.chequeNo, payRevision: (out.calc.lines.find(l => l.e.scale) || {}).e?.rev || null },
       lines: out.calc.lines.map(l => ({ name: l.e.name, cl: l.E, ml: l.F, lwp: l.G, net: l.U })),
       template_version: TPLVER, xlsx_name: out.xlsxName, docx_name: out.docxName,
       xlsx_b64: await blobB64(out.xlsx), docx_b64: await blobB64(out.docx),
@@ -1437,7 +1566,7 @@ function showView(v) {
   $('payView').hidden = !pay; $('payBar').hidden = !pay;
   $('piView').hidden = !pi; $('trView').hidden = !tr;
   $('tabPay').setAttribute('aria-selected', String(pay)); $('tabPi').setAttribute('aria-selected', String(pi)); $('tabTr').setAttribute('aria-selected', String(tr));
-  $('recordsLink').style.visibility = pay ? '' : 'hidden';
+  $('recordsLink').style.visibility = pay ? '' : 'hidden'; $('payLink').style.visibility = pay ? '' : 'hidden';
   history.replaceState(null, '', pi ? '#imprest' : tr ? '#travel' : location.pathname + location.search);
   if (!pi) $('piBarTool').hidden = true;
   if (pi) loadPi();

@@ -1,7 +1,7 @@
 // Monthly records: every Generate is saved as a draft; one version per month can be marked final.
 // A final can be reopened only with a written reason; the old final is kept as "replaced".
 import { loggedIn, send } from '../lib/auth.js';
-import { db, dbConfigured } from '../lib/db.js';
+import { db, dbConfigured, revdb } from '../lib/db.js';
 
 const json = (res, status, obj) => send(res, status, 'application/json', JSON.stringify(obj));
 const PERIOD = /^\d{4}-(0[1-9]|1[0-2])$/;
@@ -35,6 +35,10 @@ export default async function handler(req, res) {
         res.setHeader('Cache-Control', 'private, no-store');
         res.setHeader('Content-Disposition', `attachment; filename="${row[dl + '_name'].replace(/[^\w.\-]/g, '_')}"`);
         return res.end(Buffer.from(row[dl + '_b64'], 'base64'));
+      }
+      if (url.searchParams.has('revisions')) {
+        try { return json(res, 200, { configured: true, revisions: await revdb.list() }); }
+        catch (e) { return json(res, e.status === 404 ? 503 : 502, { error: e.message, missingTable: /doesn't exist yet/.test(e.message) }); }
       }
       const period = url.searchParams.get('period');
       if (period) {
@@ -89,6 +93,29 @@ export default async function handler(req, res) {
         if (e.code === '23505') return json(res, 409, { error: 'This month already has a final version. Reopen it first.' });
         throw e;
       }
+    }
+
+    if (b.action === 'revision_save') {
+      if (!PERIOD.test(b.effective_from || '')) return json(res, 400, { error: 'Choose the month the new pay starts from.' });
+      const band = Math.round(Number(b.band_pay) * 100) / 100, pct = Number(b.da_pct), rnd = Number(b.da_round);
+      if (!(band > 0) || band > 10_000_000) return json(res, 400, { error: 'Enter the band pay.' });
+      if (!(pct >= 0 && pct <= 500)) return json(res, 400, { error: 'DA % must be between 0 and 500.' });
+      if (![0, 1, 10, 100].includes(rnd)) return json(res, 400, { error: 'Bad DA rounding.' });
+      const fin = await db.finalOf(b.effective_from);
+      try {
+        const row = await revdb.insert({ row_no: 4, effective_from: b.effective_from, band_pay: band, da_pct: pct, da_round: rnd, note: String(b.note || '').trim().slice(0, 300) || null });
+        return json(res, 200, { ok: true, revision: row, warnFinal: !!fin });
+      } catch (e) {
+        if (e.code === '23505') return json(res, 409, { error: `There is already a revision starting ${label(b.effective_from)}. Delete it first.` });
+        throw e;
+      }
+    }
+
+    if (b.action === 'revision_delete') {
+      const id = Number(b.id);
+      if (!Number.isInteger(id) || id < 1) return json(res, 400, { error: 'Bad revision' });
+      await revdb.remove(id);
+      return json(res, 200, { ok: true });
     }
 
     if (b.action === 'reopen') {

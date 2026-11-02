@@ -125,6 +125,37 @@
     return emps;
   }
 
+  // ---------- pay revisions (pay-scale row only) ----------
+  // A revision changes band pay and the DA rule from a given month onward. Revisions are stored in the
+  // records database (never in code). rev = { row, band_pay, da_pct, da_round, effective_from:'YYYY-MM' }
+  // da_round: 0 = keep paise, 1 = nearest rupee, 10 = nearest ten, 100 = nearest hundred.
+  const periodKey = cal => cal.year + '-' + String(cal.monthIdx + 1).padStart(2, '0');
+  function revisionFor(revs, row, cal) {
+    const p = periodKey(cal);
+    return (revs || []).filter(r => Number(r.row_no ?? r.row) === row && r.effective_from <= p)
+      .sort((a, z) => (a.effective_from < z.effective_from ? 1 : a.effective_from > z.effective_from ? -1 : (z.id || 0) - (a.id || 0)))[0] || null;
+  }
+  function withRevisions(emps, revs, cal) {
+    return emps.map(e => {
+      if (!e.scale) return e;
+      const r = revisionFor(revs, e.row, cal);
+      if (!r) return { ...e, daPct: 100, daRound: 0, rev: null };
+      return { ...e, bandPay: Number(r.band_pay), daPct: Number(r.da_pct), daRound: Number(r.da_round) || 0, rev: r };
+    });
+  }
+  function daOf(e) {
+    const base = e.bandPay + e.gradePay, pct = e.daPct == null ? 100 : e.daPct, k = e.daRound || 0;
+    if (pct === 100 && !k) return base * 1;
+    const raw = base * pct / 100;
+    return k ? roundRupee(raw / k) * k : Number(raw.toPrecision(15));
+  }
+  function daFormula(e, r) {
+    const pct = e.daPct == null ? 100 : e.daPct, k = e.daRound || 0;
+    if (pct === 100 && !k) return `SUM(J${r}+K${r})*1`;
+    const f = `(J${r}+K${r})*${pct / 100}`;
+    return k ? `ROUND(${f},${-Math.round(Math.log10(k))})` : f;
+  }
+
   // ---------- calculation (mirrors the sheet's formulas exactly) ----------
   function calculate(emps, cal, att) {
     const D = cal.days;
@@ -132,7 +163,7 @@
       const a = att[e.row] || { cl: 0, ml: 0, lwp: 0 };
       const G = Number(a.lwp) || 0;
       let L = null, M, O;
-      if (e.scale) { L = (e.bandPay + e.gradePay) * 1; M = e.bandPay + e.gradePay + L; O = (e.bandPay + e.gradePay + L) / D * G; }
+      if (e.scale) { L = daOf(e); M = e.bandPay + e.gradePay + L; O = (e.bandPay + e.gradePay + L) / D * G; }
       else { M = e.consolidated; O = M / D * G; }
       const N = e.hra || 0;
       const P = M + N - O;
@@ -186,7 +217,8 @@
       x = setCell(x, 'G' + r, 'n', l.G);
       x = setCell(x, 'H' + r, 'f', l.H, `D${r}-G${r}`);
       if (l.e.scale) {
-        x = setCell(x, 'L' + r, 'f', num(l.L), `SUM(J${r}+K${r})*1`);
+        x = setCell(x, 'J' + r, 'n', num(l.e.bandPay));
+        x = setCell(x, 'L' + r, 'f', num(l.L), daFormula(l.e, r));
         x = setCell(x, 'M' + r, 'f', num(l.M), `J${r}+K${r}+L${r}`);
         x = setCell(x, 'O' + r, 'f', num(l.O), `SUM(J${r}+K${r}+L${r})/D${r}*G${r}`);
       } else {
@@ -243,7 +275,7 @@
   // ---------- one call does everything ----------
   async function generate(JSZip, xlsxBuf, docxBuf, input /* {year, monthIdx, chequeDate:Date, chequeNo, att:{row:{cl,ml,lwp}}} */, outType) {
     const cal = calendar(input.year, input.monthIdx);
-    const emps = await loadMaster(JSZip, xlsxBuf, docxBuf);
+    const emps = withRevisions(await loadMaster(JSZip, xlsxBuf, docxBuf), input.revisions, cal);
     const errs = validate(emps, cal, input.att, input.chequeDate);
     if (errs.length) return { ok: false, errors: errs, cal, emps };
     const calc = calculate(emps, cal, input.att);
@@ -262,6 +294,6 @@
     };
   }
 
-  const api = { MONTHS, calendar, roundRupee, indianCommas, toWords, loadMaster, calculate, validate, generate, fmtDate };
+  const api = { MONTHS, calendar, roundRupee, indianCommas, toWords, loadMaster, calculate, validate, generate, fmtDate, withRevisions, revisionFor, daOf };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.PAS = api;
 })(typeof window !== 'undefined' ? window : globalThis);
