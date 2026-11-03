@@ -135,19 +135,12 @@
     return (revs || []).filter(r => Number(r.row_no ?? r.row) === row && r.effective_from <= p)
       .sort((a, z) => (a.effective_from < z.effective_from ? 1 : a.effective_from > z.effective_from ? -1 : (z.id || 0) - (a.id || 0)))[0] || null;
   }
-  // One-time arrears: a revision can carry an arrear amount paid in one chosen month (column Q, "Arear").
-  function arrearFor(revs, row, cal) {
-    const p = periodKey(cal);
-    return (revs || []).filter(r => Number(r.row_no ?? r.row) === row && r.arrear_period === p)
-      .reduce((t, r) => t + (Number(r.arrear_amount) || 0), 0);
-  }
   function withRevisions(emps, revs, cal) {
     return emps.map(e => {
-      const arrear = arrearFor(revs, e.row, cal);
-      if (!e.scale) return arrear ? { ...e, arrear } : e;
+      if (!e.scale) return e;
       const r = revisionFor(revs, e.row, cal);
-      if (!r) return { ...e, daPct: 100, daRound: 0, rev: null, arrear };
-      return { ...e, bandPay: Number(r.band_pay), daPct: Number(r.da_pct), daRound: Number(r.da_round) || 0, rev: r, arrear };
+      if (!r) return { ...e, daPct: 100, daRound: 0, rev: null };
+      return { ...e, bandPay: Number(r.band_pay), daPct: Number(r.da_pct), daRound: Number(r.da_round) || 0, rev: r };
     });
   }
   function daOf(e) {
@@ -175,13 +168,13 @@
       const N = e.hra || 0;
       const P = M + N - O;
       const R = e.esi ? +P * 0.0075 : 0;
-      const Q = Number(e.arrear) || 0, S = 0, T = 0;
+      const Q = 0, S = 0, T = 0;
       const U = roundRupee(P + Q - R - S - T);
       return { e, D, E: Number(a.cl) || 0, F: Number(a.ml) || 0, G, H: D - G, L, M, N, O, P, Q, R, S, T, U };
     });
     const sum = k => lines.reduce((t, l) => t + (l[k] || 0), 0);
     const total = sum('U');
-    return { lines, totals: { M: sum('M'), N: sum('N'), O: sum('O'), P: sum('P'), Q: sum('Q'), R: sum('R'), S: 0, T: 0, U: total }, total };
+    return { lines, totals: { M: sum('M'), N: sum('N'), O: sum('O'), P: sum('P'), Q: 0, R: sum('R'), S: 0, T: 0, U: total }, total };
   }
 
   // ---------- validation ----------
@@ -232,7 +225,6 @@
         x = setCell(x, 'O' + r, 'f', num(l.O), `M${r}/D${r}*G${r}`);
       }
       x = setCell(x, 'P' + r, 'f', num(l.P), `M${r}+N${r}-O${r}`);
-      if (l.Q || readNum(x, 'Q' + r)) x = setCell(x, 'Q' + r, 'n', num(l.Q));
       if (l.e.esi) x = setCell(x, 'R' + r, 'f', num(l.R), `+P${r}*0.0075`);
       x = setCell(x, 'U' + r, 'f', l.U, `ROUND(P${r}+Q${r}-R${r}-S${r}-T${r},0)`);
       x = setCell(x, 'V' + r, 's', 'Paid through BT dtd.' + fmtDate(chequeDate));

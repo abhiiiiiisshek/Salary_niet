@@ -111,17 +111,6 @@ export default async function handler(req, res) {
       }
     }
 
-    if (b.action === 'revision_arrear') {
-      const id = Number(b.id), amt = Math.round(Number(b.amount) * 100) / 100;
-      if (!Number.isInteger(id) || id < 1) return json(res, 400, { error: 'Bad revision' });
-      if (!(amt >= 0) || amt > 10_000_000) return json(res, 400, { error: 'Enter the arrear amount.' });
-      if (amt > 0 && !PERIOD.test(b.period || '')) return json(res, 400, { error: 'Choose the month that pays the arrear.' });
-      if (amt > 0 && await db.finalOf(b.period)) return json(res, 409, { error: `${label(b.period)} is already final. Reopen it first.` });
-      const row = await revdb.patch(id, amt > 0 ? { arrear_amount: amt, arrear_period: b.period } : { arrear_amount: null, arrear_period: null });
-      if (!row) return json(res, 404, { error: 'Revision not found' });
-      return json(res, 200, { ok: true, revision: row });
-    }
-
     if (b.action === 'revision_delete') {
       const id = Number(b.id);
       if (!Number.isInteger(id) || id < 1) return json(res, 400, { error: 'Bad revision' });

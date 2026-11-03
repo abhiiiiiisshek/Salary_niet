@@ -14,7 +14,5 @@ create table if not exists public.pay_revisions (
 create unique index if not exists pay_revisions_one_per_month on public.pay_revisions (row_no, effective_from);
 alter table public.pay_revisions enable row level security;
 revoke all on public.pay_revisions from anon, authenticated;
-alter table public.pay_revisions add column if not exists arrear_amount numeric(12,2) check (arrear_amount is null or arrear_amount >= 0);
-alter table public.pay_revisions add column if not exists arrear_period text check (arrear_period is null or arrear_period ~ '^[0-9]{4}-(0[1-9]|1[0-2])$');   -- month whose salary carries the arrear
 
 notify pgrst, 'reload schema';
